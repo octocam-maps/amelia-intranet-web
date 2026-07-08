@@ -1,7 +1,8 @@
-import { type ClassValue, clsx } from 'clsx';
-import { twMerge } from 'tailwind-merge';
-
-/** Combina clases condicionales (clsx) y resuelve conflictos de Tailwind. */
-export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs));
+/**
+ * Combina nombres de clase condicionales y filtra los falsy. Sin
+ * tailwind-merge: no hay utilidades de Tailwind cuyo conflicto resolver,
+ * las clases son de CSS Modules (mirror de frontend-amelia-solar-V2).
+ */
+export function cn(...inputs: (string | undefined | null | false)[]): string {
+  return inputs.filter(Boolean).join(' ');
 }
