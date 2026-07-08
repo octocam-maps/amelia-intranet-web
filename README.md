@@ -73,6 +73,15 @@ src/
 - **Navbar por rol es SOLO visual** (`layouts/AppLayout/nav-config.ts`, según
   `docs/permisos-roles.md`). La protección real de cada módulo vive en el
   backend (`require_role`) — el frontend nunca es la última línea de defensa.
+- **Sesiones revocables server-side** (ver `amelia-intranet-back/README.md`):
+  el backend ahora persiste cada refresh token (`auth_sessions` + `jti`) y
+  expone `POST /auth/logout-all` para cerrar sesión en todos los
+  dispositivos. El contrato de `/auth/login`, `/auth/refresh` y
+  `/auth/logout` que ya consume este frontend no cambió — no hizo falta
+  tocar `auth-api.adapter.ts`. `logout-all` todavía no tiene botón en el
+  Topbar (no se pidió para esta ronda); añadirlo es una llamada más al
+  adapter cuando se decida dónde exponerlo (¿"Mi perfil"? ¿ajustes de
+  seguridad?).
 
 ## Pendiente / sin verificar (honesto)
 
