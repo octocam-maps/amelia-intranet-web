@@ -68,6 +68,17 @@ src/
   la instrucción explícita de la Fase 1. Tras un F5 no hay nada que
   rehidratar: `useAuthBootstrap` llama a `POST /auth/refresh` (cookie
   HttpOnly) al montar la app y, si hay sesión, trae el perfil con `GET /auth/me`.
+- **Single-flight en el refresh** (`src/features/auth/infrastructure/refresh-single-flight.ts`):
+  `useAuthBootstrap` NO llama a `authApiAdapter.refresh()` directo, sino a
+  `refreshSessionSingleFlight()`, que comparte una única promesa entre
+  llamadores concurrentes. Bug real encontrado en el E2E: React StrictMode
+  (dev) monta el efecto de bootstrap dos veces, y sin esto cada montaje
+  disparaba su propio `POST /auth/refresh` con el MISMO refresh token —
+  el backend terminaba con sesiones duplicadas o, peor, con la detección de
+  reuso revocando la sesión por error. El backend tiene su propia defensa en
+  profundidad (revocación de familia ante reuso de `jti`), pero la corrección
+  primaria es esta: que nunca se disparen dos refresh concurrentes desde el
+  mismo cliente.
 - **`credentials: 'include'`** en todas las llamadas (`src/lib/http/api-client.ts`)
   — imprescindible para que la cookie HttpOnly del refresh token viaje.
 - **Navbar por rol es SOLO visual** (`layouts/AppLayout/nav-config.ts`, según
