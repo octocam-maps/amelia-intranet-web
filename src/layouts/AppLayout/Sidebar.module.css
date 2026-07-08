@@ -15,9 +15,14 @@
   padding: 0 var(--space-6);
 }
 
+/* Logo con proporción real (1920x400) — SOLO height fijo, nunca width y
+   height a la vez o se distorsiona. */
 .logo {
   height: 1.75rem;
   width: auto;
+  max-width: 100%;
+  flex-shrink: 0;
+  object-fit: contain;
 }
 
 .nav {

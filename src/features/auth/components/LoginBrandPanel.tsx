@@ -21,7 +21,9 @@ export function LoginBrandPanel() {
           marca, no una animación llamativa. */}
       <div aria-hidden className={styles.glow} />
 
-      <img src={logoBlanco} alt="Amelia" className={styles.logo} />
+      <div className={styles.logoRow}>
+        <img src={logoBlanco} alt="Amelia" className={styles.logo} />
+      </div>
 
       <div className={styles.body}>
         <h1 className={styles.title}>Bienvenido a tu espacio de trabajo.</h1>

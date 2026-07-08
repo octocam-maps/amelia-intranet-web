@@ -19,10 +19,21 @@
   filter: blur(100px);
 }
 
-.logo {
+.logoRow {
   position: relative;
+  display: flex;
+  align-items: center;
+}
+
+/* Logo con proporción real (1920x400) — SOLO height fijo, nunca width y
+   height a la vez o se distorsiona. object-fit + flex-shrink son
+   cinturón-y-tirantes por si el contenedor algún día lo comprime. */
+.logo {
   height: 2rem;
   width: auto;
+  max-width: 100%;
+  flex-shrink: 0;
+  object-fit: contain;
 }
 
 .body {
