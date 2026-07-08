@@ -1,0 +1,114 @@
+.base {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  white-space: nowrap;
+  border-radius: calc(var(--radius) - 2px);
+  font-size: var(--space-3_5);
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  background-color: transparent;
+  transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  outline: none;
+  user-select: none;
+}
+
+.base:focus-visible {
+  outline: 2px solid hsl(var(--ring));
+  outline-offset: 2px;
+}
+
+.base:active {
+  transform: translateY(0.5px);
+}
+
+.base svg {
+  pointer-events: none;
+  width: var(--space-4);
+  height: var(--space-4);
+  flex-shrink: 0;
+}
+
+/* Variantes */
+.variantDefault {
+  background-color: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+}
+
+.variantDefault:hover:not(.disabled) {
+  background-color: hsl(var(--primary) / 0.9);
+}
+
+.variantDefault:active:not(.disabled) {
+  background-color: hsl(var(--primary) / 0.85);
+}
+
+.variantDestructive {
+  background-color: hsl(var(--destructive));
+  color: hsl(var(--destructive-foreground));
+}
+
+.variantDestructive:hover:not(.disabled) {
+  background-color: hsl(var(--destructive) / 0.9);
+}
+
+.variantOutline {
+  border: 1px solid hsl(var(--border));
+  background-color: hsl(var(--background));
+  color: hsl(var(--foreground));
+}
+
+.variantOutline:hover:not(.disabled) {
+  background-color: hsl(var(--accent));
+}
+
+.variantSecondary {
+  background-color: hsl(var(--secondary));
+  color: hsl(var(--secondary-foreground));
+}
+
+.variantSecondary:hover:not(.disabled) {
+  background-color: hsl(var(--secondary) / 0.8);
+}
+
+.variantGhost {
+  color: hsl(var(--foreground));
+}
+
+.variantGhost:hover:not(.disabled) {
+  background-color: hsl(var(--accent));
+}
+
+/* Tamaños */
+.sizeDefault {
+  height: var(--space-10);
+  padding: var(--space-2) var(--space-4);
+}
+
+.sizeSm {
+  height: 2.25rem;
+  padding: 0 var(--space-3);
+  font-size: 0.8125rem;
+}
+
+.sizeLg {
+  height: 2.75rem;
+  padding: 0 var(--space-8);
+  font-size: 0.9375rem;
+}
+
+.sizeIcon {
+  height: var(--space-10);
+  width: var(--space-10);
+  padding: 0;
+}
+
+.disabled {
+  pointer-events: none;
+  opacity: 0.5;
+  cursor: not-allowed;
+}
