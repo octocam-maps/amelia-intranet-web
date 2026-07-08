@@ -1,16 +1,33 @@
-import logoAmelia from '@/assets/brand/logo-amelia.png';
-import { GoogleSignInButton } from '../components/GoogleSignInButton';
+import { GoogleAuthPanel } from '../components/GoogleAuthPanel';
+import { LoginBrandPanel } from '../components/LoginBrandPanel';
+import styles from './LoginPage.module.css';
+
+// Placeholder — sin sistema de tickets de RRHH todavía; actualizar cuando exista.
+const RRHH_CONTACT_EMAIL = 'rrhh@ameliahub.com';
 
 export function LoginPage() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background px-4">
-      <div className="w-full max-w-sm rounded-lg border border-border bg-card p-8 text-center shadow-sm">
-        <img src={logoAmelia} alt="Amelia" className="mx-auto mb-6 h-10 w-auto" />
-        <h1 className="mb-1 text-lg font-semibold text-foreground">Bienvenido a la intranet</h1>
-        <p className="mb-6 text-sm text-muted-foreground">
-          Inicia sesión con tu cuenta de Google corporativa para continuar.
+    <div className={styles.page}>
+      <LoginBrandPanel />
+
+      <div className={styles.actionPanel}>
+        <div />
+
+        <div className={styles.actionBody}>
+          <h2 className={styles.title}>Hola de nuevo</h2>
+          <p className={styles.subtitle}>Inicia sesión con tu cuenta corporativa de Google.</p>
+
+          <div className={styles.action}>
+            <GoogleAuthPanel />
+          </div>
+        </div>
+
+        <p className={styles.contact}>
+          ¿Problemas para entrar?{' '}
+          <a href={`mailto:${RRHH_CONTACT_EMAIL}`} className={styles.contactLink}>
+            Escribe a RRHH
+          </a>
         </p>
-        <GoogleSignInButton />
       </div>
     </div>
   );
