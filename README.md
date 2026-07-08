@@ -5,19 +5,24 @@ React + Vite + TypeScript (strict), feature-sliced (espejo de
 `../amelia-intranet/CLAUDE.md` y `../amelia-intranet/docs/` para el contrato
 funcional completo.
 
-**Fase 1 (actual):** Login con Google + Shell (Sidebar/Topbar por rol) +
-Dashboard placeholder. El resto de módulos del navbar aparecen pero están
-deshabilitados ("Disponible en una fase posterior") — llegan en Fase 2+.
+**Fase 1 (actual):** Login con Google (split-screen + One Tap híbrido) +
+Shell (Sidebar/Topbar por rol) + Dashboard placeholder. El resto de módulos
+del navbar aparecen pero están deshabilitados ("Disponible en una fase
+posterior") — llegan en Fase 2+.
 
 ## Stack
 
 - React 18 + Vite + TypeScript strict
-- Tailwind CSS + tokens de marca (`tailwind.config.ts` / `src/index.css`) +
-  primitivas Radix (shadcn-ui, solo las necesarias para el Shell en Fase 1:
-  Button, Avatar, DropdownMenu, Separator)
+- **CSS Modules + Radix** (mirror de `frontend-amelia-solar-V2` — NO
+  Tailwind, NO shadcn-Tailwind): tokens de marca como variables CSS en
+  `src/index.css`, `cn` helper (`src/lib/utils.ts`) para componer nombres de
+  clase, primitivas Radix con comportamiento + `.module.css` con estilo en
+  `src/components/ui/` (solo lo necesario en Fase 1: Button, Avatar,
+  DropdownMenu, Separator)
 - react-router-dom · TanStack Query (server state) · Zustand + immer (client
-  state) · lucide-react (iconos) · Hanken Grotesk (tipografía)
-- Auth: Google Identity Services (`id_token`) contra `amelia-intranet-back`
+  state) · lucide-react (iconos) · Manrope (tipografía, CDN de Google Fonts)
+- Auth: Google Identity Services (`id_token` + One Tap) contra
+  `amelia-intranet-back`
 
 ## Arrancar en local
 
@@ -43,6 +48,7 @@ Requiere `amelia-intranet-back` corriendo en `VITE_API_BASE_URL`
 
 ```bash
 pnpm lint    # ESLint (flat config, eslint 9 + typescript-eslint)
+pnpm test    # vitest run
 pnpm build   # tsc -b (typecheck estricto) + vite build
 ```
 
@@ -52,15 +58,58 @@ pnpm build   # tsc -b (typecheck estricto) + vite build
 src/
 ├── App.tsx, main.tsx          # bootstrap: QueryClientProvider, BrowserRouter, silent refresh
 ├── routes/                    # react-router — LoginPage pública, resto detrás de ProtectedRoute
-├── layouts/AppLayout/         # Sidebar (navbar por rol) + Topbar (avatar/logout)
+├── layouts/AppLayout/         # Sidebar (navbar por rol) + Topbar (avatar/logout), CSS Modules
 ├── features/auth/             # domain (models/ports) · application (hooks) · infrastructure (adapter/dtos)
-│                               # · store (zustand slice) · components · pages
+│                               # · store (zustand slice) · components (login, CSS Modules) · pages
 ├── features/dashboard/        # placeholder de Fase 1
-├── components/ui/             # primitivas shadcn/Radix (Button, Avatar, DropdownMenu, Separator)
+├── components/ui/             # primitivas Radix + CSS Modules (Button, Avatar, DropdownMenu, Separator)
+├── components/PageLoader/     # spinner de pantalla completa
 ├── lib/http/api-client.ts     # fetch wrapper único (credentials: include, 401 -> clearSession)
-├── lib/google/                # tipos de Google Identity Services
+├── lib/google/                # tipos de Google Identity Services (incluye One Tap / prompt)
+├── lib/utils.ts               # cn() — sin tailwind-merge, solo filtra falsy y concatena
+├── test/setup.ts              # jest-dom para vitest
 └── store/                     # store raíz (combina slices con zustand/immer)
 ```
+
+Cada componente de `components/ui/` y de `layouts/AppLayout/` sigue el
+patrón `Componente.tsx` + `Componente.module.css` + `index.ts`, igual que
+`frontend-amelia-solar-V2`.
+
+## Login (split-screen + Google One Tap híbrido)
+
+`LoginPage` sigue el boceto de Fase 1 · Acceso: panel izquierdo de marca
+(`LoginBrandPanel`, navy con glow de marca y bullets de valor) + panel
+derecho de acción (`GoogleAuthPanel`). En móvil el panel de marca se
+colapsa a una banda compacta (logo + titular) para no empujar el login
+fuera de la primera pantalla.
+
+Auth híbrida (`useGoogleOneTap`, en `application/`):
+1. Al montar, inicializa Google Identity Services con **One Tap +
+   `auto_select: true`** y `use_fedcm_for_prompt: true` — si el usuario ya
+   dio su consentimiento y tiene una única sesión de Google, entra **sin
+   clic**.
+2. Si Google no puede mostrarlo (`isNotDisplayed`/`isSkippedMoment`/
+   `isDismissedMoment`), cae al **botón oficial de Google** como respaldo
+   visible (`renderButton`), montado en el mismo contenedor pero oculto
+   hasta que hace falta — para no parpadear un botón que casi siempre va a
+   desaparecer solo.
+3. Ambos caminos comparten el mismo `callback` de GIS → mismo
+   `useLoginWithGoogle` → mismo `POST /auth/login` de siempre. No se tocó
+   el backend ni `auth-api.adapter.ts`.
+
+## Testing
+
+```bash
+pnpm test    # vitest run
+```
+
+Primer test de componente del proyecto: `LoginPage.test.tsx` monta la
+página (con `MemoryRouter` + `QueryClientProvider`) y verifica que cae al
+aviso de "falta configurar Google" cuando `VITE_GOOGLE_CLIENT_ID` no está
+seteado — usa `vi.stubEnv` para no depender del `.env` real. El flujo
+completo de One Tap/FedCM no es testeable en unit (necesita el SDK real de
+Google y un navegador); eso lo valida quien tenga credenciales reales en
+un navegador.
 
 ## Decisiones de auth (Fase 1)
 
@@ -96,12 +145,19 @@ src/
 
 ## Pendiente / sin verificar (honesto)
 
-- **Login real de Google no se pudo probar** sin credenciales — `GoogleSignInButton`
-  se verificó por lectura de código e inspección visual del render (botón +
-  mensaje de `VITE_GOOGLE_CLIENT_ID` ausente), no con un login real end-to-end.
+- **Login real de Google (One Tap y botón de respaldo) no se pudo probar**
+  sin credenciales ni navegador real — verificado por lectura de código,
+  `pnpm build`/`pnpm lint`/`pnpm test`, y el test de `LoginPage` que cubre la
+  rama sin `VITE_GOOGLE_CLIENT_ID`. Falta validar en navegador: auto-login
+  real con una sola sesión de Google, y que el fallback se muestre
+  correctamente cuando One Tap no aparece.
 - Módulos con `comingSoon: true` en `nav-config.ts` no tienen página ni ruta
   todavía — se muestran deshabilitados a propósito (no ocultos del todo) para
   que el mapa de navegación completo sea visible desde Fase 1.
-- No hay tests automatizados de componentes todavía (Vitest/Testing Library)
-  — Fase 1 se verificó con `pnpm lint` + `pnpm build` (typecheck). Añadir
-  cuando entren los módulos con lógica real (Fase 2+).
+- Cobertura de tests todavía mínima (1 test de render) — se amplía cuando
+  entren los módulos con lógica real (Fase 2+).
+- Migración de Tailwind a CSS Modules verificada con `pnpm lint`/`test`/`build`
+  y revisión visual del CSS generado (opacidades `hsl(var(--x) / N)` se
+  resuelven nativas, sin el problema de los modificadores de opacidad de
+  Tailwind sobre tokens sin `<alpha-value>` que tuvimos antes) — sin
+  screenshot/QA visual en navegador real todavía.
