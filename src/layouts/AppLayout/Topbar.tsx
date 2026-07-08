@@ -1,5 +1,5 @@
 import { LogOut } from 'lucide-react';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/Avatar';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -7,10 +7,11 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+} from '@/components/ui/DropdownMenu';
 import { useLogout } from '@/features/auth/application/useLogout';
 import type { UserRole } from '@/features/auth/domain/models';
 import { useStore } from '@/store';
+import styles from './Topbar.module.css';
 
 const ROLE_LABEL: Record<UserRole, string> = {
   administrador: 'Administrador',
@@ -33,12 +34,12 @@ export function Topbar() {
   const { mutate: logout } = useLogout();
 
   return (
-    <header className="flex h-16 items-center justify-end border-b border-border bg-card px-6">
+    <header className={styles.topbar}>
       <DropdownMenu>
-        <DropdownMenuTrigger className="flex items-center gap-3 rounded-md px-2 py-1.5 outline-none hover:bg-muted">
-          <div className="text-right">
-            <p className="text-sm font-medium text-foreground">{user?.fullName}</p>
-            <p className="text-xs text-muted-foreground">{user ? ROLE_LABEL[user.role] : ''}</p>
+        <DropdownMenuTrigger className={styles.trigger}>
+          <div className={styles.userInfo}>
+            <p className={styles.userName}>{user?.fullName}</p>
+            <p className={styles.userRole}>{user ? ROLE_LABEL[user.role] : ''}</p>
           </div>
           <Avatar>
             <AvatarImage src={user?.avatarUrl ?? undefined} alt={user?.fullName ?? ''} />
@@ -49,7 +50,7 @@ export function Topbar() {
           <DropdownMenuLabel>{user?.email}</DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuItem onSelect={() => logout()}>
-            <LogOut className="mr-2 h-4 w-4" />
+            <LogOut className={styles.logoutIcon} />
             Cerrar sesión
           </DropdownMenuItem>
         </DropdownMenuContent>
