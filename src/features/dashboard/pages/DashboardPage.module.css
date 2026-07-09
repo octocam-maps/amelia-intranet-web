@@ -20,41 +20,26 @@
   font-size: 0.875rem;
 }
 
-.grid {
+.columns3 {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
   gap: var(--space-4);
 }
 
-.metric {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: hsl(var(--foreground));
-  margin-bottom: var(--space-1);
+.columns2 {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: var(--space-4);
 }
 
-.detail {
-  font-size: 0.8125rem;
-  color: hsl(var(--muted-foreground));
-  margin-bottom: var(--space-3);
+@media (max-width: 900px) {
+  .columns2 {
+    grid-template-columns: 1fr;
+  }
 }
 
-.holidayList {
+.sideColumn {
   display: flex;
   flex-direction: column;
-  gap: var(--space-1);
-  font-size: 0.8125rem;
-  color: hsl(var(--foreground));
-  list-style: none;
-}
-
-.link {
-  font-size: 0.8125rem;
-  font-weight: 600;
-  color: hsl(var(--primary));
-  text-decoration: none;
-}
-
-.link:hover {
-  text-decoration: underline;
+  gap: var(--space-4);
 }
