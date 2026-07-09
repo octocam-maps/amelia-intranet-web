@@ -1,6 +1,7 @@
 import type {
   CreateTimeClockEntryInput,
   ListTimeClockEntriesParams,
+  TimeClockCurrentStatus,
   TimeClockEntry,
   UpdateTimeClockEntryInput,
 } from './models';
@@ -13,4 +14,13 @@ export interface TimeClockRepository {
   /** Descarga el CSV como blob — no es una URL directa porque necesita el
    * header `Authorization` (no hay sesión por cookie fuera de `/auth`). */
   exportCsv(params: ListTimeClockEntriesParams): Promise<Blob>;
+
+  // Fichaje en vivo (modelo "ambos") — contrato acordado con el backend:
+  // `/time-clock/current|clock-in|clock-out|breaks/start|breaks/end`, las 4
+  // acciones devuelven el estado recalculado tras el cambio.
+  getCurrent(): Promise<TimeClockCurrentStatus>;
+  clockIn(): Promise<TimeClockCurrentStatus>;
+  clockOut(): Promise<TimeClockCurrentStatus>;
+  startBreak(): Promise<TimeClockCurrentStatus>;
+  endBreak(): Promise<TimeClockCurrentStatus>;
 }

@@ -28,3 +28,22 @@ export interface ListTimeClockEntriesParams {
   dateFrom?: string;
   dateTo?: string;
 }
+
+/** Tramo abierto ahora mismo (fichaje en vivo) — `onBreak` distingue
+ * "en jornada" de "en pausa" para la pill del topbar y la tarjeta de Inicio. */
+export interface OpenTimeClockEntry {
+  id: string;
+  clockIn: string; // ISO datetime
+  onBreak: boolean;
+}
+
+/** Estado en vivo (`GET /time-clock/current`) — contrato acordado con el
+ * backend (mismo shape para las 4 acciones de `/time-clock/{clock-in,
+ * clock-out,breaks/start,breaks/end}`, todas devuelven el estado
+ * recalculado tras el cambio). Respalda el pill del topbar y la tarjeta
+ * grande de Inicio. */
+export interface TimeClockCurrentStatus {
+  openEntry: OpenTimeClockEntry | null;
+  weekWorkedMinutes: number;
+  expectedWeeklyMinutes: number;
+}

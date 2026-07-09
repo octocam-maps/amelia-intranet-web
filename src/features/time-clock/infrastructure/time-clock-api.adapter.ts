@@ -3,12 +3,13 @@ import { useStore } from '@/store';
 import type {
   CreateTimeClockEntryInput,
   ListTimeClockEntriesParams,
+  TimeClockCurrentStatus,
   TimeClockEntry,
   UpdateTimeClockEntryInput,
 } from '../domain/models';
 import type { TimeClockRepository } from '../domain/ports';
-import type { TimeClockEntryDTO, TimeClockEntryListDTO } from './dtos';
-import { entryFromDTO } from './mappers';
+import type { TimeClockCurrentStatusDTO, TimeClockEntryDTO, TimeClockEntryListDTO } from './dtos';
+import { currentStatusFromDTO, entryFromDTO } from './mappers';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
 
@@ -65,5 +66,38 @@ export const timeClockApiAdapter: TimeClockRepository = {
       throw new ApiError('No se pudo exportar el fichaje.', response.status);
     }
     return response.blob();
+  },
+
+  async getCurrent(): Promise<TimeClockCurrentStatus> {
+    const dto = await apiClient<TimeClockCurrentStatusDTO>('/time-clock/current');
+    return currentStatusFromDTO(dto);
+  },
+
+  async clockIn(): Promise<TimeClockCurrentStatus> {
+    const dto = await apiClient<TimeClockCurrentStatusDTO>('/time-clock/clock-in', {
+      method: 'POST',
+    });
+    return currentStatusFromDTO(dto);
+  },
+
+  async clockOut(): Promise<TimeClockCurrentStatus> {
+    const dto = await apiClient<TimeClockCurrentStatusDTO>('/time-clock/clock-out', {
+      method: 'POST',
+    });
+    return currentStatusFromDTO(dto);
+  },
+
+  async startBreak(): Promise<TimeClockCurrentStatus> {
+    const dto = await apiClient<TimeClockCurrentStatusDTO>('/time-clock/breaks/start', {
+      method: 'POST',
+    });
+    return currentStatusFromDTO(dto);
+  },
+
+  async endBreak(): Promise<TimeClockCurrentStatus> {
+    const dto = await apiClient<TimeClockCurrentStatusDTO>('/time-clock/breaks/end', {
+      method: 'POST',
+    });
+    return currentStatusFromDTO(dto);
   },
 };

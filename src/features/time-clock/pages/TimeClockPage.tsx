@@ -5,6 +5,7 @@ import { useStore } from '@/store';
 import { useDeleteTimeClockEntry } from '../application/useDeleteTimeClockEntry';
 import { useExportTimeClockCsv } from '../application/useExportTimeClockCsv';
 import { useTimeClockEntries } from '../application/useTimeClockEntries';
+import { LiveClockCard } from '../components/LiveClockCard';
 import { TimeClockEntryForm } from '../components/TimeClockEntryForm';
 import { TimeClockEntryTable } from '../components/TimeClockEntryTable';
 import styles from './TimeClockPage.module.css';
@@ -58,9 +59,13 @@ export function TimeClockPage() {
         </div>
       </div>
 
+      {/* Fichaje en vivo (deck 01-home-empleado) — complementa, no
+          sustituye, la corrección manual de tramos de más abajo. */}
+      <LiveClockCard />
+
       <Card>
         <CardHeader>
-          <CardTitle>Registrar un tramo</CardTitle>
+          <CardTitle>Añadir o corregir un tramo manualmente</CardTitle>
         </CardHeader>
         <CardContent>
           <TimeClockEntryForm />
