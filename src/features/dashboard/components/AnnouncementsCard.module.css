@@ -1,0 +1,34 @@
+.headerRow {
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.icon {
+  height: var(--space-5);
+  width: var(--space-5);
+  color: hsl(var(--primary));
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.item + .item {
+  border-top: 1px solid hsl(var(--border));
+  padding-top: var(--space-3);
+}
+
+.title {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: hsl(var(--foreground));
+  margin-bottom: var(--space-1);
+}
+
+.body {
+  font-size: 0.8125rem;
+  color: hsl(var(--muted-foreground));
+}

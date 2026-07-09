@@ -1,0 +1,23 @@
+.form {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--space-4);
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1_5);
+  min-width: 9rem;
+}
+
+.submit {
+  height: var(--space-10);
+}
+
+.error {
+  flex-basis: 100%;
+  font-size: 0.8125rem;
+  color: hsl(var(--destructive));
+}

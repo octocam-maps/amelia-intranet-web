@@ -1,0 +1,38 @@
+.dark {
+  border: none;
+  background-color: hsl(var(--header-bg));
+  color: hsl(var(--header-foreground));
+}
+
+.icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 2.5rem;
+  width: 2.5rem;
+  border-radius: calc(var(--radius) - 2px);
+  background-color: hsl(var(--header-foreground) / 0.1);
+  color: hsl(var(--primary));
+  margin-bottom: var(--space-3);
+}
+
+.icon svg {
+  height: var(--space-5);
+  width: var(--space-5);
+}
+
+.title {
+  font-size: 0.9375rem;
+  font-weight: 700;
+  margin-bottom: var(--space-1);
+}
+
+.body {
+  font-size: 0.8125rem;
+  color: hsl(var(--header-foreground) / 0.7);
+  margin-bottom: var(--space-4);
+}
+
+.button {
+  width: 100%;
+}

@@ -1,0 +1,52 @@
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: var(--space-4);
+}
+
+.card {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 3rem;
+  width: 3rem;
+  flex-shrink: 0;
+  border-radius: calc(var(--radius) - 2px);
+}
+
+.icon svg {
+  height: 1.5rem;
+  width: 1.5rem;
+}
+
+.iconNeutral {
+  background-color: hsl(var(--muted));
+  color: hsl(var(--muted-foreground));
+}
+
+.iconWarning {
+  background-color: hsl(var(--warning) / 0.14);
+  color: hsl(var(--warning));
+}
+
+.iconSuccess {
+  background-color: hsl(var(--success) / 0.12);
+  color: hsl(var(--success));
+}
+
+.value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: hsl(var(--foreground));
+}
+
+.label {
+  font-size: 0.8125rem;
+  color: hsl(var(--muted-foreground));
+}

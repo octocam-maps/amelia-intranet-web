@@ -2,8 +2,8 @@ import { GoogleAuthPanel } from '../components/GoogleAuthPanel';
 import { LoginBrandPanel } from '../components/LoginBrandPanel';
 import styles from './LoginPage.module.css';
 
-// Placeholder — sin sistema de tickets de RRHH todavía; actualizar cuando exista.
-const RRHH_CONTACT_EMAIL = 'rrhh@ameliahub.com';
+// Cambio de la demo (2026-07-09): buzón real de People, ya no placeholder.
+const RRHH_CONTACT_EMAIL = 'people@ameliahub.com';
 
 export function LoginPage() {
   return (

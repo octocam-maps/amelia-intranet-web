@@ -1,0 +1,28 @@
+.input {
+  display: flex;
+  width: 100%;
+  height: var(--space-10);
+  border-radius: calc(var(--radius) - 2px);
+  border: 1px solid hsl(var(--input));
+  background-color: hsl(var(--card));
+  padding: 0 var(--space-3);
+  font-size: 0.875rem;
+  font-family: inherit;
+  color: hsl(var(--foreground));
+  transition: border-color 0.15s ease;
+}
+
+.input::placeholder {
+  color: hsl(var(--muted-foreground));
+}
+
+.input:focus-visible {
+  outline: none;
+  border-color: hsl(var(--ring));
+  box-shadow: 0 0 0 2px hsl(var(--ring) / 0.25);
+}
+
+.input:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

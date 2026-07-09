@@ -83,6 +83,19 @@
   background-color: hsl(var(--accent));
 }
 
+.variantDark {
+  background-color: hsl(var(--header-bg));
+  color: hsl(var(--header-foreground));
+}
+
+.variantDark:hover:not(.disabled) {
+  background-color: hsl(var(--header-bg) / 0.9);
+}
+
+.variantDark:active:not(.disabled) {
+  background-color: hsl(var(--header-bg) / 0.85);
+}
+
 /* Tamaños */
 .sizeDefault {
   height: var(--space-10);

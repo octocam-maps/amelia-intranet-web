@@ -1,0 +1,126 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-backdrop);
+  background-color: hsl(0 0% 0% / 0.4);
+}
+
+.overlay[data-state='open'] {
+  animation: fadeIn 0.15s ease-out;
+}
+
+.overlay[data-state='closed'] {
+  animation: fadeOut 0.15s ease-out;
+}
+
+.content {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  z-index: var(--z-modal);
+  width: 100%;
+  max-width: 30rem;
+  max-height: calc(100vh - var(--space-8));
+  overflow-y: auto;
+  transform: translate(-50%, -50%);
+  border-radius: var(--radius);
+  border: 1px solid hsl(var(--border));
+  background-color: hsl(var(--card));
+  padding: var(--space-6);
+  box-shadow:
+    0 20px 25px -5px hsl(0 0% 0% / 0.1),
+    0 8px 10px -6px hsl(0 0% 0% / 0.1);
+}
+
+.content[data-state='open'] {
+  animation:
+    fadeIn 0.15s ease-out,
+    zoomIn 0.15s ease-out;
+}
+
+.content[data-state='closed'] {
+  animation:
+    fadeOut 0.15s ease-out,
+    zoomOut 0.15s ease-out;
+}
+
+.close {
+  position: absolute;
+  top: var(--space-5);
+  right: var(--space-5);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: transparent;
+  color: hsl(var(--muted-foreground));
+  cursor: pointer;
+  border-radius: calc(var(--radius) - 2px);
+  padding: var(--space-1);
+}
+
+.close:hover {
+  background-color: hsl(var(--muted));
+  color: hsl(var(--foreground));
+}
+
+.closeIcon {
+  height: var(--space-4);
+  width: var(--space-4);
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  margin-bottom: var(--space-5);
+}
+
+.title {
+  font-size: 1.0625rem;
+  font-weight: 700;
+  color: hsl(var(--foreground));
+}
+
+.footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-3);
+  margin-top: var(--space-5);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes zoomIn {
+  from {
+    transform: translate(-50%, -50%) scale(0.95);
+  }
+  to {
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+@keyframes zoomOut {
+  from {
+    transform: translate(-50%, -50%) scale(1);
+  }
+  to {
+    transform: translate(-50%, -50%) scale(0.95);
+  }
+}

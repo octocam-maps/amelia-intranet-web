@@ -1,0 +1,42 @@
+.base {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  border-radius: 999px;
+  padding: var(--space-0_5) var(--space-2_5);
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1.4;
+  white-space: nowrap;
+}
+
+.variantDefault {
+  background-color: hsl(var(--secondary));
+  color: hsl(var(--secondary-foreground));
+}
+
+.variantSuccess {
+  background-color: hsl(var(--success) / 0.12);
+  color: hsl(var(--success));
+}
+
+.variantWarning {
+  background-color: hsl(var(--warning) / 0.14);
+  color: hsl(var(--warning));
+}
+
+.variantDestructive {
+  background-color: hsl(var(--destructive) / 0.12);
+  color: hsl(var(--destructive));
+}
+
+.variantInfo {
+  background-color: hsl(var(--info) / 0.12);
+  color: hsl(var(--info));
+}
+
+.variantOutline {
+  background-color: transparent;
+  color: hsl(var(--foreground));
+  border: 1px solid hsl(var(--border));
+}

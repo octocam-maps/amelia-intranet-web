@@ -1,8 +1,9 @@
 import { NavLink } from 'react-router-dom';
 import logoBlanco from '@/assets/brand/logo-amelia-blanco.png';
+import { useDashboardSummary } from '@/features/dashboard/application/useDashboardSummary';
 import { cn } from '@/lib/utils';
 import { useStore } from '@/store';
-import { ADMIN_SECTION, NAV_BY_ROLE, type NavItem } from './nav-config';
+import { ADMIN_SECTION_ITEMS, NAV_BY_ROLE, type NavItem } from './nav-config';
 import styles from './Sidebar.module.css';
 
 /**
@@ -13,6 +14,10 @@ import styles from './Sidebar.module.css';
 export function Sidebar() {
   const role = useStore((s) => s.user?.role);
   const items = role ? NAV_BY_ROLE[role] : [];
+  // Misma queryKey que `useDashboardSummary` de Inicio — TanStack Query
+  // reutiliza la caché, no duplica la llamada a `/dashboard/summary`.
+  const { data: summary } = useDashboardSummary();
+  const pendingCount = summary?.pendingAbsenceRequests?.length;
 
   return (
     <aside className={styles.sidebar}>
@@ -29,7 +34,12 @@ export function Sidebar() {
       {role === 'administrador' && (
         <div className={styles.adminSection}>
           <p className={styles.adminLabel}>Administración</p>
-          <NavItemLink item={ADMIN_SECTION} />
+          {ADMIN_SECTION_ITEMS.map((item) => (
+            <NavItemLink
+              key={item.to}
+              item={item.label === 'Aprobar ausencias' ? { ...item, badgeCount: pendingCount } : item}
+            />
+          ))}
         </div>
       )}
     </aside>
@@ -55,7 +65,8 @@ function NavItemLink({ item }: { item: NavItem }) {
       className={({ isActive }) => cn(styles.navItem, isActive && styles.navItemActive)}
     >
       <Icon className={styles.navIcon} />
-      {item.label}
+      <span className={styles.navLabel}>{item.label}</span>
+      {Boolean(item.badgeCount) && <span className={styles.navBadge}>{item.badgeCount}</span>}
     </NavLink>
   );
 }

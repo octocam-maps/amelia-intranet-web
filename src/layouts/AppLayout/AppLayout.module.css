@@ -1,6 +1,7 @@
 .shell {
   display: flex;
-  min-height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
   background-color: hsl(var(--background));
 }
 
@@ -13,5 +14,7 @@
 
 .main {
   flex: 1;
+  min-height: 0;
+  overflow-y: auto;
   padding: var(--space-6);
 }

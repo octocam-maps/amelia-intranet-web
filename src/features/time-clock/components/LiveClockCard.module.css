@@ -1,0 +1,98 @@
+.loading {
+  color: hsl(var(--muted-foreground));
+  font-size: 0.875rem;
+}
+
+.root {
+  display: flex;
+  align-items: center;
+  gap: var(--space-5);
+  flex-wrap: wrap;
+}
+
+.statusIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 3rem;
+  width: 3rem;
+  flex-shrink: 0;
+  border-radius: 999px;
+  background-color: hsl(var(--primary) / 0.12);
+  color: hsl(var(--primary));
+}
+
+.statusIcon svg {
+  height: 1.5rem;
+  width: 1.5rem;
+}
+
+.statusIcon[data-on-break='true'] {
+  background-color: hsl(var(--warning) / 0.14);
+  color: hsl(var(--warning));
+}
+
+.info {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  flex: 1;
+  min-width: 12rem;
+}
+
+.label {
+  font-size: 0.8125rem;
+  color: hsl(var(--muted-foreground));
+}
+
+.detail {
+  font-size: 0.875rem;
+  color: hsl(var(--foreground));
+}
+
+.timerRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.timer {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: hsl(var(--foreground));
+  letter-spacing: 0.02em;
+  font-variant-numeric: tabular-nums;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: var(--space-0_5) var(--space-2_5);
+  font-size: 0.75rem;
+  font-weight: 600;
+  background-color: hsl(var(--success) / 0.12);
+  color: hsl(var(--success));
+}
+
+.badge[data-on-break='true'] {
+  background-color: hsl(var(--warning) / 0.14);
+  color: hsl(var(--warning));
+}
+
+.actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--space-2);
+}
+
+.weekTotal {
+  font-size: 0.8125rem;
+  color: hsl(var(--muted-foreground));
+}
+
+.buttonRow {
+  display: flex;
+  gap: var(--space-2);
+}
