@@ -7,14 +7,16 @@ const SCOPE_LABEL: Record<HolidayScope, string> = {
   nacional: 'Nacional',
   autonomico: 'Autonómico',
   local: 'Local',
+  empresa: 'Empresa',
 };
 
 // deck-fase6/14-festivos.png § leyenda — nacional en navy sólido, autonómico
 // en verde, local en naranja. Reutiliza los variantes de Badge existentes.
-const SCOPE_BADGE_VARIANT: Record<HolidayScope, 'dark' | 'success' | 'warning'> = {
+const SCOPE_BADGE_VARIANT: Record<HolidayScope, 'dark' | 'success' | 'warning' | 'info'> = {
   nacional: 'dark',
   autonomico: 'success',
   local: 'warning',
+  empresa: 'info',
 };
 
 function formatShortDate(iso: string): string {
@@ -45,6 +47,7 @@ export function HolidaysTable({ holidays, isLoading, onEdit, onDelete }: Holiday
           <th>Fecha</th>
           <th>Festivo</th>
           <th>Ámbito</th>
+          <th>Origen</th>
           <th aria-label="Acciones" />
         </tr>
       </thead>
@@ -54,7 +57,18 @@ export function HolidaysTable({ holidays, isLoading, onEdit, onDelete }: Holiday
             <td className={styles.date}>{formatShortDate(holiday.date)}</td>
             <td>{holiday.name}</td>
             <td>
-              <Badge variant={SCOPE_BADGE_VARIANT[holiday.scope]}>{SCOPE_LABEL[holiday.scope]}</Badge>
+              {holiday.scope ? (
+                <Badge variant={SCOPE_BADGE_VARIANT[holiday.scope]}>
+                  {SCOPE_LABEL[holiday.scope]}
+                </Badge>
+              ) : (
+                <span className={styles.muted}>—</span>
+              )}
+            </td>
+            <td>
+              <Badge variant={holiday.source === 'oficial' ? 'info' : 'outline'}>
+                {holiday.source === 'oficial' ? 'Oficial' : 'Manual'}
+              </Badge>
             </td>
             <td>
               <div className={styles.actions}>

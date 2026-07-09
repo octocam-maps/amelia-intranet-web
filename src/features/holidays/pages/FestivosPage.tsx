@@ -1,10 +1,11 @@
 import { useState } from 'react';
-import { CalendarPlus } from 'lucide-react';
+import { CalendarPlus, DownloadCloud } from 'lucide-react';
 import { ConfigTabsNav } from '@/components/composites/ConfigTabsNav';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { useDeleteHoliday } from '../application/useDeleteHoliday';
 import { useHolidays } from '../application/useHolidays';
+import { useImportHolidays } from '../application/useImportHolidays';
 import { HolidayFormDialog } from '../components/HolidayFormDialog';
 import { HolidaysTable } from '../components/HolidaysTable';
 import type { Holiday } from '../domain/models';
@@ -17,6 +18,12 @@ export function FestivosPage() {
   const [dialogHoliday, setDialogHoliday] = useState<Holiday | 'new' | null>(null);
   const { data: holidays = [], isLoading } = useHolidays({ year: CURRENT_YEAR });
   const { mutate: deleteHoliday } = useDeleteHoliday();
+  const {
+    mutate: importHolidays,
+    isPending: isImporting,
+    data: importResult,
+    error: importError,
+  } = useImportHolidays();
 
   const handleDelete = (holiday: Holiday) => {
     if (window.confirm(`¿Eliminar el festivo "${holiday.name}"?`)) {
@@ -31,13 +38,32 @@ export function FestivosPage() {
           <h1 className={styles.title}>Configuración · Festivos</h1>
           <p className={styles.subtitle}>Calendario laboral {CURRENT_YEAR} por ámbito</p>
         </div>
-        <Button onClick={() => setDialogHoliday('new')}>
-          <CalendarPlus />
-          Añadir festivo
-        </Button>
+        <div className={styles.headerActions}>
+          <Button variant="outline" onClick={() => importHolidays(CURRENT_YEAR)} disabled={isImporting}>
+            <DownloadCloud />
+            {isImporting ? 'Importando…' : `Importar oficiales ${CURRENT_YEAR}`}
+          </Button>
+          <Button onClick={() => setDialogHoliday('new')}>
+            <CalendarPlus />
+            Añadir festivo
+          </Button>
+        </div>
       </div>
 
       <ConfigTabsNav active="festivos" />
+
+      {importResult && (
+        <p className={styles.importNote}>
+          Importación {importResult.year}: {importResult.imported} nuevos,{' '}
+          {importResult.updated} actualizados, {importResult.skipped} conservados (manuales).
+          Recuerda añadir a mano los festivos locales de Barcelona (La Mercè, Segona Pasqua).
+        </p>
+      )}
+      {importError && (
+        <p className={styles.importError}>
+          No se pudo importar el calendario oficial. Inténtalo de nuevo en unos minutos.
+        </p>
+      )}
 
       <Card className={styles.card}>
         <div className={styles.toolbar}>

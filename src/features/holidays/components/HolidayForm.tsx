@@ -12,6 +12,7 @@ const SCOPE_LABEL: Record<HolidayScope, string> = {
   nacional: 'Nacional',
   autonomico: 'Autonómico',
   local: 'Local',
+  empresa: 'Empresa',
 };
 const SCOPES = Object.keys(SCOPE_LABEL) as HolidayScope[];
 
@@ -39,7 +40,9 @@ export function HolidayForm({ holiday, onSaved, onCancel }: HolidayFormProps) {
     defaultValues: {
       date: holiday?.date ?? '',
       name: holiday?.name ?? '',
-      scope: holiday?.scope ?? 'nacional',
+      // Los festivos añadidos a mano suelen ser locales de Barcelona o
+      // cierres de empresa; 'local' es el default más útil.
+      scope: holiday?.scope ?? 'local',
     },
   });
   const { mutateAsync: createHoliday, error: createError } = useCreateHoliday();

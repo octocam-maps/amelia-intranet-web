@@ -1,7 +1,12 @@
 import { apiClient } from '@/lib/http/api-client';
-import type { Holiday, HolidayInput, HolidayListParams } from '../domain/models';
+import type {
+  Holiday,
+  HolidayImportResult,
+  HolidayInput,
+  HolidayListParams,
+} from '../domain/models';
 import type { HolidaysRepository } from '../domain/ports';
-import type { HolidayDTO, HolidayListDTO } from './dtos';
+import type { HolidayDTO, HolidayImportResultDTO, HolidayListDTO } from './dtos';
 import { holidayFromDTO, holidayInputToDTO, partialHolidayInputToDTO } from './mappers';
 
 export const holidaysApiAdapter: HolidaysRepository = {
@@ -31,5 +36,19 @@ export const holidaysApiAdapter: HolidaysRepository = {
 
   async remove(id: string): Promise<void> {
     await apiClient<void>(`/holidays/${id}`, { method: 'DELETE' });
+  },
+
+  // Importa los festivos oficiales (nacional España + autonómico Cataluña)
+  // del año desde la API oficial. No pisa los festivos añadidos a mano.
+  async importOfficial(year: number): Promise<HolidayImportResult> {
+    const dto = await apiClient<HolidayImportResultDTO>(`/holidays/import?year=${year}`, {
+      method: 'POST',
+    });
+    return {
+      year: dto.year,
+      imported: dto.imported,
+      updated: dto.updated,
+      skipped: dto.skipped,
+    };
   },
 };

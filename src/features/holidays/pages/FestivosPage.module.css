@@ -12,6 +12,31 @@
   gap: var(--space-3);
 }
 
+.headerActions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.importNote {
+  font-size: 0.8125rem;
+  color: hsl(var(--muted-foreground));
+  background-color: hsl(var(--muted) / 0.5);
+  border: 1px solid hsl(var(--border));
+  border-radius: var(--radius);
+  padding: var(--space-2) var(--space-3);
+}
+
+.importError {
+  font-size: 0.8125rem;
+  color: hsl(var(--destructive));
+  background-color: hsl(var(--destructive) / 0.08);
+  border: 1px solid hsl(var(--destructive) / 0.3);
+  border-radius: var(--radius);
+  padding: var(--space-2) var(--space-3);
+}
+
 .title {
   font-size: 1.25rem;
   font-weight: 600;
