@@ -1,16 +1,17 @@
 import { Megaphone } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
+import { useAnnouncements } from '@/features/announcements/application/useAnnouncements';
 import styles from './AnnouncementsCard.module.css';
 
-// El panel de admin (anuncios) es Fase 5 — no hay endpoint todavía.
-// Placeholder explícito (mismo criterio que Cumpleaños/Buzón): el LAYOUT es
-// fiel al deck 01-home-empleado, el contenido se sustituye cuando exista.
-const PLACEHOLDER_ANNOUNCEMENTS = [
-  { title: 'Offsite de verano', body: 'Confirma tu asistencia antes del 10 jul.' },
-  { title: 'Nueva política de teletrabajo', body: 'En vigor desde agosto.' },
-];
+const MAX_ITEMS = 3;
 
+// docs/deck-fase6/01-home-empleado — el backend ya filtra por rol (el
+// empleado solo recibe anuncios publicados); aquí solo se recorta a los
+// primeros `MAX_ITEMS` para que la tarjeta no crezca sin límite.
 export function AnnouncementsCard() {
+  const { data: announcements = [], isLoading } = useAnnouncements();
+  const items = announcements.slice(0, MAX_ITEMS);
+
   return (
     <Card>
       <CardHeader className={styles.headerRow}>
@@ -18,12 +19,18 @@ export function AnnouncementsCard() {
         <Megaphone className={styles.icon} />
       </CardHeader>
       <CardContent className={styles.list}>
-        {PLACEHOLDER_ANNOUNCEMENTS.map((announcement) => (
-          <div key={announcement.title} className={styles.item}>
-            <p className={styles.title}>{announcement.title}</p>
-            <p className={styles.body}>{announcement.body}</p>
-          </div>
-        ))}
+        {isLoading ? (
+          <p className={styles.empty}>Cargando…</p>
+        ) : items.length === 0 ? (
+          <p className={styles.empty}>No hay anuncios por ahora.</p>
+        ) : (
+          items.map((announcement) => (
+            <div key={announcement.id} className={styles.item}>
+              <p className={styles.title}>{announcement.title}</p>
+              <p className={styles.body}>{announcement.body}</p>
+            </div>
+          ))
+        )}
       </CardContent>
     </Card>
   );

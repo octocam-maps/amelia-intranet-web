@@ -32,3 +32,8 @@
   font-size: 0.8125rem;
   color: hsl(var(--muted-foreground));
 }
+
+.empty {
+  font-size: 0.8125rem;
+  color: hsl(var(--muted-foreground));
+}
