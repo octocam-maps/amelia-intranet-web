@@ -40,3 +40,8 @@
   color: hsl(var(--foreground));
   border: 1px solid hsl(var(--border));
 }
+
+.variantDark {
+  background-color: hsl(var(--header-bg));
+  color: hsl(var(--header-foreground));
+}

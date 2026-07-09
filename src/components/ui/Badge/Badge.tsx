@@ -9,6 +9,9 @@ const VARIANT_MAP = {
   destructive: styles.variantDestructive,
   info: styles.variantInfo,
   outline: styles.variantOutline,
+  // Navy sólido (`--header-bg`) — mismo criterio que Button variant="dark".
+  // deck-fase6/14-festivos.png § badge "Nacional".
+  dark: styles.variantDark,
 } as const;
 
 export interface BadgeProps extends HTMLAttributes<HTMLSpanElement> {
