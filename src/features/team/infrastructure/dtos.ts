@@ -11,9 +11,17 @@ export interface TeamMemberDTO {
   avatar_url: string | null;
 }
 
+export interface TeamMemberListDTO {
+  members: TeamMemberDTO[];
+}
+
 export interface TeamVacationEntryDTO {
   user_id: string;
   full_name: string;
   start_date: string;
   end_date: string;
+}
+
+export interface TeamVacationEntryListDTO {
+  entries: TeamVacationEntryDTO[];
 }
