@@ -35,23 +35,28 @@ export function Sidebar() {
         <img src={logoBlanco} alt="Amelia" className={styles.logo} />
       </div>
 
-      <nav className={styles.nav}>
-        {items.map((item) => (
-          <NavItemLink key={item.to} item={item} />
-        ))}
-      </nav>
-
-      {isAdmin && (
-        <div className={styles.adminSection}>
-          <p className={styles.adminLabel}>Administración</p>
-          {ADMIN_SECTION_ITEMS.map((item) => (
-            <NavItemLink
-              key={item.to}
-              item={{ ...item, badgeCount: BADGE_COUNT_BY_LABEL[item.label] ?? item.badgeCount }}
-            />
+      {/* Zona con scroll propio: garantiza que TODOS los ítems (incluida la
+          sección Administración) sean alcanzables aunque no quepan en el
+          alto del viewport. El logo queda fijo arriba. */}
+      <div className={styles.scrollArea}>
+        <nav className={styles.nav}>
+          {items.map((item) => (
+            <NavItemLink key={item.to} item={item} />
           ))}
-        </div>
-      )}
+        </nav>
+
+        {isAdmin && (
+          <div className={styles.adminSection}>
+            <p className={styles.adminLabel}>Administración</p>
+            {ADMIN_SECTION_ITEMS.map((item) => (
+              <NavItemLink
+                key={item.to}
+                item={{ ...item, badgeCount: BADGE_COUNT_BY_LABEL[item.label] ?? item.badgeCount }}
+              />
+            ))}
+          </div>
+        )}
+      </div>
     </aside>
   );
 }

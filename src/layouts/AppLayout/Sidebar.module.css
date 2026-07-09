@@ -4,8 +4,18 @@
   width: 16rem;
   flex-shrink: 0;
   flex-direction: column;
+  overflow: hidden;
   background-color: hsl(var(--header-bg));
   color: hsl(var(--header-foreground));
+}
+
+/* Contenedor scrollable (nav + Administración) bajo el logo fijo. */
+.scrollArea {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
 }
 
 .logoRow {
@@ -26,7 +36,9 @@
 }
 
 .nav {
-  flex: 1;
+  /* grow 1 para empujar Administración al fondo cuando sobra alto; shrink 0
+     para no comprimirse cuando falta (entonces el scrollArea hace scroll). */
+  flex: 1 0 auto;
   padding: var(--space-2) var(--space-3);
   display: flex;
   flex-direction: column;
@@ -88,6 +100,7 @@
 }
 
 .adminSection {
+  flex-shrink: 0;
   border-top: 1px solid hsl(var(--header-foreground) / 0.1);
   padding: var(--space-3);
 }
