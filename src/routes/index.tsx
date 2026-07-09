@@ -1,7 +1,9 @@
 import { Navigate, Route, Routes } from 'react-router-dom';
 import { ProtectedRoute } from '@/features/auth/components/ProtectedRoute';
 import { LoginPage } from '@/features/auth/pages/LoginPage';
+import { AbsencesPage } from '@/features/absences/pages/AbsencesPage';
 import { DashboardPage } from '@/features/dashboard/pages/DashboardPage';
+import { TimeClockPage } from '@/features/time-clock/pages/TimeClockPage';
 import { AppLayout } from '@/layouts/AppLayout/AppLayout';
 
 export function AppRoutes() {
@@ -17,6 +19,12 @@ export function AppRoutes() {
         }
       >
         <Route path="/" element={<DashboardPage />} />
+        {/* Backend rechaza al externo-invitado en ambos módulos
+            (require_role) — aquí no hay guard de rol porque "ocultar ≠
+            proteger" corta en ambos sentidos: el frontend tampoco es quien
+            decide el acceso, solo compone la navegación. */}
+        <Route path="/ausencias" element={<AbsencesPage />} />
+        <Route path="/control-horario" element={<TimeClockPage />} />
       </Route>
 
       <Route path="*" element={<Navigate to="/" replace />} />

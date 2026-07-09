@@ -17,13 +17,16 @@ export interface NavItem {
   label: string;
   to: string;
   icon: LucideIcon;
-  /** Fase 1 solo construye "Inicio" — el resto llega en fases posteriores. */
+  /** Módulos aún sin página/ruta (llegan en fases posteriores) se muestran
+   * deshabilitados en vez de ocultos, para que el mapa de navegación
+   * completo sea visible desde el principio. */
   comingSoon?: boolean;
 }
 
 const inicio: NavItem = { label: 'Inicio', to: '/', icon: Home };
-const ausencias: NavItem = { label: 'Ausencias', to: '/ausencias', icon: CalendarClock, comingSoon: true };
-const controlHorario: NavItem = { label: 'Control horario', to: '/control-horario', icon: Clock, comingSoon: true };
+// Fase 3: ausencias y control horario ya tienen página real — dejan de ser "comingSoon".
+const ausencias: NavItem = { label: 'Ausencias', to: '/ausencias', icon: CalendarClock };
+const controlHorario: NavItem = { label: 'Control horario', to: '/control-horario', icon: Clock };
 const nominas: NavItem = { label: 'Nóminas', to: '/nominas', icon: Wallet, comingSoon: true };
 const documentos: NavItem = { label: 'Documentos', to: '/documentos', icon: FileText, comingSoon: true };
 const equipo: NavItem = { label: 'Equipo', to: '/equipo', icon: Users, comingSoon: true };

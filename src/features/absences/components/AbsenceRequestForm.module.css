@@ -1,0 +1,45 @@
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1_5);
+  flex: 1;
+  min-width: 10rem;
+}
+
+.select {
+  height: var(--space-10);
+  border-radius: calc(var(--radius) - 2px);
+  border: 1px solid hsl(var(--input));
+  background-color: hsl(var(--card));
+  padding: 0 var(--space-3);
+  font-size: 0.875rem;
+  font-family: inherit;
+  color: hsl(var(--foreground));
+}
+
+.select:focus-visible {
+  outline: none;
+  border-color: hsl(var(--ring));
+  box-shadow: 0 0 0 2px hsl(var(--ring) / 0.25);
+}
+
+.submit {
+  align-self: flex-start;
+}
+
+.error {
+  font-size: 0.8125rem;
+  color: hsl(var(--destructive));
+}

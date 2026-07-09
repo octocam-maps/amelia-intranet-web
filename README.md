@@ -5,10 +5,14 @@ React + Vite + TypeScript (strict), feature-sliced (espejo de
 `../amelia-intranet/CLAUDE.md` y `../amelia-intranet/docs/` para el contrato
 funcional completo.
 
-**Fase 1 (actual):** Login con Google (split-screen + One Tap híbrido) +
-Shell (Sidebar/Topbar por rol) + Dashboard placeholder. El resto de módulos
-del navbar aparecen pero están deshabilitados ("Disponible en una fase
-posterior") — llegan en Fase 2+.
+**Fase 3 (actual):** Dashboard real por rol (saldo de vacaciones, fichaje
+del día, próximos festivos; bandeja de aprobación + vista global para el
+admin), Control horario (fichaje por SELECCIÓN MANUAL DE TRAMOS, historial,
+export CSV) y Ausencias (contador en tiempo real, calendario visual,
+bandeja de aprobación del admin). Fase 2 (onboarding) queda en STANDBY
+hasta que RRHH entregue contenido. Nóminas/documentos/equipo/administración
+siguen deshabilitados ("Disponible en una fase posterior") — llegan en
+Fase 4+.
 
 ## Stack
 
@@ -52,7 +56,7 @@ pnpm test    # vitest run
 pnpm build   # tsc -b (typecheck estricto) + vite build
 ```
 
-## Estructura (Fase 1)
+## Estructura (Fase 3)
 
 ```
 src/
@@ -61,8 +65,11 @@ src/
 ├── layouts/AppLayout/         # Sidebar (navbar por rol) + Topbar (avatar/logout), CSS Modules
 ├── features/auth/             # domain (models/ports) · application (hooks) · infrastructure (adapter/dtos)
 │                               # · store (zustand slice) · components (login, CSS Modules) · pages
-├── features/dashboard/        # placeholder de Fase 1
-├── components/ui/             # primitivas Radix + CSS Modules (Button, Avatar, DropdownMenu, Separator)
+├── features/dashboard/        # resumen por rol (vacaciones, fichaje del día, festivos, bandeja admin)
+├── features/time-clock/       # fichaje por tramos manuales — historial, export CSV
+├── features/absences/         # tipos, contador en tiempo real, solicitud, calendario visual, bandeja admin
+├── components/ui/             # primitivas Radix/nativas + CSS Modules (Button, Avatar, DropdownMenu,
+│                               # Separator, Badge, Card, Input, Label, Textarea)
 ├── components/PageLoader/     # spinner de pantalla completa
 ├── lib/http/api-client.ts     # fetch wrapper único (credentials: include, 401 -> clearSession)
 ├── lib/google/                # tipos de Google Identity Services (incluye One Tap / prompt)
@@ -73,7 +80,30 @@ src/
 
 Cada componente de `components/ui/` y de `layouts/AppLayout/` sigue el
 patrón `Componente.tsx` + `Componente.module.css` + `index.ts`, igual que
-`frontend-amelia-solar-V2`.
+`frontend-amelia-solar-V2`. Cada feature de Fase 3 sigue el mismo split que
+`auth`: `domain/` (modelos + puertos) → `infrastructure/` (DTOs snake_case,
+mappers, adapter sobre `apiClient`) → `application/` (hooks de TanStack
+Query) → `components/`+`pages/`.
+
+## Control horario y Ausencias (Fase 3)
+
+- **Control horario** (`/control-horario`): alta de un tramo por fecha +
+  hora de entrada/salida (`TimeClockEntryForm`), historial de los últimos 30
+  días (`TimeClockEntryTable`) y exportación CSV. El admin puede alternar
+  entre "ver solo lo mío" y "ver toda la plantilla"
+  (`docs/permisos-roles.md` § vista aumentada). La validación de solape y
+  rango horario vive en el backend — el formulario solo exige lo mínimo
+  (fecha + entrada) antes de enviar.
+- **Ausencias** (`/ausencias`): `AbsenceBalanceCards` (contador en tiempo
+  real por tipo), `AbsenceRequestForm` (el backend calcula `days_count`
+  excluyendo finde/festivos, el formulario no lo recalcula), `AbsenceCalendar`
+  (calendario visual del mes en curso, grid nativo sin librería nueva),
+  `AbsenceRequestList` (propias, con `Badge` de estado) y, solo para el
+  admin, `AbsenceApprovalTray` (bandeja de aprobación con nota opcional).
+- Ambos módulos están en `NAV_BY_ROLE` para `empleado`/`administrador` y
+  **excluidos** de `externo_invitado` (matriz de permisos: ❌) — el backend
+  ya rechaza esos endpoints con `403` para ese rol vía `require_role`, el
+  frontend simplemente no compone la ruta para él.
 
 ## Login (split-screen + Google One Tap híbrido)
 
@@ -154,8 +184,29 @@ un navegador.
 - Módulos con `comingSoon: true` en `nav-config.ts` no tienen página ni ruta
   todavía — se muestran deshabilitados a propósito (no ocultos del todo) para
   que el mapa de navegación completo sea visible desde Fase 1.
-- Cobertura de tests todavía mínima (1 test de render) — se amplía cuando
-  entren los módulos con lógica real (Fase 2+).
+- Cobertura de tests todavía mínima (1 test de render, sin cambios en Fase 3)
+  — no se pudo probar en navegador real contra credenciales de Google, así
+  que Control horario/Ausencias solo se verificaron por `pnpm lint`/`build`/`test`
+  en verde y smoke testing manual del backend con `curl` (no hay Playwright/
+  Cypress en el repo todavía). Falta QA visual en navegador real.
+- **Control horario — sin conversión de zona horaria**: el formulario envía
+  la hora elegida con sufijo `Z` (se trata como si fuera UTC), sin ajustar
+  por el huso del navegador — simplificación consciente para no acoplar una
+  librería de fechas nueva en esta ronda. Aceptable mientras el equipo esté
+  en un único huso (Madrid); revisar si el producto crece a otras zonas.
+- **Vista "toda la plantilla" del admin en Control horario muestra el
+  `user_id` truncado**, no el nombre — no hay endpoint de directorio de
+  usuarios todavía (Fase 5, "Equipo — directorio"). Se resuelve el día que
+  exista ese endpoint, sin tocar el resto del feature.
+- **`AbsenceCalendar` es un mes fijo (el actual), sin navegación** — cubre
+  "calendario visual" del encargo de forma mínima; si Fase 5 pide navegar
+  entre meses o un calendario global de equipo, se amplía este componente.
+- **Sin `@hookform/resolvers`**: los formularios (`TimeClockEntryForm`,
+  `AbsenceRequestForm`) validan con los atributos nativos de
+  `react-hook-form` (`required`), no con `zod` como resolver — la
+  dependencia no estaba instalada y no se añadió sin confirmarlo primero.
+  La validación fuerte (solape, rango de fechas, saldo) vive en el backend;
+  el frontend solo evita envíos vacíos.
 - Migración de Tailwind a CSS Modules verificada con `pnpm lint`/`test`/`build`
   y revisión visual del CSS generado (opacidades `hsl(var(--x) / N)` se
   resuelven nativas, sin el problema de los modificadores de opacidad de

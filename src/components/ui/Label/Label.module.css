@@ -1,0 +1,6 @@
+.label {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: hsl(var(--foreground));
+  line-height: 1.4;
+}
