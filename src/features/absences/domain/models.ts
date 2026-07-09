@@ -5,6 +5,23 @@ export interface AbsenceType {
   isPaid: boolean;
   affectsBalance: boolean;
   color: string | null;
+  /** Campos de administración — deck-fase6/15-tipos-ausencia.png. Solo el
+   * admin los edita (`AbsenceTypeFormDialog`); el resto de la app (dropdown
+   * de solicitud, balance) los ignora y sigue usando los campos de arriba. */
+  requiresApproval: boolean;
+  requiresJustification: boolean;
+  maxDaysPerYear: number | null;
+  isActive: boolean;
+}
+
+export interface AbsenceTypeInput {
+  name: string;
+  color: string | null;
+  affectsBalance: boolean;
+  requiresApproval: boolean;
+  requiresJustification: boolean;
+  maxDaysPerYear: number | null;
+  isActive: boolean;
 }
 
 /** Contador en tiempo real por tipo/año — se recalcula en el backend en

@@ -7,10 +7,24 @@ export interface AbsenceTypeDTO {
   is_paid: boolean;
   affects_balance: boolean;
   color: string | null;
+  requires_approval: boolean;
+  requires_justification: boolean;
+  max_days_per_year: number | null;
+  is_active: boolean;
 }
 
 export interface AbsenceTypeListDTO {
   types: AbsenceTypeDTO[];
+}
+
+export interface AbsenceTypeInputDTO {
+  name: string;
+  color: string | null;
+  affects_balance: boolean;
+  requires_approval: boolean;
+  requires_justification: boolean;
+  max_days_per_year: number | null;
+  is_active: boolean;
 }
 
 export interface AbsenceBalanceDTO {
