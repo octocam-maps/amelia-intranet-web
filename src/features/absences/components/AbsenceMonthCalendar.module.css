@@ -42,7 +42,7 @@
   flex-shrink: 0;
 }
 
-.yearNav {
+.monthNav {
   display: flex;
   align-items: center;
   gap: var(--space-2);
@@ -51,7 +51,13 @@
   color: hsl(var(--foreground));
 }
 
-.yearNav button {
+.monthNav span {
+  min-width: 8rem;
+  text-align: center;
+  text-transform: capitalize;
+}
+
+.monthNav button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -64,34 +70,20 @@
   cursor: pointer;
 }
 
-.yearNav button:hover {
+.monthNav button:hover {
   background-color: hsl(var(--accent));
 }
 
-.yearNav svg {
+.monthNav svg {
   height: var(--space-4);
   width: var(--space-4);
 }
 
-.grid {
+.calendar {
   flex: 1;
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: var(--space-4);
-  align-content: start;
-}
-
-.month {
   display: flex;
   flex-direction: column;
-  gap: var(--space-1);
-}
-
-.monthLabel {
-  font-size: 0.8125rem;
-  font-weight: 600;
-  color: hsl(var(--foreground));
-  margin-bottom: var(--space-1);
+  gap: var(--space-2);
 }
 
 .weekdays,
@@ -102,24 +94,37 @@
 
 .weekday {
   text-align: center;
-  font-size: 0.625rem;
+  font-size: 0.75rem;
   font-weight: 600;
   color: hsl(var(--muted-foreground));
   text-transform: uppercase;
-  padding-bottom: var(--space-1);
+  padding-bottom: var(--space-2);
 }
 
-.day {
+.days {
+  flex: 1;
+}
+
+/* Celda de la rejilla: define el área L-D/semana. El fondo de la ausencia
+   vive en .dayContent (ver más abajo) para que nunca toque la celda vecina. */
+.dayCell {
   display: flex;
+  min-height: 0;
+}
+
+.dayContent {
+  box-sizing: border-box;
+  display: flex;
+  flex: 1;
   align-items: center;
   justify-content: center;
-  aspect-ratio: 1;
-  border-radius: calc(var(--radius) - 3px);
-  font-size: 0.6875rem;
+  margin: var(--space-1);
+  border-radius: calc(var(--radius) - 2px);
+  font-size: 0.9375rem;
   color: hsl(var(--foreground));
 }
 
-.day[data-today='true'] {
+.dayContent[data-today='true'] {
   box-shadow: inset 0 0 0 2px hsl(var(--primary));
   font-weight: 700;
 }

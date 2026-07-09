@@ -7,7 +7,7 @@ import { useAbsenceRequests } from '../application/useAbsenceRequests';
 import { useAbsenceTypes } from '../application/useAbsenceTypes';
 import { AbsenceBalanceDonut } from './AbsenceBalanceDonut';
 import { AbsenceCompactList } from './AbsenceCompactList';
-import { AbsenceYearCalendar } from './AbsenceYearCalendar';
+import { AbsenceMonthCalendar } from './AbsenceMonthCalendar';
 import { NewAbsenceRequestDialog } from './NewAbsenceRequestDialog';
 import styles from './EmployeeAbsencesView.module.css';
 
@@ -82,7 +82,7 @@ export function EmployeeAbsencesView() {
         </div>
 
         <div className={styles.rightColumn}>
-          <AbsenceYearCalendar requests={requests} types={types} holidays={summary?.upcomingHolidays ?? []} />
+          <AbsenceMonthCalendar requests={requests} types={types} holidays={summary?.upcomingHolidays ?? []} />
         </div>
       </div>
     </div>
