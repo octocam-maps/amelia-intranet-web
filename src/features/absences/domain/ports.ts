@@ -10,6 +10,7 @@ import type {
 
 export interface AbsencesRepository {
   listTypes(): Promise<AbsenceType[]>;
+  listAllTypes(): Promise<AbsenceType[]>;
   createType(input: AbsenceTypeInput): Promise<AbsenceType>;
   updateType(id: string, input: Partial<AbsenceTypeInput>): Promise<AbsenceType>;
   getBalance(params?: { userId?: string; year?: number }): Promise<AbsenceBalance[]>;

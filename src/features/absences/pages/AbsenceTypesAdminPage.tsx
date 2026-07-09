@@ -3,7 +3,7 @@ import { Plus } from 'lucide-react';
 import { ConfigTabsNav } from '@/components/composites/ConfigTabsNav';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
-import { useAbsenceTypes } from '../application/useAbsenceTypes';
+import { useAllAbsenceTypes } from '../application/useAllAbsenceTypes';
 import { AbsenceTypeFormDialog } from '../components/AbsenceTypeFormDialog';
 import { AbsenceTypesGrid } from '../components/AbsenceTypesGrid';
 import type { AbsenceType } from '../domain/models';
@@ -12,7 +12,7 @@ import styles from './AbsenceTypesAdminPage.module.css';
 /** deck-fase6/15-tipos-ausencia.png */
 export function AbsenceTypesAdminPage() {
   const [dialogType, setDialogType] = useState<AbsenceType | 'new' | null>(null);
-  const { data: types = [], isLoading } = useAbsenceTypes();
+  const { data: types = [], isLoading } = useAllAbsenceTypes();
 
   return (
     <div className={styles.root}>
