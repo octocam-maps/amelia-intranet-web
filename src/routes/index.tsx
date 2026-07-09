@@ -2,7 +2,10 @@ import { Navigate, Route, Routes } from 'react-router-dom';
 import { ProtectedRoute } from '@/features/auth/components/ProtectedRoute';
 import { LoginPage } from '@/features/auth/pages/LoginPage';
 import { AbsencesPage } from '@/features/absences/pages/AbsencesPage';
+import { AbsenceTypesAdminPage } from '@/features/absences/pages/AbsenceTypesAdminPage';
+import { AnunciosPage } from '@/features/announcements/pages/AnunciosPage';
 import { DashboardPage } from '@/features/dashboard/pages/DashboardPage';
+import { FestivosPage } from '@/features/holidays/pages/FestivosPage';
 import { AdminMailboxPage } from '@/features/mailbox/pages/AdminMailboxPage';
 import { AnonymousMailboxPage } from '@/features/mailbox/pages/AnonymousMailboxPage';
 import { StaffPage } from '@/features/staff/pages/StaffPage';
@@ -31,6 +34,9 @@ export function AppRoutes() {
         <Route path="/buzon-anonimo" element={<AnonymousMailboxPage />} />
         <Route path="/administracion/plantilla" element={<StaffPage />} />
         <Route path="/administracion/buzon" element={<AdminMailboxPage />} />
+        <Route path="/administracion/anuncios" element={<AnunciosPage />} />
+        <Route path="/administracion/festivos" element={<FestivosPage />} />
+        <Route path="/administracion/tipos-ausencia" element={<AbsenceTypesAdminPage />} />
       </Route>
 
       <Route path="*" element={<Navigate to="/" replace />} />
