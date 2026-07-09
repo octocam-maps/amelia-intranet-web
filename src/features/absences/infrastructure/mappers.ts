@@ -35,5 +35,6 @@ export function requestFromDTO(dto: AbsenceRequestDTO): AbsenceRequest {
     status: dto.status as AbsenceRequest['status'],
     reviewedBy: dto.reviewed_by,
     reviewNote: dto.review_note,
+    userFullName: dto.user_full_name,
   };
 }

@@ -27,12 +27,6 @@ function initialsOf(name: string): string {
 interface TeamAbsenceGanttProps {
   requests: AbsenceRequest[];
   types: AbsenceType[];
-  /** Mejor esfuerzo: nombre por `userId` — solo se conoce el de quien
-   * aparece en `dashboard/summary` (pendientes). El resto de usuarios de
-   * `/absences/requests/all` no tienen nombre hasta que exista un
-   * directorio real (módulo Equipo, Fase 5); se etiquetan como
-   * "Empleado #XXXX" en vez de inventar un nombre. */
-  nameById: Map<string, string>;
 }
 
 /**
@@ -40,7 +34,7 @@ interface TeamAbsenceGanttProps {
  * con CSS grid nativo (cada día es una columna; las barras se posicionan
  * con `grid-column`, sin absolute positioning ni librería nueva).
  */
-export function TeamAbsenceGantt({ requests, types, nameById }: TeamAbsenceGanttProps) {
+export function TeamAbsenceGantt({ requests, types }: TeamAbsenceGanttProps) {
   const [cursor, setCursor] = useState(() => {
     const now = new Date();
     return new Date(now.getFullYear(), now.getMonth(), 1);
@@ -72,11 +66,14 @@ export function TeamAbsenceGantt({ requests, types, nameById }: TeamAbsenceGantt
     return Array.from(byUser.entries())
       .map(([userId, userRequests]) => ({
         userId,
-        name: nameById.get(userId) ?? `Empleado #${userId.slice(-4).toUpperCase()}`,
+        // `user_full_name` viene del backend (JOIN con `users`) en TODAS las
+        // solicitudes de `/absences/requests/all` — el fallback solo cubre
+        // el caso (no esperado) de que viniera vacío de verdad.
+        name: userRequests[0]?.userFullName || `Empleado #${userId.slice(-4).toUpperCase()}`,
         requests: userRequests,
       }))
       .sort((a, b) => a.name.localeCompare(b.name));
-  }, [requests, nameById, year, month, daysInMonth]);
+  }, [requests, year, month, daysInMonth]);
 
   const gridStyle = { gridTemplateColumns: `repeat(${daysInMonth}, minmax(1.5rem, 1fr))` };
   const monthLabel = cursor.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' });

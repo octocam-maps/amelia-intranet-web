@@ -37,6 +37,7 @@ export interface AbsenceRequestDTO {
   status: string;
   reviewed_by: string | null;
   review_note: string | null;
+  user_full_name: string | null;
 }
 
 export interface AbsenceRequestListDTO {

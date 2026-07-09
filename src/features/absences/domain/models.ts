@@ -31,6 +31,9 @@ export interface AbsenceRequest {
   status: AbsenceRequestStatus;
   reviewedBy: string | null;
   reviewNote: string | null;
+  /** Solo relleno en `mode: 'pending' | 'all'` (el backend hace JOIN con
+   * `users`) — en `mode: 'own'` viene `null` porque no hace falta. */
+  userFullName: string | null;
 }
 
 export interface CreateAbsenceRequestInput {
