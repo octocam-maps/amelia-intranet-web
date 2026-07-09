@@ -37,7 +37,8 @@ const controlHorario: NavItem = { label: 'Control horario', to: '/control-horari
 const nominas: NavItem = { label: 'Nóminas', to: '/nominas', icon: Wallet, comingSoon: true };
 const documentos: NavItem = { label: 'Documentos', to: '/documentos', icon: FileText, comingSoon: true };
 const equipo: NavItem = { label: 'Equipo', to: '/equipo', icon: Users, comingSoon: true };
-const buzonAnonimo: NavItem = { label: 'Buzón anónimo', to: '/buzon-anonimo', icon: Mailbox, comingSoon: true };
+// Fase 6: el buzón anónimo del empleado ya tiene página real.
+const buzonAnonimo: NavItem = { label: 'Buzón anónimo', to: '/buzon-anonimo', icon: Mailbox };
 const perfil: NavItem = { label: 'Mi perfil', to: '/perfil', icon: UserCircle, comingSoon: true };
 const onboarding: NavItem = { label: 'Onboarding', to: '/onboarding', icon: GraduationCap, comingSoon: true };
 
@@ -45,11 +46,12 @@ const onboarding: NavItem = { label: 'Onboarding', to: '/onboarding', icon: Grad
 // del admin. "Aprobar ausencias" reutiliza la misma página de Ausencias
 // (con la bandeja ya visible para su rol); el resto son módulos de fases
 // posteriores (comingSoon), pero el LAYOUT completo se muestra desde ya.
+// Fase 6 R1: "Plantilla" y "Buzón (recepción)" ya tienen página real.
 export const ADMIN_SECTION_ITEMS: NavItem[] = [
-  { label: 'Plantilla', to: '/administracion/plantilla', icon: Users, comingSoon: true },
+  { label: 'Plantilla', to: '/administracion/plantilla', icon: Users },
   { label: 'Aprobar ausencias', to: '/ausencias', icon: Inbox },
   { label: 'Anuncios', to: '/administracion/anuncios', icon: Bell, comingSoon: true },
-  { label: 'Buzón (recepción)', to: '/administracion/buzon', icon: Mailbox, comingSoon: true },
+  { label: 'Buzón (recepción)', to: '/administracion/buzon', icon: Mailbox },
   { label: 'Onboarding', to: '/administracion/onboarding', icon: GraduationCap, comingSoon: true },
   { label: 'Festivos', to: '/administracion/festivos', icon: CalendarDays, comingSoon: true },
   { label: 'Tipos de ausencia', to: '/administracion/tipos-ausencia', icon: Tag, comingSoon: true },
