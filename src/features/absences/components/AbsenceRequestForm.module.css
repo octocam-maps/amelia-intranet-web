@@ -18,28 +18,88 @@
   min-width: 10rem;
 }
 
-.select {
-  height: var(--space-10);
+.typeGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-2_5);
+}
+
+.typeCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-1_5);
   border-radius: calc(var(--radius) - 2px);
-  border: 1px solid hsl(var(--input));
+  border: 1px solid hsl(var(--border));
   background-color: hsl(var(--card));
-  padding: 0 var(--space-3);
-  font-size: 0.875rem;
+  padding: var(--space-3) var(--space-2);
   font-family: inherit;
+  cursor: pointer;
+  transition: border-color 0.15s, background-color 0.15s;
+}
+
+.typeCard:hover {
+  border-color: hsl(var(--primary) / 0.5);
+}
+
+.typeCardSelected {
+  border-color: hsl(var(--primary));
+  background-color: hsl(var(--primary) / 0.08);
+}
+
+.typeIcon {
+  height: 1.25rem;
+  width: 1.25rem;
+  color: hsl(var(--muted-foreground));
+}
+
+.typeLabel {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: hsl(var(--foreground));
+  text-align: center;
+}
+
+.banner {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  border-radius: calc(var(--radius) - 2px);
+  background-color: hsl(var(--success) / 0.1);
+  padding: var(--space-3);
+  font-size: 0.8125rem;
+  color: hsl(var(--success));
+}
+
+.bannerWarning {
+  background-color: hsl(var(--warning) / 0.12);
+  color: hsl(var(--warning));
+}
+
+.bannerIcon {
+  height: var(--space-4);
+  width: var(--space-4);
+  flex-shrink: 0;
+}
+
+.bannerText {
+  flex: 1;
+  font-weight: 600;
   color: hsl(var(--foreground));
 }
 
-.select:focus-visible {
-  outline: none;
-  border-color: hsl(var(--ring));
-  box-shadow: 0 0 0 2px hsl(var(--ring) / 0.25);
-}
-
-.submit {
-  align-self: flex-start;
+.bannerAvailable {
+  font-weight: 700;
 }
 
 .error {
   font-size: 0.8125rem;
   color: hsl(var(--destructive));
+}
+
+.footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-3);
 }
