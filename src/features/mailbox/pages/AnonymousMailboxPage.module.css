@@ -1,0 +1,47 @@
+.root {
+  display: flex;
+  justify-content: center;
+  padding-top: var(--space-4);
+}
+
+.card {
+  width: 100%;
+  max-width: 32rem;
+  overflow: hidden;
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: var(--space-3);
+  background-color: hsl(var(--header-bg));
+  color: hsl(var(--header-foreground));
+  padding: var(--space-8) var(--space-6) var(--space-6);
+}
+
+.icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 3rem;
+  width: 3rem;
+  border-radius: calc(var(--radius) - 2px);
+  background-color: hsl(var(--header-foreground) / 0.1);
+  color: hsl(var(--primary));
+}
+
+.icon svg {
+  height: 1.5rem;
+  width: 1.5rem;
+}
+
+.title {
+  font-size: 1.0625rem;
+  font-weight: 700;
+}
+
+.body {
+  padding: var(--space-6);
+}
