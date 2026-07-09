@@ -3,6 +3,7 @@ import logoBlanco from '@/assets/brand/logo-amelia-blanco.png';
 import { cn } from '@/lib/utils';
 import { useStore } from '@/store';
 import { ADMIN_SECTION, NAV_BY_ROLE, type NavItem } from './nav-config';
+import styles from './Sidebar.module.css';
 
 /**
  * Navbar condicionado por rol — SOLO visual. La protección real de cada
@@ -14,22 +15,20 @@ export function Sidebar() {
   const items = role ? NAV_BY_ROLE[role] : [];
 
   return (
-    <aside className="flex h-screen w-64 shrink-0 flex-col bg-navy text-white">
-      <div className="flex h-16 items-center px-6">
-        <img src={logoBlanco} alt="Amelia" className="h-7 w-auto" />
+    <aside className={styles.sidebar}>
+      <div className={styles.logoRow}>
+        <img src={logoBlanco} alt="Amelia" className={styles.logo} />
       </div>
 
-      <nav className="flex-1 space-y-1 px-3 py-2">
+      <nav className={styles.nav}>
         {items.map((item) => (
           <NavItemLink key={item.to} item={item} />
         ))}
       </nav>
 
       {role === 'administrador' && (
-        <div className="border-t border-white/10 px-3 py-3">
-          <p className="px-3 pb-1 text-xs font-semibold uppercase tracking-wide text-white/50">
-            Administración
-          </p>
+        <div className={styles.adminSection}>
+          <p className={styles.adminLabel}>Administración</p>
           <NavItemLink item={ADMIN_SECTION} />
         </div>
       )}
@@ -42,11 +41,8 @@ function NavItemLink({ item }: { item: NavItem }) {
 
   if (item.comingSoon) {
     return (
-      <span
-        className="flex cursor-not-allowed items-center gap-3 rounded-md px-3 py-2 text-sm text-white/40"
-        title="Disponible en una fase posterior"
-      >
-        <Icon className="h-4 w-4" />
+      <span className={styles.navItemDisabled} title="Disponible en una fase posterior">
+        <Icon className={styles.navIcon} />
         {item.label}
       </span>
     );
@@ -56,14 +52,9 @@ function NavItemLink({ item }: { item: NavItem }) {
     <NavLink
       to={item.to}
       end
-      className={({ isActive }) =>
-        cn(
-          'flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors hover:bg-white/10',
-          isActive ? 'bg-primary/15 text-primary' : 'text-white/80'
-        )
-      }
+      className={({ isActive }) => cn(styles.navItem, isActive && styles.navItemActive)}
     >
-      <Icon className="h-4 w-4" />
+      <Icon className={styles.navIcon} />
       {item.label}
     </NavLink>
   );

@@ -1,0 +1,149 @@
+.panel {
+  position: relative;
+  overflow: hidden;
+  background-color: hsl(var(--header-bg));
+  color: hsl(var(--header-foreground));
+  padding: var(--space-8) var(--space-8);
+}
+
+.glow {
+  display: none;
+  pointer-events: none;
+  position: absolute;
+  bottom: -8rem;
+  left: -6rem;
+  height: 20rem;
+  width: 20rem;
+  border-radius: 9999px;
+  background-color: hsl(var(--primary) / 0.2);
+  filter: blur(100px);
+}
+
+.logoRow {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+/* Logo con proporción real (1920x400) — SOLO height fijo, nunca width y
+   height a la vez o se distorsiona. object-fit + flex-shrink son
+   cinturón-y-tirantes por si el contenedor algún día lo comprime. */
+.logo {
+  height: 2rem;
+  width: auto;
+  max-width: 100%;
+  flex-shrink: 0;
+  object-fit: contain;
+}
+
+.body {
+  position: relative;
+  margin-top: var(--space-6);
+  max-width: 28rem;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.subtitle {
+  display: none;
+  font-size: 1rem;
+  color: hsl(var(--header-foreground) / 0.7);
+}
+
+.bullets {
+  display: none;
+  flex-direction: column;
+  gap: var(--space-3);
+  list-style: none;
+}
+
+.bulletItem {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  font-size: 0.875rem;
+  color: hsl(var(--header-foreground) / 0.9);
+}
+
+.bulletCheck {
+  display: flex;
+  height: var(--space-5);
+  width: var(--space-5);
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  background-color: hsl(var(--primary));
+}
+
+.checkIcon {
+  height: var(--space-3);
+  width: var(--space-3);
+  color: hsl(var(--header-bg));
+}
+
+.footer {
+  position: relative;
+  display: none;
+  font-size: 0.75rem;
+  color: hsl(var(--header-foreground) / 0.4);
+}
+
+@media (min-width: 768px) {
+  .panel {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 50%;
+    min-height: 100vh;
+    padding: var(--space-12) var(--space-12);
+  }
+
+  .glow {
+    display: block;
+  }
+
+  .logo {
+    height: 2.25rem;
+  }
+
+  .body {
+    margin-top: 0;
+    padding: var(--space-10) 0;
+    gap: var(--space-6);
+  }
+
+  .title {
+    font-size: 2.25rem;
+  }
+
+  .subtitle,
+  .bullets,
+  .footer {
+    display: flex;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .bulletItem {
+    animation: fade-in-up 0.5s ease-out both;
+  }
+}
+
+@keyframes fade-in-up {
+  0% {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

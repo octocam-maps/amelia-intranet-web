@@ -1,0 +1,28 @@
+.avatar {
+  position: relative;
+  display: flex;
+  height: var(--space-10);
+  width: var(--space-10);
+  flex-shrink: 0;
+  overflow: hidden;
+  border-radius: 9999px;
+}
+
+.image {
+  aspect-ratio: 1;
+  height: 100%;
+  width: 100%;
+}
+
+.fallback {
+  display: flex;
+  height: 100%;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  background-color: hsl(var(--header-bg));
+  color: hsl(var(--header-foreground));
+  font-size: 0.75rem;
+  font-weight: 500;
+}

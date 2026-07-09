@@ -1,4 +1,5 @@
 import { useStore } from '@/store';
+import styles from './DashboardPage.module.css';
 
 /**
  * Placeholder mínimo — solo para verificar que el Shell (Sidebar + Topbar +
@@ -10,9 +11,9 @@ export function DashboardPage() {
   const firstName = user?.fullName?.split(' ')[0] ?? '';
 
   return (
-    <div className="space-y-2">
-      <h1 className="text-xl font-semibold text-foreground">Hola, {firstName}</h1>
-      <p className="text-sm text-muted-foreground">
+    <div className={styles.root}>
+      <h1 className={styles.title}>Hola, {firstName}</h1>
+      <p className={styles.subtitle}>
         Sesión iniciada como <strong>{user?.role}</strong>. Este dashboard es un
         placeholder de la Fase 1 — confirma que el Shell y el rol funcionan
         correctamente de extremo a extremo.

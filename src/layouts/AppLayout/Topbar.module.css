@@ -1,0 +1,45 @@
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  height: 4rem;
+  padding: 0 var(--space-6);
+  border-bottom: 1px solid hsl(var(--border));
+  background-color: hsl(var(--card));
+}
+
+.trigger {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  border-radius: calc(var(--radius) - 2px);
+  padding: var(--space-1_5) var(--space-2);
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  outline: none;
+}
+
+.trigger:hover {
+  background-color: hsl(var(--muted));
+}
+
+.userInfo {
+  text-align: right;
+}
+
+.userName {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: hsl(var(--foreground));
+}
+
+.userRole {
+  font-size: 0.75rem;
+  color: hsl(var(--muted-foreground));
+}
+
+.logoutIcon {
+  height: var(--space-4);
+  width: var(--space-4);
+}
