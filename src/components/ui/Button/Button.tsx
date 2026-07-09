@@ -10,6 +10,9 @@ const VARIANT_MAP = {
   outline: styles.variantOutline,
   secondary: styles.variantSecondary,
   ghost: styles.variantGhost,
+  // Navy (`--header-bg`) — acciones "fuertes" fuera del verde primario:
+  // Fichar entrada/salida, Solicitar ausencia, Enviar solicitud (deck Fase 3).
+  dark: styles.variantDark,
 } as const;
 
 const SIZE_MAP = {
