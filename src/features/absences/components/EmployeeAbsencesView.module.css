@@ -46,7 +46,7 @@
 
 .rightColumn {
   display: flex;
-  min-height: 32rem;
+  align-self: flex-start;
 }
 
 .summaryRow {
