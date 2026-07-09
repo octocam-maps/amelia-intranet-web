@@ -1,0 +1,9 @@
+.disabledTab {
+  padding: var(--space-3) var(--space-0_5);
+  margin-bottom: -1px;
+  border-bottom: 2px solid transparent;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: hsl(var(--muted-foreground) / 0.6);
+  cursor: not-allowed;
+}
