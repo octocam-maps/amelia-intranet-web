@@ -1,0 +1,110 @@
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.table th {
+  text-align: left;
+  padding: var(--space-3) var(--space-3);
+  color: hsl(var(--muted-foreground));
+  font-weight: 500;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  border-bottom: 1px solid hsl(var(--border));
+}
+
+.table td {
+  padding: var(--space-3);
+  border-bottom: 1px solid hsl(var(--border));
+  color: hsl(var(--foreground));
+  vertical-align: middle;
+}
+
+.person {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.fullName {
+  font-weight: 600;
+  color: hsl(var(--foreground));
+}
+
+.email {
+  font-size: 0.8125rem;
+  color: hsl(var(--muted-foreground));
+}
+
+.status {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-weight: 600;
+}
+
+.statusDot {
+  height: 0.5rem;
+  width: 0.5rem;
+  border-radius: 999px;
+  flex-shrink: 0;
+}
+
+.statusActiva {
+  color: hsl(var(--success));
+}
+.statusActiva .statusDot {
+  background-color: hsl(var(--success));
+}
+
+.statusVacaciones {
+  color: hsl(var(--warning));
+}
+.statusVacaciones .statusDot {
+  background-color: hsl(var(--warning));
+}
+
+.statusBaja {
+  color: hsl(var(--muted-foreground));
+}
+.statusBaja .statusDot {
+  background-color: hsl(var(--muted-foreground));
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--space-1_5);
+}
+
+.iconButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 2rem;
+  width: 2rem;
+  border-radius: calc(var(--radius) - 2px);
+  border: 1px solid hsl(var(--border));
+  background-color: hsl(var(--card));
+  color: hsl(var(--muted-foreground));
+  cursor: pointer;
+}
+
+.iconButton:hover {
+  color: hsl(var(--foreground));
+}
+
+.iconButton svg {
+  height: 0.875rem;
+  width: 0.875rem;
+}
+
+.empty {
+  padding: var(--space-8) 0;
+  text-align: center;
+  font-size: 0.875rem;
+  color: hsl(var(--muted-foreground));
+}
