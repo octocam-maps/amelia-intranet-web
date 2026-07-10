@@ -5,11 +5,73 @@
 }
 
 .actionPanel {
+  position: relative;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  overflow: hidden;
+  padding: var(--space-12) var(--space-6);
+  /* Fallback bajo las imágenes mientras cargan / si fallan. */
+  background-color: hsl(var(--header-bg));
+}
+
+/* -------- Fondo dinámico (crossfade de imágenes) -------- */
+.backdrop {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.backdropLayer {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  opacity: 0;
+  /* Crossfade continuo: cada capa entra mientras la anterior sale. Con 4
+     capas y un desfase de 7s, siempre hay una fundiéndose sobre otra. */
+  animation: loginCrossfade 20s ease-in-out infinite;
+}
+
+@keyframes loginCrossfade {
+  0% {
+    opacity: 0;
+  }
+  6% {
+    opacity: 1;
+  }
+  25% {
+    opacity: 1;
+  }
+  31% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+/* Scrim navy: funde las imágenes con la marca y garantiza el contraste del
+   texto/botón que van por encima. Diagonal + refuerzo abajo (donde cae el
+   contenido). */
+.scrim {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background:
+    radial-gradient(120% 80% at 85% 0%, hsl(var(--primary) / 0.18), transparent 60%),
+    linear-gradient(160deg, hsl(var(--header-bg) / 0.72) 0%, hsl(var(--header-bg) / 0.62) 45%, hsl(var(--header-bg) / 0.82) 100%);
+}
+
+/* -------- Contenido en primer plano -------- */
+.foreground {
+  position: relative;
+  z-index: 2;
   display: flex;
   flex: 1;
   flex-direction: column;
   justify-content: center;
-  padding: var(--space-12) var(--space-6);
+  gap: var(--space-10);
 }
 
 .actionBody {
@@ -21,13 +83,13 @@
 .title {
   font-size: 1.5rem;
   font-weight: 600;
-  color: hsl(var(--foreground));
+  color: hsl(var(--header-foreground));
 }
 
 .subtitle {
   margin-top: var(--space-2);
   font-size: 0.875rem;
-  color: hsl(var(--muted-foreground));
+  color: hsl(var(--header-foreground) / 0.75);
 }
 
 .action {
@@ -38,7 +100,7 @@
   margin-top: var(--space-10);
   text-align: center;
   font-size: 0.875rem;
-  color: hsl(var(--muted-foreground));
+  color: hsl(var(--header-foreground) / 0.7);
 }
 
 .contactLink {
@@ -57,13 +119,27 @@
   }
 
   .actionPanel {
-    width: 50%;
+    width: 58%;
     min-height: 100vh;
-    justify-content: space-between;
     padding: var(--space-12);
+  }
+
+  .foreground {
+    justify-content: space-between;
   }
 
   .contact {
     margin-top: 0;
+  }
+}
+
+/* Accesibilidad: sin animación, se muestra una sola imagen fija (la primera). */
+@media (prefers-reduced-motion: reduce) {
+  .backdropLayer {
+    animation: none;
+    opacity: 0;
+  }
+  .backdropLayer:first-child {
+    opacity: 1;
   }
 }
