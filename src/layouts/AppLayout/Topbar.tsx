@@ -1,4 +1,4 @@
-import { Bell, LogOut, Plus } from 'lucide-react';
+import { LogOut, Plus } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/Avatar';
 import { Button } from '@/components/ui/Button';
 import {
@@ -15,6 +15,7 @@ import { useLogout } from '@/features/auth/application/useLogout';
 import { formatHms, useElapsedSeconds } from '@/hooks/useElapsedSeconds';
 import { useClockIn } from '@/features/time-clock/application/useTimeClockLiveActions';
 import { useTimeClockCurrent } from '@/features/time-clock/application/useTimeClockCurrent';
+import { NotificationBell } from '@/features/notifications/components/NotificationBell';
 import { useStore } from '@/store';
 import styles from './Topbar.module.css';
 
@@ -83,9 +84,7 @@ export function Topbar() {
       <div className={styles.actions}>
         {canUseTimeClock && <LiveClockPill />}
 
-        <button className={styles.iconButton} type="button" title="Notificaciones (Fase 6)" disabled>
-          <Bell className={styles.bellIcon} />
-        </button>
+        <NotificationBell />
 
         <DropdownMenu>
           <DropdownMenuTrigger className={styles.trigger}>

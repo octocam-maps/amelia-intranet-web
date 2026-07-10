@@ -1,0 +1,172 @@
+.trigger {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: var(--space-10);
+  width: var(--space-10);
+  border: none;
+  border-radius: calc(var(--radius) - 2px);
+  background: transparent;
+  color: hsl(var(--muted-foreground));
+  cursor: pointer;
+  outline: none;
+}
+
+.trigger:hover {
+  background-color: hsl(var(--muted));
+  color: hsl(var(--foreground));
+}
+
+.bellIcon {
+  height: 1.125rem;
+  width: 1.125rem;
+}
+
+.badge {
+  position: absolute;
+  top: 0.1rem;
+  right: 0.1rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.125rem;
+  height: 1.125rem;
+  padding: 0 var(--space-1);
+  border-radius: 999px;
+  background-color: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+  font-size: 0.625rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+/* Cancela el padding de .content (DropdownMenu.module.css) para que el
+ * panel controle su propio ancho y respiración de borde a borde. */
+.panel {
+  margin: calc(var(--space-1) * -1);
+  width: 22rem;
+  max-width: calc(100vw - var(--space-8));
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  border-bottom: 1px solid hsl(var(--border));
+}
+
+.headerTitle {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: hsl(var(--foreground));
+}
+
+.markAllButton {
+  border: none;
+  background: transparent;
+  padding: 0;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: hsl(var(--primary));
+  cursor: pointer;
+}
+
+.markAllButton:disabled {
+  color: hsl(var(--muted-foreground));
+  cursor: not-allowed;
+}
+
+.list {
+  max-height: 22rem;
+  overflow-y: auto;
+}
+
+.item {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--space-1);
+  width: 100%;
+  padding: var(--space-2_5) var(--space-3);
+  border: none;
+  border-bottom: 1px solid hsl(var(--border));
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+}
+
+.item:last-child {
+  border-bottom: none;
+}
+
+.item:hover {
+  background-color: hsl(var(--muted));
+}
+
+.item[data-unread='true'] {
+  background-color: hsl(var(--primary) / 0.06);
+}
+
+.itemTop {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.dot {
+  height: 0.4rem;
+  width: 0.4rem;
+  flex-shrink: 0;
+  border-radius: 999px;
+  background-color: transparent;
+}
+
+.dot[data-visible='true'] {
+  background-color: hsl(var(--primary));
+}
+
+.itemTitle {
+  flex: 1;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: hsl(var(--foreground));
+}
+
+.itemTime {
+  flex-shrink: 0;
+  font-size: 0.6875rem;
+  color: hsl(var(--muted-foreground));
+}
+
+.itemBody {
+  padding-left: calc(0.4rem + var(--space-2));
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  font-size: 0.75rem;
+  color: hsl(var(--muted-foreground));
+}
+
+.empty {
+  padding: var(--space-8) var(--space-3);
+  text-align: center;
+  font-size: 0.8125rem;
+  color: hsl(var(--muted-foreground));
+}
+
+.skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-3);
+}
+
+.skeletonRow {
+  height: 2.5rem;
+  border-radius: calc(var(--radius) - 2px);
+  background-color: hsl(var(--muted));
+}

@@ -39,34 +39,6 @@
   background-color: currentColor;
 }
 
-.iconButton {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  height: var(--space-10);
-  width: var(--space-10);
-  border: none;
-  border-radius: calc(var(--radius) - 2px);
-  background: transparent;
-  color: hsl(var(--muted-foreground));
-  cursor: pointer;
-}
-
-.iconButton:hover:not(:disabled) {
-  background-color: hsl(var(--muted));
-  color: hsl(var(--foreground));
-}
-
-.iconButton:disabled {
-  cursor: not-allowed;
-  opacity: 0.6;
-}
-
-.bellIcon {
-  height: var(--space-4_5, 1.125rem);
-  width: var(--space-4_5, 1.125rem);
-}
-
 .trigger {
   display: flex;
   align-items: center;
