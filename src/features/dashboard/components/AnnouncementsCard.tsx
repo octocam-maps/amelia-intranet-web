@@ -1,6 +1,7 @@
 import { Megaphone } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { useAnnouncements } from '@/features/announcements/application/useAnnouncements';
+import { AnnouncementBody } from '@/features/announcements/components/AnnouncementBody';
 import styles from './AnnouncementsCard.module.css';
 
 const MAX_ITEMS = 3;
@@ -27,7 +28,9 @@ export function AnnouncementsCard() {
           items.map((announcement) => (
             <div key={announcement.id} className={styles.item}>
               <p className={styles.title}>{announcement.title}</p>
-              <p className={styles.body}>{announcement.body}</p>
+              <div className={styles.body}>
+                <AnnouncementBody body={announcement.body} />
+              </div>
             </div>
           ))
         )}

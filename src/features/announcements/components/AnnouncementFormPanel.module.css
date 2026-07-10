@@ -36,7 +36,12 @@
   border: 1px solid hsl(var(--border));
   background-color: hsl(var(--secondary));
   color: hsl(var(--muted-foreground));
-  cursor: not-allowed;
+  cursor: pointer;
+}
+
+.toolbarButton:hover {
+  border-color: hsl(var(--primary) / 0.4);
+  color: hsl(var(--primary));
 }
 
 .toolbarButton svg {
@@ -46,6 +51,11 @@
 
 .body {
   resize: vertical;
+}
+
+.hint {
+  font-size: 0.75rem;
+  color: hsl(var(--muted-foreground));
 }
 
 .row {

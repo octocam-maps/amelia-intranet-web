@@ -10,6 +10,7 @@ import { cn } from '@/lib/utils';
 import { useDeleteAnnouncement } from '../application/useDeleteAnnouncement';
 import { useUpdateAnnouncement } from '../application/useUpdateAnnouncement';
 import type { Announcement } from '../domain/models';
+import { AnnouncementBody } from './AnnouncementBody';
 import styles from './AnnouncementsList.module.css';
 
 function formatFullDate(iso: string): string {
@@ -95,7 +96,9 @@ export function AnnouncementsList({ announcements, isLoading, selectedId, onSele
           </div>
 
           <h3 className={styles.cardTitle}>{announcement.title}</h3>
-          <p className={styles.cardBody}>{announcement.body}</p>
+          <div className={styles.cardBody}>
+            <AnnouncementBody body={announcement.body} />
+          </div>
 
           <div className={styles.cardMeta}>
             <span>

@@ -1,5 +1,5 @@
-import { useEffect } from 'react';
-import { Bold, Italic, LinkIcon, List, Send } from 'lucide-react';
+import { useEffect, useRef } from 'react';
+import { Bold, Italic, LinkIcon, Send } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
@@ -25,10 +25,12 @@ interface AnnouncementFormPanelProps {
 
 /**
  * deck-fase6/11-anuncios.png — panel persistente a la derecha del listado,
- * se reutiliza para alta y edición. La barra de formato (B/I/lista/enlace) es
- * decorativa: montar un editor de texto rico es fuera de alcance de esta
- * ronda, el mensaje se guarda como texto plano. El selector "Publicar" solo
- * ofrece "Ahora" — la programación de fecha queda para una fase posterior.
+ * se reutiliza para alta y edición. El mensaje se guarda como Markdown
+ * ligero (negrita/cursiva/enlaces, ver `AnnouncementBody`); la barra de
+ * formato solo envuelve la selección del textarea con la sintaxis
+ * correspondiente, no es un editor de texto rico. El selector "Publicar"
+ * solo ofrece "Ahora" — la programación de fecha queda para una fase
+ * posterior.
  */
 export function AnnouncementFormPanel({ announcement, onSaved }: AnnouncementFormPanelProps) {
   const { register, handleSubmit, reset, watch, setValue } = useForm<FormValues>({
@@ -40,8 +42,46 @@ export function AnnouncementFormPanel({ announcement, onSaved }: AnnouncementFor
   });
   const { mutateAsync: createAnnouncement, isPending: isCreating } = useCreateAnnouncement();
   const { mutateAsync: updateAnnouncement, isPending: isUpdating } = useUpdateAnnouncement();
+  const bodyField = register('body', { required: true });
+  const bodyRef = useRef<HTMLTextAreaElement | null>(null);
   const pinned = watch('pinned');
   const isSaving = isCreating || isUpdating;
+
+  const applyFormatting = (kind: 'bold' | 'italic' | 'link') => {
+    const textarea = bodyRef.current;
+    if (!textarea) return;
+
+    const current = watch('body') ?? '';
+    const start = textarea.selectionStart ?? current.length;
+    const end = textarea.selectionEnd ?? current.length;
+    const selected = current.slice(start, end);
+
+    let prefix = '**';
+    let suffix = '**';
+    let placeholder = 'texto en negrita';
+    if (kind === 'italic') {
+      prefix = '_';
+      suffix = '_';
+      placeholder = 'texto en cursiva';
+    } else if (kind === 'link') {
+      const url = window.prompt('URL del enlace (https://…)');
+      if (!url) return;
+      prefix = '[';
+      suffix = `](${url})`;
+      placeholder = 'texto del enlace';
+    }
+
+    const text = selected || placeholder;
+    const next = `${current.slice(0, start)}${prefix}${text}${suffix}${current.slice(end)}`;
+    setValue('body', next, { shouldDirty: true });
+
+    const selectionStart = start + prefix.length;
+    const selectionEnd = selectionStart + text.length;
+    requestAnimationFrame(() => {
+      textarea.focus();
+      textarea.setSelectionRange(selectionStart, selectionEnd);
+    });
+  };
 
   // Cambiar de anuncio seleccionado (o pasar a "nuevo") resetea el formulario.
   useEffect(() => {
@@ -79,16 +119,31 @@ export function AnnouncementFormPanel({ announcement, onSaved }: AnnouncementFor
       <div className={styles.field}>
         <Label htmlFor="announcementBody">Mensaje *</Label>
         <div className={styles.toolbar}>
-          <button type="button" className={styles.toolbarButton} disabled title="Formato próximamente">
+          <button
+            type="button"
+            className={styles.toolbarButton}
+            title="Negrita"
+            aria-label="Negrita"
+            onClick={() => applyFormatting('bold')}
+          >
             <Bold />
           </button>
-          <button type="button" className={styles.toolbarButton} disabled title="Formato próximamente">
+          <button
+            type="button"
+            className={styles.toolbarButton}
+            title="Cursiva"
+            aria-label="Cursiva"
+            onClick={() => applyFormatting('italic')}
+          >
             <Italic />
           </button>
-          <button type="button" className={styles.toolbarButton} disabled title="Formato próximamente">
-            <List />
-          </button>
-          <button type="button" className={styles.toolbarButton} disabled title="Formato próximamente">
+          <button
+            type="button"
+            className={styles.toolbarButton}
+            title="Enlace"
+            aria-label="Enlace"
+            onClick={() => applyFormatting('link')}
+          >
             <LinkIcon />
           </button>
         </div>
@@ -97,8 +152,13 @@ export function AnnouncementFormPanel({ announcement, onSaved }: AnnouncementFor
           className={styles.body}
           rows={6}
           placeholder="Escribe el comunicado…"
-          {...register('body', { required: true })}
+          {...bodyField}
+          ref={(el) => {
+            bodyField.ref(el);
+            bodyRef.current = el;
+          }}
         />
+        <p className={styles.hint}>Admite formato básico (Markdown): negrita, cursiva y enlaces.</p>
       </div>
 
       <div className={styles.row}>
