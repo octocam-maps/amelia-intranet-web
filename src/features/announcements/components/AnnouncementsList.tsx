@@ -9,9 +9,22 @@ import {
 import { cn } from '@/lib/utils';
 import { useDeleteAnnouncement } from '../application/useDeleteAnnouncement';
 import { useUpdateAnnouncement } from '../application/useUpdateAnnouncement';
-import type { Announcement } from '../domain/models';
+import type { Announcement, AnnouncementEntity } from '../domain/models';
 import { AnnouncementBody } from './AnnouncementBody';
 import styles from './AnnouncementsList.module.css';
+
+const ENTITY_LABEL: Record<AnnouncementEntity, string> = {
+  hub: 'Amelia Hub',
+  lab: 'Amelia Lab',
+  ops: 'Amelia Ops',
+};
+
+function audienceLabel(announcement: Announcement): string {
+  if (announcement.audience === 'entity' && announcement.entityCode) {
+    return ENTITY_LABEL[announcement.entityCode];
+  }
+  return 'Toda la plantilla';
+}
 
 function formatFullDate(iso: string): string {
   return new Date(iso).toLocaleDateString('es-ES', { day: 'numeric', month: 'short', year: 'numeric' }).replace('.', '');
@@ -105,7 +118,7 @@ export function AnnouncementsList({ announcements, isLoading, selectedId, onSele
               <Calendar /> {formatFullDate(announcement.publishedAt ?? announcement.createdAt)}
             </span>
             <span>
-              <Users /> Toda la plantilla
+              <Users /> {audienceLabel(announcement)}
             </span>
             <span>
               <Eye /> {announcement.viewCount} vistas

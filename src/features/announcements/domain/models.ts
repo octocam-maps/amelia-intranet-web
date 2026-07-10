@@ -1,9 +1,10 @@
 export type AnnouncementStatus = 'draft' | 'published';
 
-/** El deck (11-anuncios.png) solo ofrece "Toda la plantilla" en el selector
- * de destinatarios — se deja como string en vez de un enum cerrado para no
- * romper si el backend añade segmentación por entidad más adelante. */
-export type AnnouncementAudience = 'all';
+/** Segmentación por entidad del grupo (Hub/Lab/Ops). El backend también
+ * admite `role`, pero la UI no lo usa por ahora. */
+export type AnnouncementEntity = 'hub' | 'lab' | 'ops';
+
+export type AnnouncementAudience = 'all' | 'entity';
 
 export interface Announcement {
   id: string;
@@ -12,6 +13,7 @@ export interface Announcement {
   status: AnnouncementStatus;
   pinned: boolean;
   audience: AnnouncementAudience;
+  entityCode: AnnouncementEntity | null;
   publishedAt: string | null;
   createdAt: string;
   viewCount: number;
@@ -21,6 +23,7 @@ export interface AnnouncementInput {
   title: string;
   body: string;
   audience: AnnouncementAudience;
+  entity?: AnnouncementEntity | null;
   pinned: boolean;
   status: AnnouncementStatus;
 }

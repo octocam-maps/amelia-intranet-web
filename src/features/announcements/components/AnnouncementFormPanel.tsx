@@ -8,12 +8,31 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@/components/ui/Textarea';
 import { useCreateAnnouncement } from '../application/useCreateAnnouncement';
 import { useUpdateAnnouncement } from '../application/useUpdateAnnouncement';
-import type { Announcement, AnnouncementStatus } from '../domain/models';
+import type { Announcement, AnnouncementEntity, AnnouncementStatus } from '../domain/models';
 import styles from './AnnouncementFormPanel.module.css';
+
+/** Valor plano del selector de destinatarios: 'all' o una entidad concreta.
+ * Se traduce a `{audience, entity}` recién al guardar (ver `save`). */
+type AudienceTarget = 'all' | AnnouncementEntity;
+
+const AUDIENCE_OPTIONS: { value: AudienceTarget; label: string }[] = [
+  { value: 'all', label: 'Toda la plantilla' },
+  { value: 'hub', label: 'Amelia Hub' },
+  { value: 'lab', label: 'Amelia Lab' },
+  { value: 'ops', label: 'Amelia Ops' },
+];
+
+function targetFromAnnouncement(announcement: Announcement | undefined): AudienceTarget {
+  if (announcement?.audience === 'entity' && announcement.entityCode) {
+    return announcement.entityCode;
+  }
+  return 'all';
+}
 
 interface FormValues {
   title: string;
   body: string;
+  target: AudienceTarget;
   pinned: boolean;
 }
 
@@ -28,15 +47,16 @@ interface AnnouncementFormPanelProps {
  * se reutiliza para alta y edición. El mensaje se guarda como Markdown
  * ligero (negrita/cursiva/enlaces, ver `AnnouncementBody`); la barra de
  * formato solo envuelve la selección del textarea con la sintaxis
- * correspondiente, no es un editor de texto rico. El selector "Publicar"
- * solo ofrece "Ahora" — la programación de fecha queda para una fase
- * posterior.
+ * correspondiente, no es un editor de texto rico. No hay selector de
+ * "Publicar" con fecha: el backend no soporta programación, los botones
+ * "Guardar borrador"/"Publicar" del pie ya cubren ese estado.
  */
 export function AnnouncementFormPanel({ announcement, onSaved }: AnnouncementFormPanelProps) {
   const { register, handleSubmit, reset, watch, setValue } = useForm<FormValues>({
     defaultValues: {
       title: announcement?.title ?? '',
       body: announcement?.body ?? '',
+      target: targetFromAnnouncement(announcement),
       pinned: announcement?.pinned ?? false,
     },
   });
@@ -45,6 +65,7 @@ export function AnnouncementFormPanel({ announcement, onSaved }: AnnouncementFor
   const bodyField = register('body', { required: true });
   const bodyRef = useRef<HTMLTextAreaElement | null>(null);
   const pinned = watch('pinned');
+  const target = watch('target');
   const isSaving = isCreating || isUpdating;
 
   const applyFormatting = (kind: 'bold' | 'italic' | 'link') => {
@@ -88,12 +109,21 @@ export function AnnouncementFormPanel({ announcement, onSaved }: AnnouncementFor
     reset({
       title: announcement?.title ?? '',
       body: announcement?.body ?? '',
+      target: targetFromAnnouncement(announcement),
       pinned: announcement?.pinned ?? false,
     });
   }, [announcement, reset]);
 
   const save = async (values: FormValues, status: AnnouncementStatus) => {
-    const input = { title: values.title, body: values.body, pinned: values.pinned, audience: 'all' as const, status };
+    const input = {
+      title: values.title,
+      body: values.body,
+      pinned: values.pinned,
+      status,
+      ...(values.target === 'all'
+        ? { audience: 'all' as const, entity: null }
+        : { audience: 'entity' as const, entity: values.target }),
+    };
     if (announcement) {
       await updateAnnouncement({ id: announcement.id, input });
     } else {
@@ -102,7 +132,7 @@ export function AnnouncementFormPanel({ announcement, onSaved }: AnnouncementFor
       // guardar, así que el `useEffect` de arriba no vuelve a dispararse
       // (la dependencia no cambia de referencia) y el formulario quedaría
       // con el título/mensaje del anuncio recién publicado. Se limpia a mano.
-      reset({ title: '', body: '', pinned: false });
+      reset({ title: '', body: '', target: 'all', pinned: false });
     }
     onSaved();
   };
@@ -161,29 +191,20 @@ export function AnnouncementFormPanel({ announcement, onSaved }: AnnouncementFor
         <p className={styles.hint}>Admite formato básico (Markdown): negrita, cursiva y enlaces.</p>
       </div>
 
-      <div className={styles.row}>
-        <div className={styles.field}>
-          <Label>Destinatarios</Label>
-          <Select value="all" disabled>
-            <SelectTrigger>
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Toda la plantilla</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-        <div className={styles.field}>
-          <Label>Publicar</Label>
-          <Select value="now" disabled>
-            <SelectTrigger>
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="now">Ahora</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
+      <div className={styles.field}>
+        <Label>Destinatarios</Label>
+        <Select value={target} onValueChange={(value) => setValue('target', value as AudienceTarget, { shouldDirty: true })}>
+          <SelectTrigger>
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {AUDIENCE_OPTIONS.map((option) => (
+              <SelectItem key={option.value} value={option.value}>
+                {option.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
 
       <label className={styles.checkboxRow}>

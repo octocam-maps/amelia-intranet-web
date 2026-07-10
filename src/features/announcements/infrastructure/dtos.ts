@@ -10,6 +10,7 @@ export interface AnnouncementDTO {
   title: string;
   body: string;
   audience: string;
+  entity_code: string | null;
   is_pinned: boolean;
   published_at: string | null;
   created_at: string;
@@ -23,6 +24,7 @@ export interface AnnouncementInputDTO {
   title: string;
   body: string;
   audience: string;
+  entity?: string | null;
   is_pinned: boolean;
   published: boolean;
 }
