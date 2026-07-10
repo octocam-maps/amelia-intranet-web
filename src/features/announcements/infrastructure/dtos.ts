@@ -1,15 +1,18 @@
-/** Formas snake_case tal cual las devuelve el backend (Pydantic). */
+/** Formas snake_case tal cual las devuelve / acepta el backend (Pydantic).
+ *
+ * El backend NO tiene un campo `status`: el estado borrador/publicado se
+ * expresa con `published_at` (null = borrador). En escritura acepta
+ * `published: bool` e `is_pinned: bool`. Traducir a/desde el modelo de
+ * dominio (`status`/`pinned`) ocurre en `mappers.ts`. */
 
 export interface AnnouncementDTO {
   id: string;
   title: string;
   body: string;
-  status: string;
-  pinned: boolean;
   audience: string;
+  is_pinned: boolean;
   published_at: string | null;
   created_at: string;
-  view_count: number;
 }
 
 export interface AnnouncementListDTO {
@@ -20,6 +23,6 @@ export interface AnnouncementInputDTO {
   title: string;
   body: string;
   audience: string;
-  pinned: boolean;
-  status: string;
+  is_pinned: boolean;
+  published: boolean;
 }
