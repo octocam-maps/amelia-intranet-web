@@ -3,9 +3,9 @@ export type EntityCode = 'hub' | 'lab' | 'ops';
 export interface TeamMember {
   id: string;
   fullName: string;
-  jobTitle: string;
-  entityCode: EntityCode;
-  entityName: string;
+  jobTitle: string | null;
+  entityCode: EntityCode | null;
+  entityName: string | null;
   phone: string | null;
   email: string;
   avatarUrl: string | null;

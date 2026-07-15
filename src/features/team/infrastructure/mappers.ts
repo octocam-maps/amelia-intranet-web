@@ -6,7 +6,7 @@ export function memberFromDTO(dto: TeamMemberDTO): TeamMember {
     id: dto.id,
     fullName: dto.full_name,
     jobTitle: dto.job_title,
-    entityCode: dto.entity_code as EntityCode,
+    entityCode: dto.entity_code as EntityCode | null,
     entityName: dto.entity_name,
     phone: dto.phone,
     email: dto.email,

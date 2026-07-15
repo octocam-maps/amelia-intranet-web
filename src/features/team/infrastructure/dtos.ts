@@ -3,9 +3,9 @@
 export interface TeamMemberDTO {
   id: string;
   full_name: string;
-  job_title: string;
-  entity_code: string;
-  entity_name: string;
+  job_title: string | null;
+  entity_code: string | null;
+  entity_name: string | null;
   phone: string | null;
   email: string;
   avatar_url: string | null;

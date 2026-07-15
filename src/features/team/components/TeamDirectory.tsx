@@ -48,7 +48,12 @@ export function TeamDirectory({ members, isLoading }: TeamDirectoryProps) {
 
   const entities = useMemo(() => {
     const byCode = new Map<EntityCode, string>();
-    for (const member of members) byCode.set(member.entityCode, member.entityName);
+    for (const member of members) {
+      // Los usuarios sin entidad asignada no generan pill de filtro; siguen
+      // apareciendo en "Todos".
+      if (!member.entityCode) continue;
+      byCode.set(member.entityCode, member.entityName ?? entityShortLabel(member.entityCode));
+    }
     return Array.from(byCode.entries()).map(([code, name]) => ({
       code,
       name,
@@ -110,14 +115,16 @@ export function TeamDirectory({ members, isLoading }: TeamDirectoryProps) {
                   <Avatar>
                     <AvatarFallback>{initialsOf(member.fullName)}</AvatarFallback>
                   </Avatar>
-                  <Badge variant={ENTITY_BADGE_VARIANT[member.entityCode]}>
-                    {entityShortLabel(member.entityCode)}
-                  </Badge>
+                  {member.entityCode && (
+                    <Badge variant={ENTITY_BADGE_VARIANT[member.entityCode]}>
+                      {entityShortLabel(member.entityCode)}
+                    </Badge>
+                  )}
                 </div>
 
                 <div className={styles.identity}>
                   <p className={styles.name}>{member.fullName}</p>
-                  <p className={styles.jobTitle}>{member.jobTitle}</p>
+                  <p className={styles.jobTitle}>{member.jobTitle ?? '—'}</p>
                 </div>
 
                 <div className={styles.contact}>
