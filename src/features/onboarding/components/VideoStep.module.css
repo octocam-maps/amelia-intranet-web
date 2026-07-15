@@ -22,7 +22,7 @@
   overflow: hidden;
   background-color: hsl(var(--header-bg));
   aspect-ratio: 16 / 9;
-  max-height: 32rem;
+  max-height: 38rem;
 }
 
 .video {
