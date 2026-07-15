@@ -1,9 +1,11 @@
 import { useState } from 'react';
+import { Download } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { useStore } from '@/store';
 import { useDeleteTimeClockEntry } from '../application/useDeleteTimeClockEntry';
 import { useExportTimeClockCsv } from '../application/useExportTimeClockCsv';
+import { useExportTimeClockXlsx } from '../application/useExportTimeClockXlsx';
 import { useTimeClockEntries } from '../application/useTimeClockEntries';
 import { LiveClockCard } from '../components/LiveClockCard';
 import { TimeClockEntryForm } from '../components/TimeClockEntryForm';
@@ -38,6 +40,7 @@ export function TimeClockPage() {
   });
   const { mutate: deleteEntry } = useDeleteTimeClockEntry();
   const { mutate: exportCsv, isPending: isExporting } = useExportTimeClockCsv();
+  const { mutate: exportXlsx, isPending: isExportingXlsx } = useExportTimeClockXlsx();
 
   return (
     <div className={styles.root}>
@@ -56,6 +59,15 @@ export function TimeClockPage() {
           >
             Exportar CSV
           </Button>
+          {/* Informe XLSX con logo — solo admin: es TODA la plantilla,
+              últimos 30 días, no el listado filtrado en pantalla
+              (`require_role("administrador")` en el backend). */}
+          {isAdmin && (
+            <Button variant="outline" disabled={isExportingXlsx} onClick={() => exportXlsx()}>
+              <Download size={16} />
+              {isExportingXlsx ? 'Generando…' : 'Descargar Excel'}
+            </Button>
+          )}
         </div>
       </div>
 

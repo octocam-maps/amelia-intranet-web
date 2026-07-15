@@ -68,6 +68,20 @@ export const timeClockApiAdapter: TimeClockRepository = {
     return response.blob();
   },
 
+  async exportXlsx(): Promise<Blob> {
+    // Mismo motivo que `exportCsv`: la respuesta es un binario (xlsx), no
+    // JSON, así que no puede pasar por `apiClient`.
+    const accessToken = useStore.getState().getAccessToken();
+    const response = await fetch(`${API_BASE_URL}/time-clock/entries/export.xlsx`, {
+      credentials: 'include',
+      headers: accessToken ? { Authorization: `Bearer ${accessToken}` } : {},
+    });
+    if (!response.ok) {
+      throw new ApiError('No se pudo generar el Excel de fichajes.', response.status);
+    }
+    return response.blob();
+  },
+
   async getCurrent(): Promise<TimeClockCurrentStatus> {
     const dto = await apiClient<TimeClockCurrentStatusDTO>('/time-clock/current');
     return currentStatusFromDTO(dto);
