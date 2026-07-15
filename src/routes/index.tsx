@@ -8,6 +8,7 @@ import { DashboardPage } from '@/features/dashboard/pages/DashboardPage';
 import { FestivosPage } from '@/features/holidays/pages/FestivosPage';
 import { AdminMailboxPage } from '@/features/mailbox/pages/AdminMailboxPage';
 import { AnonymousMailboxPage } from '@/features/mailbox/pages/AnonymousMailboxPage';
+import { OnboardingAdminPage } from '@/features/onboarding/admin/pages/OnboardingAdminPage';
 import { OnboardingPage } from '@/features/onboarding/pages/OnboardingPage';
 import { ProfilePage } from '@/features/profile/pages/ProfilePage';
 import { StaffPage } from '@/features/staff/pages/StaffPage';
@@ -43,6 +44,7 @@ export function AppRoutes() {
         <Route path="/administracion/anuncios" element={<AnunciosPage />} />
         <Route path="/administracion/festivos" element={<FestivosPage />} />
         <Route path="/administracion/tipos-ausencia" element={<AbsenceTypesAdminPage />} />
+        <Route path="/administracion/onboarding" element={<OnboardingAdminPage />} />
       </Route>
 
       <Route path="*" element={<Navigate to="/" replace />} />

@@ -1,0 +1,140 @@
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.table th {
+  text-align: left;
+  padding: var(--space-3) var(--space-3);
+  color: hsl(var(--muted-foreground));
+  font-weight: 500;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  border-bottom: 1px solid hsl(var(--border));
+}
+
+.table td {
+  padding: var(--space-3);
+  border-bottom: 1px solid hsl(var(--border));
+  color: hsl(var(--foreground));
+  vertical-align: middle;
+}
+
+.person {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.fullName {
+  font-weight: 600;
+  color: hsl(var(--foreground));
+}
+
+.email {
+  font-size: 0.8125rem;
+  color: hsl(var(--muted-foreground));
+}
+
+.status {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.statusDot {
+  height: 0.5rem;
+  width: 0.5rem;
+  border-radius: 999px;
+  flex-shrink: 0;
+}
+
+.statusNotStarted {
+  color: hsl(var(--muted-foreground));
+}
+.statusNotStarted .statusDot {
+  background-color: hsl(var(--muted-foreground));
+}
+
+.statusInProgress {
+  color: hsl(var(--warning));
+}
+.statusInProgress .statusDot {
+  background-color: hsl(var(--warning));
+}
+
+.statusCompleted {
+  color: hsl(var(--success));
+}
+.statusCompleted .statusDot {
+  background-color: hsl(var(--success));
+}
+
+.progressCell {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  min-width: 8rem;
+}
+
+.progressCount {
+  font-size: 0.75rem;
+  color: hsl(var(--muted-foreground));
+  white-space: nowrap;
+}
+
+.progressTrack {
+  height: var(--space-1_5);
+  width: 100%;
+  border-radius: 999px;
+  background-color: hsl(var(--muted));
+  overflow: hidden;
+}
+
+.progressFill {
+  height: 100%;
+  background-color: hsl(var(--primary));
+  transition: width 0.2s linear;
+}
+
+.currentStep {
+  color: hsl(var(--muted-foreground));
+}
+
+.reopenButton {
+  white-space: nowrap;
+}
+
+.dash {
+  color: hsl(var(--muted-foreground));
+}
+
+.empty {
+  padding: var(--space-8) 0;
+  text-align: center;
+  font-size: 0.875rem;
+  color: hsl(var(--muted-foreground));
+}
+
+.banner {
+  font-size: 0.8125rem;
+  border-radius: var(--radius);
+  border: 1px solid hsl(var(--border));
+  padding: var(--space-2) var(--space-3);
+}
+
+.bannerSuccess {
+  color: hsl(var(--success));
+  background-color: hsl(var(--success) / 0.08);
+  border-color: hsl(var(--success) / 0.3);
+}
+
+.bannerError {
+  color: hsl(var(--destructive));
+  background-color: hsl(var(--destructive) / 0.08);
+  border-color: hsl(var(--destructive) / 0.3);
+}

@@ -1,12 +1,12 @@
 import { useNavigate } from 'react-router-dom';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/Tabs';
-import styles from './ConfigTabsNav.module.css';
 
-export type ConfigTab = 'festivos' | 'tipos-ausencia';
+export type ConfigTab = 'festivos' | 'tipos-ausencia' | 'onboarding';
 
 const TABS: { value: ConfigTab; label: string; to: string }[] = [
   { value: 'festivos', label: 'Festivos', to: '/administracion/festivos' },
   { value: 'tipos-ausencia', label: 'Tipos de ausencia', to: '/administracion/tipos-ausencia' },
+  { value: 'onboarding', label: 'Onboarding', to: '/administracion/onboarding' },
 ];
 
 interface ConfigTabsNavProps {
@@ -14,12 +14,12 @@ interface ConfigTabsNavProps {
 }
 
 /**
- * deck-fase6/14-festivos.png y 15-tipos-ausencia.png — "Festivos", "Tipos de
- * ausencia" y "Onboarding" comparten una misma cabecera "Configuración" con
- * pestañas subrayadas. Se comparte entre las páginas de `holidays` y
- * `absences` en vez de duplicar el marcado. "Onboarding" (16-onboarding-config.png)
- * queda fuera de esta ronda — misma convención "comingSoon" que el sidebar
- * (docs/permisos-roles.md): se muestra pero deshabilitada.
+ * deck-fase6/14-festivos.png, 15-tipos-ausencia.png y 16-onboarding-config.png
+ * — "Festivos", "Tipos de ausencia" y "Onboarding" comparten una misma
+ * cabecera "Configuración" con pestañas subrayadas. Se comparte entre las
+ * páginas de `holidays`, `absences` y `onboarding/admin` en vez de duplicar
+ * el marcado. "Onboarding" ya tiene página real — deja de mostrarse
+ * deshabilitada.
  */
 export function ConfigTabsNav({ active }: ConfigTabsNavProps) {
   const navigate = useNavigate();
@@ -38,9 +38,6 @@ export function ConfigTabsNav({ active }: ConfigTabsNavProps) {
             {tab.label}
           </TabsTrigger>
         ))}
-        <span className={styles.disabledTab} title="Disponible en una fase posterior">
-          Onboarding
-        </span>
       </TabsList>
     </Tabs>
   );

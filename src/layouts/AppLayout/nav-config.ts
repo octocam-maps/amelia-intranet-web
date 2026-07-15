@@ -56,12 +56,13 @@ const onboarding: NavItem = { label: 'Onboarding', to: '/onboarding', icon: Grad
 // posteriores (comingSoon), pero el LAYOUT completo se muestra desde ya.
 // Fase 6 R1: "Plantilla" y "Buzón (recepción)" ya tienen página real.
 // Fase 6 R2: "Anuncios", "Festivos" y "Tipos de ausencia" se suman.
+// Fase 6 R3: "Onboarding" (gestión de pasos + progreso de la plantilla) se suma.
 export const ADMIN_SECTION_ITEMS: NavItem[] = [
   { label: 'Plantilla', to: '/administracion/plantilla', icon: Users },
   { label: 'Aprobar ausencias', to: '/ausencias', icon: Inbox },
   { label: 'Anuncios', to: '/administracion/anuncios', icon: Bell },
   { label: 'Buzón (recepción)', to: '/administracion/buzon', icon: Mailbox },
-  { label: 'Onboarding', to: '/administracion/onboarding', icon: GraduationCap, comingSoon: true },
+  { label: 'Onboarding', to: '/administracion/onboarding', icon: GraduationCap },
   { label: 'Festivos', to: '/administracion/festivos', icon: CalendarDays },
   { label: 'Tipos de ausencia', to: '/administracion/tipos-ausencia', icon: Tag },
   { label: 'Organigrama', to: '/administracion/organigrama', icon: Network, comingSoon: true },
