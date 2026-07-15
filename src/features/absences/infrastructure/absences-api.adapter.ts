@@ -3,6 +3,7 @@ import type {
   AbsenceBalance,
   AbsenceRequest,
   AbsenceType,
+  AbsenceTypeInput,
   CreateAbsenceRequestInput,
   ListAbsenceRequestsMode,
   ReviewAbsenceRequestInput,
@@ -12,14 +13,45 @@ import type {
   AbsenceBalanceListDTO,
   AbsenceRequestDTO,
   AbsenceRequestListDTO,
+  AbsenceTypeDTO,
   AbsenceTypeListDTO,
 } from './dtos';
-import { balanceFromDTO, requestFromDTO, typeFromDTO } from './mappers';
+import {
+  absenceTypeInputToDTO,
+  balanceFromDTO,
+  partialAbsenceTypeInputToDTO,
+  requestFromDTO,
+  typeFromDTO,
+} from './mappers';
 
 export const absencesApiAdapter: AbsencesRepository = {
   async listTypes(): Promise<AbsenceType[]> {
     const dto = await apiClient<AbsenceTypeListDTO>('/absences/types');
     return dto.types.map(typeFromDTO);
+  },
+
+  // Vista de gestión del admin: incluye los tipos DESACTIVADOS (is_active
+  // false), a diferencia de `listTypes` (solo activos, para el modal de
+  // solicitud). Sin esto, al desactivar un tipo desaparecía de la grid.
+  async listAllTypes(): Promise<AbsenceType[]> {
+    const dto = await apiClient<AbsenceTypeListDTO>('/absences/types/admin');
+    return dto.types.map(typeFromDTO);
+  },
+
+  async createType(input: AbsenceTypeInput): Promise<AbsenceType> {
+    const dto = await apiClient<AbsenceTypeDTO>('/absences/types', {
+      method: 'POST',
+      body: JSON.stringify(absenceTypeInputToDTO(input)),
+    });
+    return typeFromDTO(dto);
+  },
+
+  async updateType(id: string, input: Partial<AbsenceTypeInput>): Promise<AbsenceType> {
+    const dto = await apiClient<AbsenceTypeDTO>(`/absences/types/${id}`, {
+      method: 'PATCH',
+      body: JSON.stringify(partialAbsenceTypeInputToDTO(input)),
+    });
+    return typeFromDTO(dto);
   },
 
   async getBalance(params = {}): Promise<AbsenceBalance[]> {

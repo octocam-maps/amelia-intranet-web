@@ -1,6 +1,7 @@
 import { NavLink } from 'react-router-dom';
 import logoBlanco from '@/assets/brand/logo-amelia-blanco.png';
 import { useDashboardSummary } from '@/features/dashboard/application/useDashboardSummary';
+import { useMailboxMessages } from '@/features/mailbox/application/useMailboxMessages';
 import { cn } from '@/lib/utils';
 import { useStore } from '@/store';
 import { ADMIN_SECTION_ITEMS, NAV_BY_ROLE, type NavItem } from './nav-config';
@@ -13,11 +14,20 @@ import styles from './Sidebar.module.css';
  */
 export function Sidebar() {
   const role = useStore((s) => s.user?.role);
+  const isAdmin = role === 'administrador';
   const items = role ? NAV_BY_ROLE[role] : [];
   // Misma queryKey que `useDashboardSummary` de Inicio — TanStack Query
   // reutiliza la caché, no duplica la llamada a `/dashboard/summary`.
   const { data: summary } = useDashboardSummary();
   const pendingCount = summary?.pendingAbsenceRequests?.length;
+  // Solo se consulta si el rol es admin — evita un 403 de más al resto de roles.
+  const { data: unreadMessages } = useMailboxMessages('unread', isAdmin);
+  const unreadCount = isAdmin ? unreadMessages?.length : undefined;
+
+  const BADGE_COUNT_BY_LABEL: Record<string, number | undefined> = {
+    'Aprobar ausencias': pendingCount,
+    'Buzón (recepción)': unreadCount,
+  };
 
   return (
     <aside className={styles.sidebar}>
@@ -25,23 +35,28 @@ export function Sidebar() {
         <img src={logoBlanco} alt="Amelia" className={styles.logo} />
       </div>
 
-      <nav className={styles.nav}>
-        {items.map((item) => (
-          <NavItemLink key={item.to} item={item} />
-        ))}
-      </nav>
-
-      {role === 'administrador' && (
-        <div className={styles.adminSection}>
-          <p className={styles.adminLabel}>Administración</p>
-          {ADMIN_SECTION_ITEMS.map((item) => (
-            <NavItemLink
-              key={item.to}
-              item={item.label === 'Aprobar ausencias' ? { ...item, badgeCount: pendingCount } : item}
-            />
+      {/* Zona con scroll propio: garantiza que TODOS los ítems (incluida la
+          sección Administración) sean alcanzables aunque no quepan en el
+          alto del viewport. El logo queda fijo arriba. */}
+      <div className={styles.scrollArea}>
+        <nav className={styles.nav}>
+          {items.map((item) => (
+            <NavItemLink key={item.to} item={item} />
           ))}
-        </div>
-      )}
+        </nav>
+
+        {isAdmin && (
+          <div className={styles.adminSection}>
+            <p className={styles.adminLabel}>Administración</p>
+            {ADMIN_SECTION_ITEMS.map((item) => (
+              <NavItemLink
+                key={item.to}
+                item={{ ...item, badgeCount: BADGE_COUNT_BY_LABEL[item.label] ?? item.badgeCount }}
+              />
+            ))}
+          </div>
+        )}
+      </div>
     </aside>
   );
 }

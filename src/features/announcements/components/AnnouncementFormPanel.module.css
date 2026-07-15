@@ -1,0 +1,85 @@
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  border-radius: var(--radius);
+  border: 1px solid hsl(var(--border));
+  background-color: hsl(var(--card));
+  padding: var(--space-5);
+  align-self: start;
+}
+
+.title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: hsl(var(--foreground));
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1_5);
+}
+
+.toolbar {
+  display: flex;
+  gap: var(--space-1);
+}
+
+.toolbarButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 1.75rem;
+  width: 1.75rem;
+  border-radius: calc(var(--radius) - 4px);
+  border: 1px solid hsl(var(--border));
+  background-color: hsl(var(--secondary));
+  color: hsl(var(--muted-foreground));
+  cursor: pointer;
+}
+
+.toolbarButton:hover {
+  border-color: hsl(var(--primary) / 0.4);
+  color: hsl(var(--primary));
+}
+
+.toolbarButton svg {
+  height: 0.8125rem;
+  width: 0.8125rem;
+}
+
+.body {
+  resize: vertical;
+}
+
+.hint {
+  font-size: 0.75rem;
+  color: hsl(var(--muted-foreground));
+}
+
+.checkboxRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: 0.8125rem;
+  color: hsl(var(--foreground));
+  cursor: pointer;
+}
+
+.checkbox {
+  height: 1rem;
+  width: 1rem;
+  accent-color: hsl(var(--primary));
+  cursor: pointer;
+}
+
+.footer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2_5);
+}
+
+.footer button {
+  width: 100%;
+}

@@ -10,7 +10,9 @@
   align-items: center;
   gap: var(--space-2);
   font-size: 0.875rem;
-  color: hsl(var(--muted-foreground));
+  /* El panel de acción del login tiene fondo oscuro (imágenes + scrim navy),
+     así que el estado va en claro para mantener el contraste. */
+  color: hsl(var(--header-foreground) / 0.8);
 }
 
 .spinner {

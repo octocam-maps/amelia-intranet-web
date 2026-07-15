@@ -1,0 +1,91 @@
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-4);
+}
+
+.card {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3_5);
+  border-radius: var(--radius);
+  border: 1px solid hsl(var(--border));
+  background-color: hsl(var(--card));
+  padding: var(--space-4);
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.card:hover {
+  border-color: hsl(var(--primary) / 0.4);
+}
+
+.card:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px hsl(var(--ring));
+}
+
+.colorBar {
+  flex-shrink: 0;
+  height: 2.25rem;
+  width: 0.25rem;
+  border-radius: 999px;
+  background-color: hsl(var(--muted-foreground));
+}
+
+.cardBody {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-0_5);
+  min-width: 0;
+  flex: 1;
+}
+
+.cardName {
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: hsl(var(--foreground));
+}
+
+.cardDescription {
+  font-size: 0.8125rem;
+  color: hsl(var(--muted-foreground));
+}
+
+.switchWrapper {
+  flex-shrink: 0;
+}
+
+.addCard {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  border-radius: var(--radius);
+  border: 1px dashed hsl(var(--border));
+  background-color: transparent;
+  color: hsl(var(--muted-foreground));
+  padding: var(--space-4);
+  font-family: inherit;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.addCard:hover {
+  color: hsl(var(--foreground));
+  border-color: hsl(var(--primary) / 0.4);
+}
+
+.addCard svg {
+  height: 1rem;
+  width: 1rem;
+}
+
+.empty {
+  padding: var(--space-8) 0;
+  text-align: center;
+  font-size: 0.875rem;
+  color: hsl(var(--muted-foreground));
+}

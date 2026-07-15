@@ -1,0 +1,44 @@
+/* deck-fase6/14-festivos.png y 15-tipos-ausencia.png — pestañas subrayadas,
+ * no el estilo "pill" de otros filtros de la app (MailboxInbox, StaffPage). */
+.list {
+  display: flex;
+  gap: var(--space-6);
+  border-bottom: 1px solid hsl(var(--border));
+}
+
+.trigger {
+  padding: var(--space-3) var(--space-0_5);
+  margin-bottom: -1px;
+  border: none;
+  border-bottom: 2px solid transparent;
+  background: none;
+  font-family: inherit;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: hsl(var(--muted-foreground));
+  cursor: pointer;
+}
+
+.trigger:hover {
+  color: hsl(var(--foreground));
+}
+
+.trigger[data-state='active'] {
+  color: hsl(var(--foreground));
+  border-bottom-color: hsl(var(--primary));
+}
+
+.trigger:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.trigger:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px hsl(var(--ring));
+}
+
+.content {
+  padding-top: var(--space-5);
+  outline: none;
+}

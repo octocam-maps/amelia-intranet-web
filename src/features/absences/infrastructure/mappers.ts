@@ -1,5 +1,5 @@
-import type { AbsenceBalance, AbsenceRequest, AbsenceType } from '../domain/models';
-import type { AbsenceBalanceDTO, AbsenceRequestDTO, AbsenceTypeDTO } from './dtos';
+import type { AbsenceBalance, AbsenceRequest, AbsenceType, AbsenceTypeInput } from '../domain/models';
+import type { AbsenceBalanceDTO, AbsenceRequestDTO, AbsenceTypeDTO, AbsenceTypeInputDTO } from './dtos';
 
 export function typeFromDTO(dto: AbsenceTypeDTO): AbsenceType {
   return {
@@ -9,7 +9,35 @@ export function typeFromDTO(dto: AbsenceTypeDTO): AbsenceType {
     isPaid: dto.is_paid,
     affectsBalance: dto.affects_balance,
     color: dto.color,
+    requiresApproval: dto.requires_approval,
+    requiresJustification: dto.requires_justification,
+    maxDaysPerYear: dto.max_days_per_year,
+    isActive: dto.is_active,
   };
+}
+
+export function absenceTypeInputToDTO(input: AbsenceTypeInput): AbsenceTypeInputDTO {
+  return {
+    name: input.name,
+    color: input.color,
+    affects_balance: input.affectsBalance,
+    requires_approval: input.requiresApproval,
+    requires_justification: input.requiresJustification,
+    max_days_per_year: input.maxDaysPerYear,
+    is_active: input.isActive,
+  };
+}
+
+export function partialAbsenceTypeInputToDTO(input: Partial<AbsenceTypeInput>): Partial<AbsenceTypeInputDTO> {
+  const dto: Partial<AbsenceTypeInputDTO> = {};
+  if (input.name !== undefined) dto.name = input.name;
+  if (input.color !== undefined) dto.color = input.color;
+  if (input.affectsBalance !== undefined) dto.affects_balance = input.affectsBalance;
+  if (input.requiresApproval !== undefined) dto.requires_approval = input.requiresApproval;
+  if (input.requiresJustification !== undefined) dto.requires_justification = input.requiresJustification;
+  if (input.maxDaysPerYear !== undefined) dto.max_days_per_year = input.maxDaysPerYear;
+  if (input.isActive !== undefined) dto.is_active = input.isActive;
+  return dto;
 }
 
 export function balanceFromDTO(dto: AbsenceBalanceDTO): AbsenceBalance {

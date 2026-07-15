@@ -1,0 +1,37 @@
+/*
+ * display: contents para que el wrapper no agregue una caja propia: hereda
+ * tipografía/color del contenedor que lo use (p.ej. cardBody, con su
+ * line-clamp) y no rompe el layout existente.
+ */
+.markdown {
+  display: contents;
+}
+
+.markdown p {
+  margin: 0;
+}
+
+.markdown p + p {
+  margin-top: var(--space-2);
+}
+
+.markdown ul,
+.markdown ol {
+  margin: 0;
+  padding-left: 1.25rem;
+}
+
+.markdown strong {
+  font-weight: 700;
+  color: hsl(var(--foreground));
+}
+
+.link {
+  color: hsl(var(--primary));
+  text-decoration: underline;
+  text-decoration-color: hsl(var(--primary) / 0.4);
+}
+
+.link:hover {
+  text-decoration-color: hsl(var(--primary));
+}
