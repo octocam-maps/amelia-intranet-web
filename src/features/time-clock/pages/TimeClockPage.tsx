@@ -59,15 +59,15 @@ export function TimeClockPage() {
           >
             Exportar CSV
           </Button>
-          {/* Informe XLSX con logo — solo admin: es TODA la plantilla,
-              últimos 30 días, no el listado filtrado en pantalla
-              (`require_role("administrador")` en el backend). */}
-          {isAdmin && (
-            <Button variant="outline" disabled={isExportingXlsx} onClick={() => exportXlsx()}>
-              <Download size={16} />
-              {isExportingXlsx ? 'Generando…' : 'Descargar Excel'}
-            </Button>
-          )}
+          {/* Informe XLSX con logo, últimos 30 días — disponible para admin
+              y empleado (`require_role("administrador", "empleado")`). El
+              ALCANCE lo decide el backend según el rol, nunca un parámetro
+              del cliente: admin recibe TODA la plantilla, empleado recibe
+              SOLO sus propios fichajes (RGPD) — mismo botón para los dos. */}
+          <Button variant="outline" disabled={isExportingXlsx} onClick={() => exportXlsx()}>
+            <Download size={16} />
+            {isExportingXlsx ? 'Generando…' : 'Descargar Excel'}
+          </Button>
         </div>
       </div>
 

@@ -1,10 +1,11 @@
 import { useMutation } from '@tanstack/react-query';
 import { timeClockApiAdapter } from '../infrastructure/time-clock-api.adapter';
 
-/** Descarga el informe XLSX (logo + TODA la plantilla, últimos 30 días) como
- * blob y dispara el "Guardar como" del navegador — igual que
- * `useExportTimeClockCsv`, no hay backend de almacenamiento de ficheros que
- * devuelva una URL pública. */
+/** Descarga el informe XLSX (logo, últimos 30 días) como blob y dispara el
+ * "Guardar como" del navegador — igual que `useExportTimeClockCsv`, no hay
+ * backend de almacenamiento de ficheros que devuelva una URL pública. El
+ * ALCANCE (toda la plantilla vs. solo lo propio) lo decide el backend según
+ * el rol del usuario autenticado — este hook no manda `userId`. */
 export function useExportTimeClockXlsx() {
   return useMutation({
     mutationFn: async () => {
