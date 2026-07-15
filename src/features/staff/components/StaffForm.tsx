@@ -66,7 +66,7 @@ export function StaffForm({ member, onSaved, onCancel }: StaffFormProps) {
       fullName: member?.fullName ?? '',
       email: member?.email ?? '',
       jobTitle: member?.jobTitle ?? '',
-      department: member?.department ?? '',
+      department: member?.departmentName ?? '',
       entityCode: member?.entityCode ?? 'hub',
       role: member?.role ?? 'empleado',
       hireDate: member?.hireDate ?? '',
@@ -81,22 +81,34 @@ export function StaffForm({ member, onSaved, onCancel }: StaffFormProps) {
   const error = createError ?? updateError;
 
   const onSubmit = async (values: FormValues) => {
-    const input = {
-      fullName: values.fullName,
-      email: values.email,
-      jobTitle: values.jobTitle,
-      department: values.department || null,
-      entityCode: values.entityCode,
-      role: values.role,
-      hireDate: values.hireDate || null,
-      vacationDaysPerYear: values.vacationDaysPerYear ? Number(values.vacationDaysPerYear) : null,
-      isActive: values.isActive,
-    };
+    const vacationDaysPerYear = values.vacationDaysPerYear ? Number(values.vacationDaysPerYear) : null;
 
     if (member) {
-      await updateMember({ id: member.id, input });
+      // `PATCH /staff/{id}` no admite `full_name`/`email`/`hire_date` — el
+      // backend no permite editarlos desde este endpoint.
+      await updateMember({
+        id: member.id,
+        input: {
+          jobTitle: values.jobTitle || null,
+          department: values.department || null,
+          entityCode: values.entityCode,
+          role: values.role,
+          vacationDaysPerYear,
+          isActive: values.isActive,
+        },
+      });
     } else {
-      await createMember(input);
+      // `POST /staff` no admite `is_active` — el alta siempre entra activa.
+      await createMember({
+        fullName: values.fullName,
+        email: values.email,
+        jobTitle: values.jobTitle || null,
+        department: values.department || null,
+        entityCode: values.entityCode,
+        role: values.role,
+        hireDate: values.hireDate || null,
+        vacationDaysPerYear,
+      });
     }
     onSaved();
   };
@@ -170,7 +182,10 @@ export function StaffForm({ member, onSaved, onCancel }: StaffFormProps) {
       <div className={styles.row}>
         <div className={styles.field}>
           <Label htmlFor="hireDate">Fecha de alta</Label>
-          <Input id="hireDate" type="date" {...register('hireDate')} />
+          {/* `PATCH /staff/{id}` no admite `hire_date` — solo se puede fijar
+           * al crear la persona; en edición se muestra de solo lectura para
+           * no sugerir un cambio que el backend va a ignorar. */}
+          <Input id="hireDate" type="date" disabled={Boolean(member)} {...register('hireDate')} />
         </div>
         <div className={styles.field}>
           <Label htmlFor="vacationDaysPerYear">Días de vacaciones/año</Label>
@@ -178,13 +193,17 @@ export function StaffForm({ member, onSaved, onCancel }: StaffFormProps) {
         </div>
       </div>
 
-      <div className={styles.statusRow}>
-        <div>
-          <p className={styles.statusLabel}>Estado activo</p>
-          <p className={styles.statusHint}>Al desactivar, la persona pierde acceso a la intranet</p>
+      {/* `POST /staff` no admite `is_active` (el alta siempre entra activa);
+       * el interruptor solo tiene efecto real al editar. */}
+      {member && (
+        <div className={styles.statusRow}>
+          <div>
+            <p className={styles.statusLabel}>Estado activo</p>
+            <p className={styles.statusHint}>Al desactivar, la persona pierde acceso a la intranet</p>
+          </div>
+          <Switch checked={isActive} onCheckedChange={(checked) => setValue('isActive', checked)} />
         </div>
-        <Switch checked={isActive} onCheckedChange={(checked) => setValue('isActive', checked)} />
-      </div>
+      )}
 
       {(errors.fullName || errors.email || errors.jobTitle) && (
         <p className={styles.error}>Completa nombre, correo y puesto.</p>

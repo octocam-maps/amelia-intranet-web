@@ -52,24 +52,24 @@
   flex-shrink: 0;
 }
 
-.statusActiva {
+.statusActive {
   color: hsl(var(--success));
 }
-.statusActiva .statusDot {
+.statusActive .statusDot {
   background-color: hsl(var(--success));
 }
 
-.statusVacaciones {
+.statusInvited {
   color: hsl(var(--warning));
 }
-.statusVacaciones .statusDot {
+.statusInvited .statusDot {
   background-color: hsl(var(--warning));
 }
 
-.statusBaja {
+.statusSuspended {
   color: hsl(var(--muted-foreground));
 }
-.statusBaja .statusDot {
+.statusSuspended .statusDot {
   background-color: hsl(var(--muted-foreground));
 }
 

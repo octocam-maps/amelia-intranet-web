@@ -52,7 +52,11 @@ export function StaffPage() {
 
   const entities = useMemo(() => {
     const byCode = new Map<EntityCode, string>();
-    for (const member of members) byCode.set(member.entityCode, member.entityName);
+    for (const member of members) {
+      // `entityCode`/`entityName` pueden ser `null` (persona sin entidad
+      // asignada todavía) — no entran en los pills de filtro por entidad.
+      if (member.entityCode && member.entityName) byCode.set(member.entityCode, member.entityName);
+    }
     return Array.from(byCode.entries()).map(([code, name]) => ({
       code,
       name,
@@ -73,7 +77,7 @@ export function StaffPage() {
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   const currentPage = Math.min(page, totalPages);
   const paged = filtered.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
-  const entityCount = new Set(members.map((m) => m.entityCode)).size;
+  const entityCount = new Set(members.map((m) => m.entityCode).filter(Boolean)).size;
 
   return (
     <div className={styles.root}>

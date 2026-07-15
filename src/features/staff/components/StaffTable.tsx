@@ -12,15 +12,15 @@ import type { EntityCode, StaffMember, StaffStatus } from '../domain/models';
 import styles from './StaffTable.module.css';
 
 const STATUS_LABEL: Record<StaffStatus, string> = {
-  activa: 'Activa',
-  vacaciones: 'Vacaciones',
-  baja: 'Baja',
+  active: 'Activo',
+  invited: 'Invitado',
+  suspended: 'Suspendido',
 };
 
 const STATUS_CLASS: Record<StaffStatus, string | undefined> = {
-  activa: styles.statusActiva,
-  vacaciones: styles.statusVacaciones,
-  baja: styles.statusBaja,
+  active: styles.statusActive,
+  invited: styles.statusInvited,
+  suspended: styles.statusSuspended,
 };
 
 // deck-fase6/09-plantilla-listado.png — esta tabla usa una paleta de
@@ -86,11 +86,15 @@ export function StaffTable({ members, isLoading, onEdit, onToggleActive }: Staff
                 </div>
               </div>
             </td>
-            <td>{member.jobTitle}</td>
+            <td>{member.jobTitle ?? '—'}</td>
             <td>
-              <Badge variant={ENTITY_BADGE_VARIANT[member.entityCode]}>
-                {entityShortLabel(member.entityCode)}
-              </Badge>
+              {member.entityCode ? (
+                <Badge variant={ENTITY_BADGE_VARIANT[member.entityCode]}>
+                  {entityShortLabel(member.entityCode)}
+                </Badge>
+              ) : (
+                <Badge variant="outline">Sin entidad</Badge>
+              )}
             </td>
             <td>
               <span className={cn(styles.status, STATUS_CLASS[member.status])}>
