@@ -81,6 +81,8 @@ export function DashboardPage() {
         </>
       ) : (
         <>
+          <AnnouncementsCard />
+
           <LiveClockCard />
 
           <div className={styles.columns3}>
@@ -92,7 +94,6 @@ export function DashboardPage() {
           <div className={styles.columns2}>
             <RecentAbsenceRequestsCard />
             <div className={styles.sideColumn}>
-              <AnnouncementsCard />
               <AnonymousMailboxCard />
             </div>
           </div>
