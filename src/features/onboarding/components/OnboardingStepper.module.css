@@ -1,0 +1,85 @@
+.rail {
+  display: flex;
+  align-items: flex-start;
+  list-style: none;
+  gap: 0;
+  padding: var(--space-4) 0;
+  overflow-x: auto;
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  min-width: 3.5rem;
+}
+
+.item:last-child {
+  flex: 0 0 auto;
+}
+
+.node {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  height: 2rem;
+  width: 2rem;
+  border-radius: 999px;
+  border: 1px solid hsl(var(--border));
+  background-color: hsl(var(--card));
+  color: hsl(var(--muted-foreground));
+  font-size: 0.8125rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: border-color 0.15s, background-color 0.15s, color 0.15s;
+}
+
+.node:disabled {
+  cursor: not-allowed;
+}
+
+.nodeIcon {
+  height: 1rem;
+  width: 1rem;
+}
+
+.nodeActive {
+  border-color: hsl(var(--header-bg));
+  background-color: hsl(var(--header-bg));
+  color: hsl(var(--header-foreground));
+}
+
+.nodeCompleted {
+  border-color: hsl(var(--primary));
+  background-color: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+}
+
+.nodeLocked {
+  color: hsl(var(--muted-foreground) / 0.6);
+}
+
+.label {
+  margin: 0 var(--space-2);
+  flex-shrink: 0;
+  font-size: 0.8125rem;
+  color: hsl(var(--muted-foreground));
+  white-space: nowrap;
+}
+
+.labelActive {
+  font-weight: 700;
+  color: hsl(var(--foreground));
+}
+
+.connector {
+  flex: 1;
+  min-width: 1.5rem;
+  height: 2px;
+  background-color: hsl(var(--border));
+}
+
+.connectorFilled {
+  background-color: hsl(var(--primary));
+}

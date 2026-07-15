@@ -1,0 +1,244 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  max-width: 48rem;
+  margin: 0 auto;
+}
+
+.loading {
+  font-size: 0.875rem;
+  color: hsl(var(--muted-foreground));
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.eyebrow {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: hsl(var(--primary));
+}
+
+.title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: hsl(var(--foreground));
+}
+
+.progressCard {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2_5);
+}
+
+.progressRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.progressLabel {
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: hsl(var(--foreground));
+}
+
+.progressPct {
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: hsl(var(--primary));
+}
+
+.progressTrack {
+  height: 0.5rem;
+  border-radius: 999px;
+  background-color: hsl(var(--muted));
+  overflow: hidden;
+}
+
+.progressFill {
+  height: 100%;
+  border-radius: 999px;
+  background-color: hsl(var(--primary));
+  transition: width 0.3s ease;
+}
+
+.progressHint {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1_5);
+  font-size: 0.8125rem;
+  color: hsl(var(--muted-foreground));
+}
+
+.progressHintIcon {
+  height: var(--space-4);
+  width: var(--space-4);
+}
+
+.stepperCard {
+  padding-top: var(--space-2);
+  padding-bottom: var(--space-2);
+}
+
+.stepCard {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.continueRow {
+  display: flex;
+  justify-content: flex-end;
+  border-top: 1px solid hsl(var(--border));
+  padding-top: var(--space-4);
+}
+
+.continueButton {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  border: none;
+  border-radius: calc(var(--radius) - 2px);
+  background-color: hsl(var(--header-bg));
+  color: hsl(var(--header-foreground));
+  padding: var(--space-2_5) var(--space-4);
+  font-family: inherit;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.continueButton:hover {
+  opacity: 0.92;
+}
+
+.continueIcon {
+  height: var(--space-4);
+  width: var(--space-4);
+}
+
+/* Pantalla final — deck Fase 2 "onboarding completado", hero oscuro */
+.completedHero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-4);
+  max-width: 40rem;
+  margin: var(--space-8) auto;
+  border-radius: var(--radius);
+  background-color: hsl(var(--header-bg));
+  padding: var(--space-12) var(--space-6);
+  text-align: center;
+}
+
+.completedIconWrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 5rem;
+  width: 5rem;
+  border-radius: 999px;
+  background-color: hsl(var(--primary) / 0.16);
+}
+
+.completedIcon {
+  height: 3rem;
+  width: 3rem;
+  color: hsl(var(--primary));
+}
+
+.completedTitle {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: hsl(var(--header-foreground));
+}
+
+.completedSubtitle {
+  max-width: 26rem;
+  font-size: 0.9375rem;
+  color: hsl(var(--header-foreground) / 0.7);
+}
+
+.completedCards {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(9rem, 1fr));
+  gap: var(--space-3);
+  width: 100%;
+  margin-top: var(--space-2);
+}
+
+@media (max-width: 640px) {
+  .completedCards {
+    grid-template-columns: 1fr;
+  }
+}
+
+.completedCard,
+.completedCardDisabled {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-1_5);
+  border-radius: calc(var(--radius) - 2px);
+  background-color: hsl(var(--header-foreground) / 0.06);
+  padding: var(--space-4) var(--space-3);
+  text-decoration: none;
+  transition: background-color 0.15s;
+}
+
+.completedCard:hover {
+  background-color: hsl(var(--header-foreground) / 0.1);
+}
+
+.completedCardDisabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.completedCardIcon {
+  height: var(--space-6);
+  width: var(--space-6);
+  color: hsl(var(--primary));
+}
+
+.completedCardTitle {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: hsl(var(--header-foreground));
+}
+
+.completedCardSubtitle {
+  font-size: 0.75rem;
+  color: hsl(var(--header-foreground) / 0.6);
+  text-align: center;
+}
+
+.completedCta {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  border-radius: calc(var(--radius) - 2px);
+  background-color: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+  padding: var(--space-3) var(--space-6);
+  font-size: 0.9375rem;
+  font-weight: 700;
+  text-decoration: none;
+  margin-top: var(--space-2);
+}
+
+.completedCta:hover {
+  opacity: 0.92;
+}
+
+.completedCtaIcon {
+  height: var(--space-4);
+  width: var(--space-4);
+}

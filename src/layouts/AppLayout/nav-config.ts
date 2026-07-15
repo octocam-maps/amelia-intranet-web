@@ -41,7 +41,13 @@ const documentos: NavItem = { label: 'Documentos', to: '/documentos', icon: File
 const equipo: NavItem = { label: 'Equipo', to: '/equipo', icon: Users };
 const buzonAnonimo: NavItem = { label: 'Buzón anónimo', to: '/buzon-anonimo', icon: Mailbox };
 const perfil: NavItem = { label: 'Mi perfil', to: '/perfil', icon: UserCircle, comingSoon: true };
-const onboarding: NavItem = { label: 'Onboarding', to: '/onboarding', icon: GraduationCap, comingSoon: true };
+// Fase 2: onboarding ya tiene página real — deja de ser "comingSoon".
+// docs/permisos-roles.md dice que el admin (único) "configura, ver
+// Administración" en vez de recorrer el flujo — pero el contrato de
+// backend consumido aquí incluye "administrador" en quiz/firma/perfil
+// además de vídeo/manual, así que se muestra también en su navbar (ver
+// engram: "Onboarding — nav por rol y contrato backend").
+const onboarding: NavItem = { label: 'Onboarding', to: '/onboarding', icon: GraduationCap };
 
 // docs/deck-fase3/02-home-admin-bandeja.png § sidebar — sección exclusiva
 // del admin. "Aprobar ausencias" reutiliza la misma página de Ausencias
@@ -62,7 +68,7 @@ export const ADMIN_SECTION_ITEMS: NavItem[] = [
 
 // docs/permisos-roles.md § "Navbar por rol" — copiado literal, un ítem por rol.
 export const NAV_BY_ROLE: Record<UserRole, NavItem[]> = {
-  empleado: [inicio, ausencias, controlHorario, nominas, documentos, equipo, buzonAnonimo, perfil],
-  administrador: [inicio, ausencias, controlHorario, nominas, documentos, equipo, perfil],
+  empleado: [inicio, onboarding, ausencias, controlHorario, nominas, documentos, equipo, buzonAnonimo, perfil],
+  administrador: [inicio, onboarding, ausencias, controlHorario, nominas, documentos, equipo, perfil],
   externo_invitado: [onboarding, equipo, perfil],
 };

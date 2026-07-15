@@ -1,0 +1,101 @@
+export type OnboardingStepType = 'video' | 'quiz' | 'signature' | 'manual' | 'profile';
+
+export type OnboardingStepStatus = 'locked' | 'available' | 'in_progress' | 'completed';
+
+/** `config.video` — el backend expone `url` + `duration` (segundos); el
+ * asset real del paso 1 (`hincator.mp4`) todavía se sirve embebido en el
+ * bundle del frontend (ver VideoStep), no desde esta URL. */
+export interface VideoStepConfig {
+  url: string;
+  duration: number;
+}
+
+/** `config.quiz` — el backend enmascara `correct` en cada opción: nunca
+ * llega al cliente. La forma exacta de `options` (string plano vs. objeto
+ * con id) no está fijada en el contrato — se asume `string[]` y el valor de
+ * respuesta enviado es el propio texto de la opción seleccionada. */
+export interface QuizQuestion {
+  id: string;
+  text: string;
+  options: string[];
+}
+
+export interface QuizStepConfig {
+  questions: QuizQuestion[];
+  threshold: number;
+}
+
+/**
+ * Un paso del onboarding — el backend en `GET /onboarding/me` ya filtra la
+ * lista según el rol (p.ej. `externo_invitado` solo recibe `video` +
+ * `manual`), así que aquí no hay ninguna rama de rol: se renderiza lo que
+ * llega. `config` varía por `type` — cada Step component hace el cast
+ * correspondiente. `data` guarda el resultado de un intento previo (p.ej.
+ * `{score, passed}` de un quiz ya enviado) cuando el paso ya no está
+ * disponible para reintentar.
+ */
+export interface OnboardingStep {
+  id: string;
+  stepOrder: number;
+  type: OnboardingStepType;
+  title: string;
+  config: unknown;
+  status: OnboardingStepStatus;
+  progressPct: number;
+  data: Record<string, unknown> | null;
+  startedAt: string | null;
+  completedAt: string | null;
+}
+
+export interface ReportVideoProgressInput {
+  progressPct: number;
+}
+
+export interface VideoProgressResult {
+  id: string;
+  stepId: string;
+  status: OnboardingStepStatus;
+  progressPct: number;
+  startedAt: string | null;
+  completedAt: string | null;
+}
+
+export interface SubmitQuizInput {
+  answers: Record<string, string>;
+}
+
+export interface QuizResult {
+  stepId: string;
+  score: number;
+  passed: boolean;
+  submittedAt: string;
+}
+
+export interface SignDocumentResult {
+  id: string;
+  stepId: string;
+  documentId: string;
+  documentVersion: number;
+  signedAt: string;
+}
+
+export interface AcknowledgeManualResult {
+  id: string;
+  stepId: string;
+  documentId: string;
+  acknowledgedAt: string;
+}
+
+/**
+ * Contrato del cuerpo de `complete-profile` no fija nombres de campo más
+ * allá de "phone, address, emergency contact" — se modela el contacto de
+ * emergencia como nombre + teléfono + relación (opcional), es la forma
+ * mínima habitual para este dato en RRHH.
+ */
+export interface CompleteProfileInput {
+  phone: string;
+  address: string;
+  emergencyContactName: string;
+  emergencyContactPhone: string;
+  emergencyContactRelationship?: string;
+}
