@@ -36,9 +36,11 @@
 }
 
 .nav {
-  /* grow 1 para empujar Administración al fondo cuando sobra alto; shrink 0
-     para no comprimirse cuando falta (entonces el scrollArea hace scroll). */
-  flex: 1 0 auto;
+  /* Altura natural (sin grow): la sección Administración queda pegada justo
+     debajo de los ítems, no empujada al fondo del sidebar (antes `flex: 1`
+     dejaba un hueco en blanco entre ambos). shrink 0 para no comprimirse
+     cuando falta alto — entonces el scrollArea hace scroll. */
+  flex: 0 0 auto;
   padding: var(--space-2) var(--space-3);
   display: flex;
   flex-direction: column;
