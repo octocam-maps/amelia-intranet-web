@@ -34,6 +34,8 @@ function parseErrorPayload(payload: unknown, status: number): { message: string;
 interface RequestOptions extends RequestInit {
   /** Si es `true`, no adjunta `Authorization` (login, refresh). */
   skipAuth?: boolean;
+  /** Interno: marca el reintento tras un refresh para no reintentar en bucle. */
+  _retriedAfterRefresh?: boolean;
 }
 
 /**
@@ -41,7 +43,7 @@ interface RequestOptions extends RequestInit {
  * lo que manda la cookie HttpOnly del refresh token en cada request.
  */
 export async function apiClient<T>(endpoint: string, options: RequestOptions = {}): Promise<T> {
-  const { skipAuth, headers, ...init } = options;
+  const { skipAuth, _retriedAfterRefresh, headers, ...init } = options;
   const url = `${API_BASE_URL}${endpoint.startsWith('/') ? endpoint : `/${endpoint}`}`;
 
   const requestHeaders: Record<string, string> = { 'Content-Type': 'application/json' };
@@ -60,8 +62,24 @@ export async function apiClient<T>(endpoint: string, options: RequestOptions = {
     const errorBody: unknown = await response.json().catch(() => ({}));
     const parsed = parseErrorPayload(errorBody, response.status);
 
-    if (response.status === 401 && !skipAuth) {
-      useStore.getState().clearSession();
+    // Un 401 suele ser solo el access token expirado (vive ~15 min, en
+    // memoria). Antes de cerrar la sesión de golpe, intentamos UNA renovación
+    // con la cookie HttpOnly de refresh y reintentamos la petición original;
+    // solo si el refresh falla asumimos que la sesión murió de verdad.
+    // `_retriedAfterRefresh` corta el bucle si el reintento vuelve a dar 401.
+    if (response.status === 401 && !skipAuth && !_retriedAfterRefresh) {
+      try {
+        // Import dinámico: rompe el ciclo api-client → refresh → adapter → api-client.
+        const { refreshSessionSingleFlight } = await import(
+          '@/features/auth/infrastructure/refresh-single-flight'
+        );
+        const refreshed = await refreshSessionSingleFlight();
+        useStore.getState().setSessionFromRefresh(refreshed);
+        return apiClient<T>(endpoint, { ...options, _retriedAfterRefresh: true });
+      } catch {
+        // El refresh también falló: ahora sí, la sesión terminó.
+        useStore.getState().clearSession();
+      }
     }
 
     throw new ApiError(parsed.message, response.status, parsed.code);
