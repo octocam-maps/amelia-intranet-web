@@ -1,9 +1,14 @@
-import { parseEnumNullable } from '@/lib/parseEnum';
-import type { EntityCode, TeamBirthday, TeamMember, TeamVacationEntry } from '../domain/models';
-import type { TeamBirthdayDTO, TeamMemberDTO, TeamVacationEntryDTO } from './dtos';
+import { parseEnum, parseEnumNullable } from '@/lib/parseEnum';
+import type { AbsenceKind, EntityCode, TeamAbsenceEntry, TeamBirthday, TeamMember } from '../domain/models';
+import type { TeamAbsenceEntryDTO, TeamBirthdayDTO, TeamMemberDTO } from './dtos';
 
 // Se pinta como badge en TeamDirectory (`ENTITY_BADGE_VARIANT[entityCode]`).
 const ENTITY_CODES: EntityCode[] = ['hub', 'lab', 'ops'];
+
+// Los únicos 3 valores privacy-safe que puede mandar el backend (ver
+// domain/models.ts::AbsenceKind). Un valor inesperado colapsa a "ausente"
+// — nunca se asume/expone un tipo real de ausencia sin reconocer.
+const ABSENCE_KINDS: AbsenceKind[] = ['vacaciones', 'remoto', 'ausente'];
 
 export function memberFromDTO(dto: TeamMemberDTO): TeamMember {
   return {
@@ -18,12 +23,13 @@ export function memberFromDTO(dto: TeamMemberDTO): TeamMember {
   };
 }
 
-export function vacationEntryFromDTO(dto: TeamVacationEntryDTO): TeamVacationEntry {
+export function absenceEntryFromDTO(dto: TeamAbsenceEntryDTO): TeamAbsenceEntry {
   return {
     userId: dto.user_id,
     fullName: dto.full_name,
     startDate: dto.start_date,
     endDate: dto.end_date,
+    kind: parseEnum(dto.kind, ABSENCE_KINDS, 'ausente'),
   };
 }
 

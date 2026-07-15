@@ -148,6 +148,21 @@
   background-color: hsl(var(--primary));
 }
 
+/* Color por `kind` privacy-safe — "ausente" usa un gris neutro a propósito:
+   agrupa baja médica, duelo, asuntos propios, etc. y no debe llamar la
+   atención ni sugerir gravedad sobre un motivo que nunca se muestra. */
+.bar[data-kind='vacaciones'] {
+  background-color: hsl(var(--success));
+}
+
+.bar[data-kind='remoto'] {
+  background-color: hsl(var(--info));
+}
+
+.bar[data-kind='ausente'] {
+  background-color: hsl(var(--muted-foreground));
+}
+
 .legend {
   display: flex;
   flex-wrap: wrap;
@@ -171,6 +186,18 @@
   border-radius: 999px;
   background-color: hsl(var(--primary));
   flex-shrink: 0;
+}
+
+.legendDot[data-kind='vacaciones'] {
+  background-color: hsl(var(--success));
+}
+
+.legendDot[data-kind='remoto'] {
+  background-color: hsl(var(--info));
+}
+
+.legendDot[data-kind='ausente'] {
+  background-color: hsl(var(--muted-foreground));
 }
 
 .legendWeekend {

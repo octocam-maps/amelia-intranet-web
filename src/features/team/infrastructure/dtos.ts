@@ -15,15 +15,17 @@ export interface TeamMemberListDTO {
   members: TeamMemberDTO[];
 }
 
-export interface TeamVacationEntryDTO {
+export interface TeamAbsenceEntryDTO {
   user_id: string;
   full_name: string;
   start_date: string;
   end_date: string;
+  // Privacy-safe: nunca el tipo real de ausencia (ver domain/models.ts).
+  kind: string;
 }
 
-export interface TeamVacationEntryListDTO {
-  entries: TeamVacationEntryDTO[];
+export interface TeamAbsenceEntryListDTO {
+  entries: TeamAbsenceEntryDTO[];
 }
 
 export interface TeamBirthdayDTO {
