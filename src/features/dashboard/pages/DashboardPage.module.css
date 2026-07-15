@@ -44,18 +44,26 @@
   gap: var(--space-4);
 }
 
-/* Radar de asistencia (izquierda) · pestañas operativas (centro, más ancho
- * por la tabla de la bandeja de aprobación) · columna de seguimiento
- * (derecha) — brief del Home admin. */
-.adminBottomGrid {
+/* Home admin: dos columnas que fluyen en vertical, para evitar los huecos
+ * escalonados de un grid de columnas de distinta altura. Izquierda (ancha):
+ * lo operativo y prioritario — radar de asistencia + pestañas. Derecha
+ * (angosta): seguimiento — cumpleaños, vacaciones, accesos, onboarding, buzón.
+ * `align-items: start` para que cada columna conserve su alto natural. */
+.adminMainGrid {
   display: grid;
-  grid-template-columns: 1fr 1.3fr 1fr;
+  grid-template-columns: 2fr 1fr;
   gap: var(--space-4);
   align-items: start;
 }
 
-@media (max-width: 1200px) {
-  .adminBottomGrid {
+.mainColumn {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+@media (max-width: 1100px) {
+  .adminMainGrid {
     grid-template-columns: 1fr;
   }
 }

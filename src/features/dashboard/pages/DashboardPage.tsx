@@ -61,21 +61,19 @@ export function DashboardPage() {
 
           <AdminKpiRow metrics={metrics} isLoading={isMetricsLoading} />
 
-          <div className={styles.columns2}>
-            <UpcomingBirthdaysCard title="Cumpleaños esta semana" />
-            <VacationSummaryCard title="Tus vacaciones 2026" balance={summary.vacationBalance} />
-          </div>
-
-          <div className={styles.adminBottomGrid}>
-            <AttendanceRadarCard items={metrics?.attendanceRadar ?? []} isLoading={isMetricsLoading} />
-
-            <AdminHomeTabs
-              pendingAbsenceRequests={summary.pendingAbsenceRequests ?? []}
-              metricsKpis={metrics?.kpis}
-              isMetricsLoading={isMetricsLoading}
-            />
+          <div className={styles.adminMainGrid}>
+            <div className={styles.mainColumn}>
+              <AttendanceRadarCard items={metrics?.attendanceRadar ?? []} isLoading={isMetricsLoading} />
+              <AdminHomeTabs
+                pendingAbsenceRequests={summary.pendingAbsenceRequests ?? []}
+                metricsKpis={metrics?.kpis}
+                isMetricsLoading={isMetricsLoading}
+              />
+            </div>
 
             <div className={styles.sideColumn}>
+              <UpcomingBirthdaysCard title="Cumpleaños esta semana" />
+              <VacationSummaryCard title="Tus vacaciones 2026" balance={summary.vacationBalance} />
               <AdminQuickLinksCard />
               <AdminOnboardingSummaryCard />
               <AnonymousMailboxCard />
