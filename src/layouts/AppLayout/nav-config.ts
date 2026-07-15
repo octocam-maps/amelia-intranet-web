@@ -40,7 +40,8 @@ const documentos: NavItem = { label: 'Documentos', to: '/documentos', icon: File
 // página real. Fase 6: el buzón anónimo del empleado también. Ambos activos.
 const equipo: NavItem = { label: 'Equipo', to: '/equipo', icon: Users };
 const buzonAnonimo: NavItem = { label: 'Buzón anónimo', to: '/buzon-anonimo', icon: Mailbox };
-const perfil: NavItem = { label: 'Mi perfil', to: '/perfil', icon: UserCircle, comingSoon: true };
+// Fase 3: "Mi perfil" (ficha de solo lectura) ya tiene página real.
+const perfil: NavItem = { label: 'Mi perfil', to: '/perfil', icon: UserCircle };
 // Fase 2: onboarding ya tiene página real — deja de ser "comingSoon".
 // docs/permisos-roles.md dice que el admin (único) "configura, ver
 // Administración" en vez de recorrer el flujo — pero el contrato de

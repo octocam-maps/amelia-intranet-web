@@ -1,0 +1,39 @@
+.root {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.avatar {
+  height: var(--space-16);
+  width: var(--space-16);
+}
+
+.fallback {
+  font-size: 1.25rem;
+}
+
+.identity {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  min-width: 0;
+}
+
+.nameRow {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-2_5);
+}
+
+.name {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: hsl(var(--foreground));
+}
+
+.jobTitle {
+  font-size: 0.875rem;
+  color: hsl(var(--muted-foreground));
+}
