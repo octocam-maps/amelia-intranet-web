@@ -12,6 +12,13 @@ const REPORT_INTERVAL_MS = 5_000;
 // Margen al comparar `currentTime` con `maxWatched` en `onSeeking` — evita
 // revertir por el jitter normal del <video>.
 const SEEK_EPSILON_SECONDS = 0.5;
+// Único ritmo de reproducción permitido. Sin esto, `handleTimeUpdate` avanza
+// `maxWatchedRef` con cualquier `currentTime` creciente — así que forzar
+// `video.playbackRate = 16` desde DevTools "ve" el vídeo completo en una
+// fracción del tiempo real y completa el paso sin haberlo mirado. No hay UI
+// propia para cambiar el ritmo, pero eso no bloquea tocar la propiedad
+// directamente desde la consola.
+const ENFORCED_PLAYBACK_RATE = 1;
 
 interface VideoStepProps {
   step: OnboardingStep;
@@ -32,6 +39,12 @@ interface VideoStepProps {
  *     es fácil de añadir permitiendo click solo a posiciones <= maxWatched.)
  *   - `onSeeking` se mantiene como RED DE SEGURIDAD (teclado, gestos) que
  *     revierte cualquier salto más allá de lo ya visto.
+ *   - `playbackRate` se fija a 1 en `loadedmetadata` y se restaura en cada
+ *     `ratechange`: sin esto, `video.playbackRate = 16` desde DevTools deja
+ *     "ver" el vídeo completo en una fracción del tiempo real y completa el
+ *     paso. La validación de fondo (tiempo reportado vs. tiempo real) la
+ *     hace el backend en paralelo; esto solo cierra el vector obvio del
+ *     cliente.
  *
  * El progreso reportado es monotónico (`maxWatched`, nunca `currentTime` a
  * secas) para que nada haga bajar el `progress_pct` ya confirmado por el
@@ -67,6 +80,7 @@ export function VideoStep({ step }: VideoStepProps) {
 
     function handleLoadedMetadata(event: Event) {
       const el = event.currentTarget as HTMLVideoElement;
+      el.playbackRate = ENFORCED_PLAYBACK_RATE;
       const duration = el.duration || config.duration || 0;
       // Retoma desde donde el backend dejó el progreso — el `maxWatched`
       // local arranca ahí, no en 0, para no permitir "retroceder el candado"
@@ -100,6 +114,18 @@ export function VideoStep({ step }: VideoStepProps) {
       }
     }
 
+    // Segunda red de seguridad: si algo cambia `playbackRate` (DevTools,
+    // extensión, script en consola), lo restauramos en el propio evento que
+    // dispara ese cambio — no hay forma de acelerar el vídeo y que se quede
+    // acelerado. La validación de fondo (progreso reportado vs. tiempo real
+    // transcurrido) la hace el backend; esto solo cierra el vector obvio.
+    function handleRateChange(event: Event) {
+      const el = event.currentTarget as HTMLVideoElement;
+      if (el.playbackRate !== ENFORCED_PLAYBACK_RATE) {
+        el.playbackRate = ENFORCED_PLAYBACK_RATE;
+      }
+    }
+
     function handlePlay() {
       setIsPlaying(true);
     }
@@ -120,6 +146,7 @@ export function VideoStep({ step }: VideoStepProps) {
     videoEl.addEventListener('loadedmetadata', handleLoadedMetadata);
     videoEl.addEventListener('timeupdate', handleTimeUpdate);
     videoEl.addEventListener('seeking', handleSeeking);
+    videoEl.addEventListener('ratechange', handleRateChange);
     videoEl.addEventListener('play', handlePlay);
     videoEl.addEventListener('pause', handlePause);
     videoEl.addEventListener('ended', handleEnded);
@@ -135,6 +162,7 @@ export function VideoStep({ step }: VideoStepProps) {
       videoEl.removeEventListener('loadedmetadata', handleLoadedMetadata);
       videoEl.removeEventListener('timeupdate', handleTimeUpdate);
       videoEl.removeEventListener('seeking', handleSeeking);
+      videoEl.removeEventListener('ratechange', handleRateChange);
       videoEl.removeEventListener('play', handlePlay);
       videoEl.removeEventListener('pause', handlePause);
       videoEl.removeEventListener('ended', handleEnded);
