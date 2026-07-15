@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { CheckCircle2, Lock, Pause, Play } from 'lucide-react';
+import { CheckCircle2, Lock, Play } from 'lucide-react';
 import hincatorVideo from '@/assets/videos/hincator.mp4';
 import { useReportVideoProgress } from '../application/useReportVideoProgress';
 import type { OnboardingStep, VideoStepConfig } from '../domain/models';
@@ -184,18 +184,17 @@ export function VideoStep({ step }: VideoStepProps) {
           onClick={isCompleted ? undefined : togglePlay}
         />
 
-        {!isCompleted ? (
+        {/* El botón solo aparece cuando el vídeo está pausado (o sin
+            arrancar): invita a reproducir sin tapar la imagen mientras corre.
+            Para pausar durante la reproducción, se hace clic sobre el vídeo. */}
+        {!isCompleted && !isPlaying ? (
           <button
             type="button"
             className={styles.playButton}
             onClick={togglePlay}
-            aria-label={isPlaying ? 'Pausar vídeo' : 'Reproducir vídeo'}
+            aria-label="Reproducir vídeo"
           >
-            {isPlaying ? (
-              <Pause className={styles.playIcon} />
-            ) : (
-              <Play className={styles.playIcon} />
-            )}
+            <Play className={styles.playIcon} />
           </button>
         ) : null}
 
