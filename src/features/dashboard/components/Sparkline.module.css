@@ -1,0 +1,13 @@
+.svg {
+  display: block;
+  width: 100%;
+  height: 1.75rem;
+}
+
+.strokePrimary {
+  stroke: hsl(var(--primary));
+}
+
+.strokeNeutral {
+  stroke: hsl(var(--muted-foreground));
+}

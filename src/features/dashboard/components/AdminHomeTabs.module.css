@@ -1,0 +1,11 @@
+.headerRow {
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.headerIcon {
+  height: var(--space-5);
+  width: var(--space-5);
+  color: hsl(var(--primary));
+}

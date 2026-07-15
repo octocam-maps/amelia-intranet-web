@@ -1,0 +1,52 @@
+.headerRow {
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.headerIcon {
+  height: var(--space-5);
+  width: var(--space-5);
+  color: hsl(var(--primary));
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.link {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  border-radius: calc(var(--radius) - 2px);
+  padding: var(--space-3);
+  color: hsl(var(--foreground));
+  text-decoration: none;
+  background-color: hsl(var(--muted));
+}
+
+.link:hover {
+  background-color: hsl(var(--accent));
+}
+
+.linkIcon {
+  height: var(--space-5);
+  width: var(--space-5);
+  flex-shrink: 0;
+  color: hsl(var(--primary));
+}
+
+.linkLabel {
+  flex: 1;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.chevron {
+  height: var(--space-4);
+  width: var(--space-4);
+  flex-shrink: 0;
+  color: hsl(var(--muted-foreground));
+}

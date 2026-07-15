@@ -1,10 +1,10 @@
-.grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: var(--space-4);
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
 }
 
-.card {
+.top {
   display: flex;
   align-items: center;
   gap: var(--space-4);
@@ -20,7 +20,7 @@
   border-radius: calc(var(--radius) - 2px);
 }
 
-.icon svg {
+.iconSvg {
   height: 1.5rem;
   width: 1.5rem;
 }
@@ -48,5 +48,14 @@
 
 .label {
   font-size: 0.8125rem;
+  color: hsl(var(--muted-foreground));
+}
+
+.sparklineSlot {
+  min-height: 1.75rem;
+}
+
+.noSeries {
+  font-size: 0.75rem;
   color: hsl(var(--muted-foreground));
 }

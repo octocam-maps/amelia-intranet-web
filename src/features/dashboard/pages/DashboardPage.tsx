@@ -1,13 +1,20 @@
+import { useState } from 'react';
 import { useStore } from '@/store';
 import { LiveClockCard } from '@/features/time-clock/components/LiveClockCard';
-import { AdminApprovalQueueCard } from '../components/AdminApprovalQueueCard';
-import { AdminStatCards } from '../components/AdminStatCards';
+import { AdminFiltersBar } from '../components/AdminFiltersBar';
+import type { AdminHomeFiltersValue } from '../components/AdminFiltersBar';
+import { AdminHomeTabs } from '../components/AdminHomeTabs';
+import { AdminKpiRow } from '../components/AdminKpiRow';
+import { AdminOnboardingSummaryCard } from '../components/AdminOnboardingSummaryCard';
+import { AdminQuickLinksCard } from '../components/AdminQuickLinksCard';
 import { AnnouncementsCard } from '../components/AnnouncementsCard';
 import { AnonymousMailboxCard } from '../components/AnonymousMailboxCard';
+import { AttendanceRadarCard } from '../components/AttendanceRadarCard';
 import { RecentAbsenceRequestsCard } from '../components/RecentAbsenceRequestsCard';
 import { UpcomingBirthdaysCard } from '../components/UpcomingBirthdaysCard';
 import { UpcomingHolidaysCard } from '../components/UpcomingHolidaysCard';
 import { VacationSummaryCard } from '../components/VacationSummaryCard';
+import { useAdminMetrics } from '../application/useAdminMetrics';
 import { useDashboardSummary } from '../application/useDashboardSummary';
 import styles from './DashboardPage.module.css';
 
@@ -19,16 +26,23 @@ const TODAY_LABEL = new Date().toLocaleDateString('es-ES', {
 
 /**
  * Dashboard condicionado por rol (docs/permisos-roles.md § Inicio):
- * empleado ve sus propios widgets (deck 01-home-empleado); admin ve además
- * la bandeja de aprobación y la vista global (deck 02-home-admin-bandeja).
- * El backend (`/dashboard/summary`) decide qué llega — aquí solo se
- * condiciona qué RENDERIZAR con lo que la respuesta trae.
+ * empleado ve sus propios widgets (deck 01-home-empleado); admin ve el Home
+ * ampliado (filtros de Sede/Departamento, KPIs con sparklines, radar de
+ * asistencia, pestañas operativas y columna de seguimiento). El backend
+ * (`/dashboard/summary`, `/dashboard/admin/metrics`) decide qué llega y
+ * quién puede pedirlo — aquí solo se condiciona qué RENDERIZAR.
  */
 export function DashboardPage() {
   const user = useStore((s) => s.user);
   const firstName = user?.fullName?.split(' ')[0] ?? '';
-  const { data: summary, isLoading } = useDashboardSummary();
-  const isAdmin = Boolean(summary?.pendingAbsenceRequests);
+  const isAdmin = user?.role === 'administrador';
+
+  const { data: summary, isLoading: isSummaryLoading } = useDashboardSummary();
+  const [filters, setFilters] = useState<AdminHomeFiltersValue>({});
+  const { data: metrics, isLoading: isMetricsLoading } = useAdminMetrics({
+    entityId: filters.entityId,
+    departmentId: filters.departmentId,
+  });
 
   return (
     <div className={styles.root}>
@@ -39,15 +53,33 @@ export function DashboardPage() {
         </p>
       </div>
 
-      {isLoading || !summary ? (
+      {isSummaryLoading || !summary ? (
         <p className={styles.loading}>Cargando…</p>
       ) : isAdmin ? (
         <>
-          <AdminStatCards pendingRequestsCount={summary.pendingAbsenceRequests?.length ?? 0} />
-          <AdminApprovalQueueCard requests={summary.pendingAbsenceRequests ?? []} />
+          <AdminFiltersBar value={filters} onChange={setFilters} />
+
+          <AdminKpiRow metrics={metrics} isLoading={isMetricsLoading} />
+
           <div className={styles.columns2}>
-            <VacationSummaryCard title="Tus vacaciones 2026" balance={summary.vacationBalance} />
             <UpcomingBirthdaysCard title="Cumpleaños esta semana" />
+            <VacationSummaryCard title="Tus vacaciones 2026" balance={summary.vacationBalance} />
+          </div>
+
+          <div className={styles.adminBottomGrid}>
+            <AttendanceRadarCard items={metrics?.attendanceRadar ?? []} isLoading={isMetricsLoading} />
+
+            <AdminHomeTabs
+              pendingAbsenceRequests={summary.pendingAbsenceRequests ?? []}
+              metricsKpis={metrics?.kpis}
+              isMetricsLoading={isMetricsLoading}
+            />
+
+            <div className={styles.sideColumn}>
+              <AdminQuickLinksCard />
+              <AdminOnboardingSummaryCard />
+              <AnonymousMailboxCard />
+            </div>
           </div>
         </>
       ) : (
