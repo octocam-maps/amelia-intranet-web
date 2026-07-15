@@ -1,4 +1,4 @@
-import { Building2, CalendarDays, Mail, UserCog, Users } from 'lucide-react';
+import { Building2, CalendarDays, Hourglass, Mail, UserCog, Users } from 'lucide-react';
 import type { UserProfile } from '../domain/models';
 import styles from './ProfileDetails.module.css';
 
@@ -13,6 +13,33 @@ function formatHireDate(hireDate: string | null): string {
   });
 }
 
+/** Antigüedad calculada en el cliente a partir de `hire_date` — no hay
+ * endpoint que la devuelva. Sin libs de fecha nuevas: diferencia de
+ * años/meses con `Date` nativo, igual criterio de anclaje a medianoche que
+ * `formatHireDate`. Una fecha futura (alta todavía no efectiva) no es
+ * antigüedad negativa, se trata como "—". */
+function formatTenure(hireDate: string | null): string {
+  if (!hireDate) return '—';
+  const start = new Date(`${hireDate}T00:00:00`);
+  const now = new Date();
+  if (start > now) return '—';
+
+  let years = now.getFullYear() - start.getFullYear();
+  let months = now.getMonth() - start.getMonth();
+  if (now.getDate() < start.getDate()) months -= 1;
+  if (months < 0) {
+    years -= 1;
+    months += 12;
+  }
+
+  const yearsLabel = years > 0 ? `${years} ${years === 1 ? 'año' : 'años'}` : '';
+  const monthsLabel = months > 0 ? `${months} ${months === 1 ? 'mes' : 'meses'}` : '';
+
+  if (!yearsLabel && !monthsLabel) return 'Menos de un mes en Amelia';
+  if (yearsLabel && monthsLabel) return `${yearsLabel} y ${monthsLabel} en Amelia`;
+  return `${yearsLabel || monthsLabel} en Amelia`;
+}
+
 interface ProfileDetailsProps {
   profile: UserProfile;
 }
@@ -24,6 +51,7 @@ export function ProfileDetails({ profile }: ProfileDetailsProps) {
     { icon: Users, label: 'Departamento', value: profile.departmentName ?? 'Sin asignar' },
     { icon: UserCog, label: 'Responsable', value: profile.managerName ?? 'Sin asignar' },
     { icon: CalendarDays, label: 'Fecha de incorporación', value: formatHireDate(profile.hireDate) },
+    { icon: Hourglass, label: 'Antigüedad', value: formatTenure(profile.hireDate) },
   ];
 
   return (

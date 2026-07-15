@@ -1,0 +1,62 @@
+.headerRow {
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.headerIcon {
+  height: var(--space-5);
+  width: var(--space-5);
+  color: hsl(var(--primary));
+}
+
+.empty {
+  font-size: 0.8125rem;
+  color: hsl(var(--muted-foreground));
+}
+
+.progressLabel {
+  font-size: 0.875rem;
+  color: hsl(var(--foreground));
+  margin-bottom: var(--space-2);
+}
+
+.barTrack {
+  position: relative;
+  height: 0.5rem;
+  border-radius: 999px;
+  background-color: hsl(var(--muted));
+  overflow: hidden;
+  margin-bottom: var(--space-2);
+}
+
+.barFill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  border-radius: 999px;
+  background-color: hsl(var(--primary));
+}
+
+.detail {
+  font-size: 0.8125rem;
+  color: hsl(var(--muted-foreground));
+}
+
+.completedRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.completedIcon {
+  height: var(--space-5);
+  width: var(--space-5);
+  color: hsl(var(--success));
+  flex-shrink: 0;
+}
+
+.completedLabel {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: hsl(var(--foreground));
+}
