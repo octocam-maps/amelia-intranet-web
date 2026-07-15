@@ -81,9 +81,9 @@ export function DashboardPage() {
         </>
       ) : (
         <>
-          <AnnouncementsCard />
-
           <LiveClockCard />
+
+          <AnnouncementsCard />
 
           <div className={styles.columns3}>
             <VacationSummaryCard title="Vacaciones 2026" balance={summary.vacationBalance} />
