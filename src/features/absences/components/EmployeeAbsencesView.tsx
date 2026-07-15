@@ -2,6 +2,7 @@ import { Plus } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { useDashboardSummary } from '@/features/dashboard/application/useDashboardSummary';
+import { useHolidays } from '@/features/holidays/application/useHolidays';
 import { useAbsenceBalance } from '../application/useAbsenceBalance';
 import { useAbsenceRequests } from '../application/useAbsenceRequests';
 import { useAbsenceTypes } from '../application/useAbsenceTypes';
@@ -11,6 +12,13 @@ import { AbsenceMonthCalendar } from './AbsenceMonthCalendar';
 import { NewAbsenceRequestDialog } from './NewAbsenceRequestDialog';
 import styles from './EmployeeAbsencesView.module.css';
 
+function formatHolidayDate(isoDate: string): string {
+  return new Date(`${isoDate}T00:00:00`).toLocaleDateString('es-ES', {
+    day: 'numeric',
+    month: 'short',
+  });
+}
+
 /** Vista de empleado — deck 03-ausencias-empleado. El "Resumen de días"
  * (donut + base anual) se calcula sobre el saldo de `vacaciones`
  * específicamente, igual que la tarjeta "Vacaciones 2026" de Inicio. */
@@ -19,6 +27,8 @@ export function EmployeeAbsencesView() {
   const { data: balances = [] } = useAbsenceBalance();
   const { data: requests = [] } = useAbsenceRequests({ mode: 'own' });
   const { data: summary } = useDashboardSummary();
+  const currentYear = new Date().getFullYear();
+  const { data: holidays = [] } = useHolidays({ year: currentYear });
 
   const vacationType = types.find((t) => t.code === 'vacaciones');
   const vacationBalance = vacationType ? balances.find((b) => b.absenceTypeId === vacationType.id) : undefined;
@@ -83,6 +93,28 @@ export function EmployeeAbsencesView() {
 
         <div className={styles.rightColumn}>
           <AbsenceMonthCalendar requests={requests} types={types} holidays={summary?.upcomingHolidays ?? []} />
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Festivos {currentYear}</CardTitle>
+            </CardHeader>
+            <CardContent>
+              {holidays.length === 0 ? (
+                <p className={styles.holidaysEmpty}>No hay festivos registrados para {currentYear}.</p>
+              ) : (
+                <ul className={styles.holidaysList}>
+                  {[...holidays]
+                    .sort((a, b) => a.date.localeCompare(b.date))
+                    .map((holiday) => (
+                      <li key={holiday.id} className={styles.holidayRow}>
+                        <span className={styles.holidayDate}>{formatHolidayDate(holiday.date)}</span>
+                        <span className={styles.holidayName}>{holiday.name}</span>
+                      </li>
+                    ))}
+                </ul>
+              )}
+            </CardContent>
+          </Card>
         </div>
       </div>
     </div>
