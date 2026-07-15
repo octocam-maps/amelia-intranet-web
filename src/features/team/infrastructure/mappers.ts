@@ -32,7 +32,6 @@ export function birthdayFromDTO(dto: TeamBirthdayDTO): TeamBirthday {
     userId: dto.user_id,
     fullName: dto.full_name,
     avatarUrl: dto.avatar_url,
-    birthDate: dto.birth_date,
     day: dto.day,
     month: dto.month,
     isToday: dto.is_today,

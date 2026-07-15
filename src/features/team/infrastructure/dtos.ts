@@ -30,7 +30,6 @@ export interface TeamBirthdayDTO {
   user_id: string;
   full_name: string;
   avatar_url: string | null;
-  birth_date: string;
   day: number;
   month: number;
   is_today: boolean;
