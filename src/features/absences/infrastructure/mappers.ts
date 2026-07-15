@@ -1,5 +1,15 @@
+import { parseEnum } from '@/lib/parseEnum';
 import type { AbsenceBalance, AbsenceRequest, AbsenceType, AbsenceTypeInput } from '../domain/models';
 import type { AbsenceBalanceDTO, AbsenceRequestDTO, AbsenceTypeDTO, AbsenceTypeInputDTO } from './dtos';
+
+// Se usa en `Record<AbsenceRequestStatus, ...>` de las tarjetas de bandeja
+// (badge de estado) — un valor fuera de contrato dejaría el badge en blanco.
+const ABSENCE_REQUEST_STATUSES: AbsenceRequest['status'][] = [
+  'pending',
+  'approved',
+  'rejected',
+  'cancelled',
+];
 
 export function typeFromDTO(dto: AbsenceTypeDTO): AbsenceType {
   return {
@@ -60,7 +70,7 @@ export function requestFromDTO(dto: AbsenceRequestDTO): AbsenceRequest {
     endDate: dto.end_date,
     daysCount: dto.days_count,
     reason: dto.reason,
-    status: dto.status as AbsenceRequest['status'],
+    status: parseEnum(dto.status, ABSENCE_REQUEST_STATUSES, 'pending'),
     reviewedBy: dto.reviewed_by,
     reviewNote: dto.review_note,
     userFullName: dto.user_full_name,

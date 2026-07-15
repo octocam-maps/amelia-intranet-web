@@ -1,6 +1,14 @@
 import type { UserRole } from '@/features/auth/domain/models';
+import { parseEnum } from '@/lib/parseEnum';
 import type { EntityCode, StaffMember, StaffMemberInput, StaffStatus } from '../domain/models';
 import type { StaffMemberDTO, StaffMemberInputDTO } from './dtos';
+
+// Los tres se pintan como badge en StaffTable (`ENTITY_BADGE_VARIANT`,
+// `STATUS_LABEL`/`STATUS_CLASS`) o en el desplegable de StaffForm
+// (`ROLE_LABEL`) — un valor fuera de contrato deja el badge sin variant/texto.
+const ENTITY_CODES: EntityCode[] = ['hub', 'lab', 'ops'];
+const USER_ROLES: UserRole[] = ['administrador', 'empleado', 'externo_invitado'];
+const STAFF_STATUSES: StaffStatus[] = ['activa', 'vacaciones', 'baja'];
 
 export function staffMemberFromDTO(dto: StaffMemberDTO): StaffMember {
   return {
@@ -9,10 +17,10 @@ export function staffMemberFromDTO(dto: StaffMemberDTO): StaffMember {
     email: dto.email,
     jobTitle: dto.job_title,
     department: dto.department,
-    entityCode: dto.entity_code as EntityCode,
+    entityCode: parseEnum(dto.entity_code, ENTITY_CODES, 'hub'),
     entityName: dto.entity_name,
-    role: dto.role as UserRole,
-    status: dto.status as StaffStatus,
+    role: parseEnum(dto.role, USER_ROLES, 'empleado'),
+    status: parseEnum(dto.status, STAFF_STATUSES, 'activa'),
     avatarUrl: dto.avatar_url,
     hireDate: dto.hire_date,
     vacationDaysPerYear: dto.vacation_days_per_year,

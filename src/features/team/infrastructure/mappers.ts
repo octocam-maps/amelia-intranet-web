@@ -1,12 +1,16 @@
+import { parseEnumNullable } from '@/lib/parseEnum';
 import type { EntityCode, TeamMember, TeamVacationEntry } from '../domain/models';
 import type { TeamMemberDTO, TeamVacationEntryDTO } from './dtos';
+
+// Se pinta como badge en TeamDirectory (`ENTITY_BADGE_VARIANT[entityCode]`).
+const ENTITY_CODES: EntityCode[] = ['hub', 'lab', 'ops'];
 
 export function memberFromDTO(dto: TeamMemberDTO): TeamMember {
   return {
     id: dto.id,
     fullName: dto.full_name,
     jobTitle: dto.job_title,
-    entityCode: dto.entity_code as EntityCode | null,
+    entityCode: parseEnumNullable(dto.entity_code, ENTITY_CODES),
     entityName: dto.entity_name,
     phone: dto.phone,
     email: dto.email,

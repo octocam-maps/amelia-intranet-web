@@ -1,5 +1,10 @@
+import { parseEnum } from '@/lib/parseEnum';
 import type { TimeClockCurrentStatus, TimeClockEntry } from '../domain/models';
 import type { TimeClockCurrentStatusDTO, TimeClockEntryDTO } from './dtos';
+
+// No se renderiza como badge hoy, pero se guarda con el mismo criterio que
+// el resto de mappers para no dejar pasar un valor fuera de contrato.
+const TIME_CLOCK_SOURCES: TimeClockEntry['source'][] = ['web', 'mobile'];
 
 export function entryFromDTO(dto: TimeClockEntryDTO): TimeClockEntry {
   return {
@@ -8,7 +13,7 @@ export function entryFromDTO(dto: TimeClockEntryDTO): TimeClockEntry {
     workDate: dto.work_date,
     clockIn: dto.clock_in,
     clockOut: dto.clock_out,
-    source: dto.source as TimeClockEntry['source'],
+    source: parseEnum(dto.source, TIME_CLOCK_SOURCES, 'web'),
     workedMinutes: dto.worked_minutes,
   };
 }

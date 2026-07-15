@@ -1,13 +1,19 @@
+import { parseEnum, parseEnumNullable } from '@/lib/parseEnum';
 import type { Holiday, HolidayInput, HolidayScope, HolidaySource } from '../domain/models';
 import type { HolidayDTO, HolidayInputDTO } from './dtos';
+
+// Ambos se pintan como badge (`SCOPE_LABEL`/`SCOPE_BADGE_VARIANT` en
+// HolidaysTable) — un valor fuera de contrato dejaría el badge sin texto/variant.
+const HOLIDAY_SCOPES: HolidayScope[] = ['nacional', 'autonomico', 'local', 'empresa'];
+const HOLIDAY_SOURCES: HolidaySource[] = ['oficial', 'manual'];
 
 export function holidayFromDTO(dto: HolidayDTO): Holiday {
   return {
     id: dto.id,
     date: dto.day,
     name: dto.name,
-    scope: (dto.scope as HolidayScope) ?? null,
-    source: dto.source as HolidaySource,
+    scope: parseEnumNullable(dto.scope, HOLIDAY_SCOPES),
+    source: parseEnum(dto.source, HOLIDAY_SOURCES, 'manual'),
   };
 }
 
