@@ -19,3 +19,15 @@ export interface TeamVacationEntry {
   startDate: string;
   endDate: string;
 }
+
+/** Cumpleaños dentro de la ventana consultada (widget "Cumpleaños esta
+ * semana" del Inicio) — solo plantilla interna, nunca externos-invitado. */
+export interface TeamBirthday {
+  userId: string;
+  fullName: string;
+  avatarUrl: string | null;
+  birthDate: string;
+  day: number;
+  month: number;
+  isToday: boolean;
+}

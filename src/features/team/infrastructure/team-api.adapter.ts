@@ -1,8 +1,8 @@
 import { apiClient } from '@/lib/http/api-client';
-import type { TeamMember, TeamVacationEntry } from '../domain/models';
+import type { TeamBirthday, TeamMember, TeamVacationEntry } from '../domain/models';
 import type { TeamRepository } from '../domain/ports';
-import type { TeamMemberListDTO, TeamVacationEntryListDTO } from './dtos';
-import { memberFromDTO, vacationEntryFromDTO } from './mappers';
+import type { TeamBirthdayListDTO, TeamMemberListDTO, TeamVacationEntryListDTO } from './dtos';
+import { birthdayFromDTO, memberFromDTO, vacationEntryFromDTO } from './mappers';
 
 export const teamApiAdapter: TeamRepository = {
   async listDirectory(): Promise<TeamMember[]> {
@@ -15,5 +15,10 @@ export const teamApiAdapter: TeamRepository = {
       `/team/vacation-calendar?month=${month}`
     );
     return dto.entries.map(vacationEntryFromDTO);
+  },
+
+  async listBirthdays(days = 7): Promise<TeamBirthday[]> {
+    const dto = await apiClient<TeamBirthdayListDTO>(`/team/birthdays?days=${days}`);
+    return dto.birthdays.map(birthdayFromDTO);
   },
 };
