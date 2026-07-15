@@ -36,8 +36,9 @@ const ausencias: NavItem = { label: 'Ausencias', to: '/ausencias', icon: Calenda
 const controlHorario: NavItem = { label: 'Control horario', to: '/control-horario', icon: Clock };
 const nominas: NavItem = { label: 'Nóminas', to: '/nominas', icon: Wallet, comingSoon: true };
 const documentos: NavItem = { label: 'Documentos', to: '/documentos', icon: FileText, comingSoon: true };
-const equipo: NavItem = { label: 'Equipo', to: '/equipo', icon: Users, comingSoon: true };
-// Fase 6: el buzón anónimo del empleado ya tiene página real.
+// Fase 5: Equipo (directorio, calendario de vacaciones, organigrama) ya tiene
+// página real. Fase 6: el buzón anónimo del empleado también. Ambos activos.
+const equipo: NavItem = { label: 'Equipo', to: '/equipo', icon: Users };
 const buzonAnonimo: NavItem = { label: 'Buzón anónimo', to: '/buzon-anonimo', icon: Mailbox };
 const perfil: NavItem = { label: 'Mi perfil', to: '/perfil', icon: UserCircle, comingSoon: true };
 const onboarding: NavItem = { label: 'Onboarding', to: '/onboarding', icon: GraduationCap, comingSoon: true };

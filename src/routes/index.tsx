@@ -9,6 +9,7 @@ import { FestivosPage } from '@/features/holidays/pages/FestivosPage';
 import { AdminMailboxPage } from '@/features/mailbox/pages/AdminMailboxPage';
 import { AnonymousMailboxPage } from '@/features/mailbox/pages/AnonymousMailboxPage';
 import { StaffPage } from '@/features/staff/pages/StaffPage';
+import { TeamPage } from '@/features/team/pages/TeamPage';
 import { TimeClockPage } from '@/features/time-clock/pages/TimeClockPage';
 import { AppLayout } from '@/layouts/AppLayout/AppLayout';
 
@@ -32,6 +33,7 @@ export function AppRoutes() {
         <Route path="/ausencias" element={<AbsencesPage />} />
         <Route path="/control-horario" element={<TimeClockPage />} />
         <Route path="/buzon-anonimo" element={<AnonymousMailboxPage />} />
+        <Route path="/equipo" element={<TeamPage />} />
         <Route path="/administracion/plantilla" element={<StaffPage />} />
         <Route path="/administracion/buzon" element={<AdminMailboxPage />} />
         <Route path="/administracion/anuncios" element={<AnunciosPage />} />
