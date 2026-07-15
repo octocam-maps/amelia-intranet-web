@@ -76,7 +76,6 @@ export function DashboardPage() {
               <VacationSummaryCard title="Tus vacaciones 2026" balance={summary.vacationBalance} />
               <AdminQuickLinksCard />
               <AdminOnboardingSummaryCard />
-              <AnonymousMailboxCard />
             </div>
           </div>
         </>
