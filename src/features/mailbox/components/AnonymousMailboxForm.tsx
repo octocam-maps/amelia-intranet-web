@@ -89,7 +89,7 @@ export function AnonymousMailboxForm() {
         </Label>
         <Textarea
           id="body"
-          rows={6}
+          rows={10}
           placeholder="Cuéntanos qué te gustaría mejorar o preguntar…"
           {...register('body', { required: true, minLength: 10 })}
         />
