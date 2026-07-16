@@ -5,10 +5,16 @@ import type {
   MailboxMessage,
   MailboxMessageFilter,
   ReplyToMailboxMessageInput,
+  TrackedMailboxMessage,
 } from '../domain/models';
 import type { MailboxRepository } from '../domain/ports';
-import type { CreateMailboxMessageResultDTO, MailboxMessageDTO, MailboxMessageListDTO } from './dtos';
-import { messageFromDTO } from './mappers';
+import type {
+  CreateMailboxMessageResultDTO,
+  MailboxMessageDTO,
+  MailboxMessageListDTO,
+  TrackMessageDTO,
+} from './dtos';
+import { messageFromDTO, trackedMessageFromDTO } from './mappers';
 
 export const mailboxApiAdapter: MailboxRepository = {
   async createMessage(input: CreateMailboxMessageInput): Promise<CreateMailboxMessageResult> {
@@ -39,5 +45,16 @@ export const mailboxApiAdapter: MailboxRepository = {
       method: 'POST',
     });
     return messageFromDTO(dto);
+  },
+
+  async trackMessage(referenceCode: string): Promise<TrackedMailboxMessage> {
+    // `skipAuth`: aunque el endpoint no exige sesión, tampoco tiene por qué
+    // recibir el Bearer token de quien esté logueado en este navegador — el
+    // seguimiento es del `reference_code`, no de la identidad de nadie.
+    const dto = await apiClient<TrackMessageDTO>(
+      `/mailbox/track/${encodeURIComponent(referenceCode)}`,
+      { skipAuth: true }
+    );
+    return trackedMessageFromDTO(dto);
   },
 };

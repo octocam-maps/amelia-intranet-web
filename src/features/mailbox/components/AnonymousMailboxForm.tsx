@@ -1,12 +1,14 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { CheckCircle2, Send, ShieldCheck } from 'lucide-react';
+import { CheckCircle2, KeyRound, Send, ShieldCheck } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/Button';
 import { Label } from '@/components/ui/Label';
 import { Textarea } from '@/components/ui/Textarea';
 import { cn } from '@/lib/utils';
 import { useCreateMailboxMessage } from '../application/useCreateMailboxMessage';
 import type { MailboxMessageCategory } from '../domain/models';
+import { saveLastReferenceCode } from '../infrastructure/reference-code-storage';
 import styles from './AnonymousMailboxForm.module.css';
 
 const CATEGORY_LABEL: Record<MailboxMessageCategory, string> = {
@@ -39,6 +41,11 @@ export function AnonymousMailboxForm() {
   const onSubmit = async (values: FormValues) => {
     const result = await mutateAsync({ category, body: values.body });
     setReferenceCode(result.referenceCode);
+    // El código de referencia es la ÚNICA forma de leer la respuesta más
+    // adelante — no hay email ni notificación que lo recuerde (el mensaje
+    // es anónimo, no hay a quién avisar). Guardarlo aquí es una comodidad
+    // de "recibo", no un dato de identidad (ver reference-code-storage.ts).
+    saveLastReferenceCode(result.referenceCode);
     reset();
   };
 
@@ -48,8 +55,13 @@ export function AnonymousMailboxForm() {
         <CheckCircle2 className={styles.successIcon} />
         <p className={styles.successTitle}>Mensaje enviado</p>
         <p className={styles.successBody}>
-          Referencia <strong>{referenceCode}</strong>. Podrás ver la respuesta en tus notificaciones.
+          Referencia <strong>{referenceCode}</strong>. Guarda este código: es la única forma de
+          consultar la respuesta, ya que el mensaje es anónimo.
         </p>
+        <Link to="/buzon-anonimo/seguimiento" className={styles.trackLink}>
+          <KeyRound />
+          Ver estado de mi mensaje
+        </Link>
         <Button variant="outline" onClick={() => setReferenceCode(null)}>
           Enviar otro mensaje
         </Button>
@@ -63,7 +75,8 @@ export function AnonymousMailboxForm() {
         <ShieldCheck className={styles.noticeIcon} />
         <p>
           Tu mensaje llega a RRHH <strong>sin tu nombre</strong>. No registramos tu identidad ni tu IP.
-          Podrás ver la respuesta en tus notificaciones.
+          Al enviarlo recibirás un código de referencia: guárdalo, porque es la única forma de
+          consultar la respuesta más adelante.
         </p>
       </div>
 

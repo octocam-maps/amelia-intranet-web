@@ -173,7 +173,8 @@ function MailboxDetail({ message, onResolve, isResolving }: MailboxDetailProps) 
 
         <p className={styles.protectionNotice}>
           <ShieldAlert />
-          No puedes ver quién lo envió. La respuesta le llega por notificación anónima.
+          No puedes ver quién lo envió. Tu respuesta queda guardada en el mensaje: solo podrá leerla
+          si consulta su código de referencia.
         </p>
       </div>
 

@@ -18,3 +18,16 @@ export interface MailboxMessageListDTO {
 export interface CreateMailboxMessageResultDTO {
   reference_code: string;
 }
+
+/** `GET /mailbox/track/{reference_code}` — forma propia (`TrackMessageDTO`
+ * en el backend), distinta de `MailboxMessageDTO`: sin `id`, con `subject`
+ * y `admin_reply` en vez de `reply`. */
+export interface TrackMessageDTO {
+  reference_code: string;
+  category: string;
+  subject: string | null;
+  body: string;
+  status: string;
+  admin_reply: string | null;
+  created_at: string;
+}
