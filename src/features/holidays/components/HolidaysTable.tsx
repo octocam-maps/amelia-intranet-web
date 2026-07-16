@@ -28,16 +28,18 @@ function formatShortDate(iso: string): string {
 interface HolidaysTableProps {
   holidays: Holiday[];
   isLoading: boolean;
+  /** Año que se está mostrando — solo para el mensaje de lista vacía. */
+  year: number;
   onEdit: (holiday: Holiday) => void;
   onDelete: (holiday: Holiday) => void;
 }
 
-export function HolidaysTable({ holidays, isLoading, onEdit, onDelete }: HolidaysTableProps) {
+export function HolidaysTable({ holidays, isLoading, year, onEdit, onDelete }: HolidaysTableProps) {
   if (isLoading) {
     return <p className={styles.empty}>Cargando festivos…</p>;
   }
   if (holidays.length === 0) {
-    return <p className={styles.empty}>No hay festivos configurados para este año.</p>;
+    return <p className={styles.empty}>No hay festivos configurados para {year}. Impórtalos o añádelos a mano.</p>;
   }
 
   return (

@@ -64,16 +64,42 @@
   gap: var(--space-3);
 }
 
+.yearControl {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.yearLabel {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  color: hsl(var(--muted-foreground));
+}
+
+/* Selector de año — mismo look de píldora verde que antes tenía el <span>
+   estático, pero ahora es un Radix Select real para poder cambiar de año. */
 .yearPill {
   display: inline-flex;
+  width: auto;
+  height: auto;
   align-items: center;
   justify-content: center;
+  gap: var(--space-1_5);
+  border: none;
   border-radius: 999px;
   background-color: hsl(var(--primary));
   color: hsl(var(--primary-foreground));
-  padding: var(--space-1_5) var(--space-4);
+  padding: var(--space-1_5) var(--space-3) var(--space-1_5) var(--space-4);
   font-size: 0.8125rem;
   font-weight: 700;
+  cursor: pointer;
+}
+
+.yearPill:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px hsl(var(--primary) / 0.3);
 }
 
 .legend {
