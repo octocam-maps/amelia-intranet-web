@@ -31,6 +31,25 @@
   overflow-x: auto;
 }
 
+.errorBanner {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  border-radius: var(--radius);
+  border: 1px solid hsl(var(--destructive) / 0.3);
+  background-color: hsl(var(--destructive) / 0.1);
+  padding: var(--space-3) var(--space-4);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: hsl(var(--destructive));
+}
+
+.errorBannerIcon {
+  height: var(--space-4);
+  width: var(--space-4);
+  flex-shrink: 0;
+}
+
 .capWarning {
   display: flex;
   align-items: center;

@@ -1,11 +1,12 @@
 import { useForm } from 'react-hook-form';
-import type { UserRole } from '@/features/auth/domain/models';
 import { Avatar, AvatarFallback } from '@/components/ui/Avatar';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Label } from '@/components/ui/Label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/Select';
 import { Switch } from '@/components/ui/Switch';
+import type { UserRole } from '@/features/auth/domain/models';
+import { useRoles } from '@/features/roles/application/useRoles';
 import { cn } from '@/lib/utils';
 import { useCreateStaffMember } from '../application/useCreateStaffMember';
 import { useUpdateStaffMember } from '../application/useUpdateStaffMember';
@@ -17,13 +18,6 @@ const ENTITIES: { code: EntityCode; label: string }[] = [
   { code: 'lab', label: 'Lab' },
   { code: 'ops', label: 'Ops' },
 ];
-
-const ROLE_LABEL: Record<UserRole, string> = {
-  empleado: 'Empleado',
-  administrador: 'Administrador',
-  externo_invitado: 'Externo',
-};
-const ROLES = Object.keys(ROLE_LABEL) as UserRole[];
 
 interface FormValues {
   fullName: string;
@@ -76,6 +70,10 @@ export function StaffForm({ member, onSaved, onCancel }: StaffFormProps) {
   });
   const { mutateAsync: createMember, error: createError } = useCreateStaffMember();
   const { mutateAsync: updateMember, error: updateError } = useUpdateStaffMember();
+  // Fuente dinámica de "qué roles existen" (`GET /roles`, tabla `roles`) —
+  // reemplaza el mapa `ROLE_LABEL`/`ROLES` hardcodeado: sumar un rol nuevo
+  // (pasó con `socio`, migración 024) ya no requiere tocar este componente.
+  const { data: roles, isLoading: isLoadingRoles } = useRoles();
 
   const [fullName, entityCode, isActive] = watch(['fullName', 'entityCode', 'isActive']);
   const error = createError ?? updateError;
@@ -163,15 +161,21 @@ export function StaffForm({ member, onSaved, onCancel }: StaffFormProps) {
           <Label htmlFor="role">Rol de acceso *</Label>
           <Select
             value={watch('role')}
+            disabled={isLoadingRoles}
+            // `role.code` viaja como `string` desde `GET /roles` (fuente
+            // única: la tabla `roles`) — se castea a `UserRole` en este único
+            // punto porque el resto del formulario ya lo tipa así. No es un
+            // fallback silencioso: NO se descarta ningún código que el
+            // backend no conozca de antemano, solo se anota su tipo.
             onValueChange={(value) => setValue('role', value as UserRole, { shouldValidate: true })}
           >
             <SelectTrigger id="role">
-              <SelectValue />
+              <SelectValue placeholder={isLoadingRoles ? 'Cargando roles…' : undefined} />
             </SelectTrigger>
             <SelectContent>
-              {ROLES.map((role) => (
-                <SelectItem key={role} value={role}>
-                  {ROLE_LABEL[role]}
+              {(roles ?? []).map((role) => (
+                <SelectItem key={role.code} value={role.code}>
+                  {role.name}
                 </SelectItem>
               ))}
             </SelectContent>

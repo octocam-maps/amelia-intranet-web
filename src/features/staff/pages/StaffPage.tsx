@@ -45,7 +45,7 @@ export function StaffPage() {
   const [page, setPage] = useState(1);
   const [dialogMember, setDialogMember] = useState<StaffMember | 'new' | null>(null);
 
-  const { data, isLoading } = useStaffList({ pageSize: CLIENT_PAGE_CAP });
+  const { data, isLoading, error } = useStaffList({ pageSize: CLIENT_PAGE_CAP });
   const members = data?.members ?? EMPTY_MEMBERS;
   const reachedClientCap = members.length >= CLIENT_PAGE_CAP;
   const { mutate: updateMember } = useUpdateStaffMember();
@@ -93,6 +93,17 @@ export function StaffPage() {
           Añadir persona
         </Button>
       </div>
+
+      {/* BUG-2: antes `data?.members ?? []` se tragaba en silencio un fetch
+          fallido (p. ej. el 422 que devolvía `page_size=200` contra el techo
+          `le=100` del backend) y la pantalla se veía "vacía" (0 de 39
+          personas) sin ninguna pista de que algo había fallado. */}
+      {error && (
+        <div className={styles.errorBanner}>
+          <AlertTriangle className={styles.errorBannerIcon} />
+          No se pudo cargar la plantilla: {error instanceof Error ? error.message : 'error desconocido'}.
+        </div>
+      )}
 
       {reachedClientCap && (
         <div className={styles.capWarning}>

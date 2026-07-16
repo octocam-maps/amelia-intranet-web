@@ -1,4 +1,4 @@
-import type { UserRole } from '@/features/auth/domain/models';
+import { USER_ROLES } from '@/features/auth/domain/models';
 import { parseEnum, parseEnumNullable } from '@/lib/parseEnum';
 import type {
   CreateStaffMemberInput,
@@ -9,11 +9,14 @@ import type {
 } from '../domain/models';
 import type { CreateStaffMemberDTO, StaffMemberDTO, UpdateStaffMemberDTO } from './dtos';
 
-// Los tres se pintan como badge en StaffTable (`ENTITY_BADGE_VARIANT`,
-// `STATUS_LABEL`/`STATUS_CLASS`) o en el desplegable de StaffForm
-// (`ROLE_LABEL`) — un valor fuera de contrato deja el badge sin variant/texto.
+// Los dos se pintan como badge en StaffTable (`ENTITY_BADGE_VARIANT`,
+// `STATUS_LABEL`/`STATUS_CLASS`) — un valor fuera de contrato deja el badge
+// sin variant/texto. El rol usa `USER_ROLES` (fuente única de
+// `features/auth/domain/models.ts`) — antes duplicado aquí como
+// `STAFF_ROLES`; si no incluyera `socio`, un `role_code: 'socio'` real caería
+// al fallback `'empleado'` y un PATCH posterior sobre esa persona (aunque
+// solo cambie el puesto) le quitaría el rol socio en silencio.
 const ENTITY_CODES: EntityCode[] = ['hub', 'lab', 'ops'];
-const USER_ROLES: UserRole[] = ['administrador', 'empleado', 'externo_invitado'];
 const STAFF_STATUSES: StaffStatus[] = ['active', 'invited', 'suspended'];
 
 /** El backend NO manda `entity_name` (solo `entity_code`) — se deriva aquí
