@@ -1,0 +1,29 @@
+.description {
+  font-size: 0.8125rem;
+  color: hsl(var(--muted-foreground));
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1_5);
+  flex: 1;
+  min-width: 9rem;
+}
+
+.error {
+  font-size: 0.8125rem;
+  color: hsl(var(--destructive));
+}

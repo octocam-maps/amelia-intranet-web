@@ -26,15 +26,37 @@
   color: hsl(var(--muted-foreground));
 }
 
+/* Vive en un `<div>` DENTRO del `<td>` de acciones, no en el `<td>` mismo —
+   ver el comentario en `TimeClockEntryTable.tsx` (BUG de cuadrícula
+   torcida: un `<td>` con `display: flex` deja de ser una celda de tabla). */
+.actionsCell {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  white-space: nowrap;
+}
+
+.notesButton,
+.editButton,
 .deleteButton {
   border: none;
   background: none;
-  color: hsl(var(--destructive));
   font-size: 0.8125rem;
   cursor: pointer;
   padding: 0;
 }
 
+.notesButton,
+.editButton {
+  color: hsl(var(--foreground));
+}
+
+.deleteButton {
+  color: hsl(var(--destructive));
+}
+
+.notesButton:hover,
+.editButton:hover,
 .deleteButton:hover {
   text-decoration: underline;
 }
