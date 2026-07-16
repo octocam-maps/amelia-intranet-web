@@ -1,6 +1,18 @@
 import { parseEnum } from '@/lib/parseEnum';
-import type { AbsenceBalance, AbsenceRequest, AbsenceType, AbsenceTypeInput } from '../domain/models';
-import type { AbsenceBalanceDTO, AbsenceRequestDTO, AbsenceTypeDTO, AbsenceTypeInputDTO } from './dtos';
+import type {
+  AbsenceBalance,
+  AbsenceCalendarEntry,
+  AbsenceRequest,
+  AbsenceType,
+  AbsenceTypeInput,
+} from '../domain/models';
+import type {
+  AbsenceBalanceDTO,
+  AbsenceCalendarEntryDTO,
+  AbsenceRequestDTO,
+  AbsenceTypeDTO,
+  AbsenceTypeInputDTO,
+} from './dtos';
 
 // Se usa en `Record<AbsenceRequestStatus, ...>` de las tarjetas de bandeja
 // (badge de estado) — un valor fuera de contrato dejaría el badge en blanco.
@@ -74,5 +86,20 @@ export function requestFromDTO(dto: AbsenceRequestDTO): AbsenceRequest {
     reviewedBy: dto.reviewed_by,
     reviewNote: dto.review_note,
     userFullName: dto.user_full_name,
+  };
+}
+
+export function calendarEntryFromDTO(dto: AbsenceCalendarEntryDTO): AbsenceCalendarEntry {
+  return {
+    requestId: dto.request_id,
+    userId: dto.user_id,
+    userFullName: dto.user_full_name,
+    absenceTypeId: dto.absence_type_id,
+    absenceTypeName: dto.absence_type_name,
+    absenceTypeColor: dto.absence_type_color,
+    startDate: dto.start_date,
+    endDate: dto.end_date,
+    daysCount: dto.days_count,
+    status: parseEnum(dto.status, ABSENCE_REQUEST_STATUSES, 'pending'),
   };
 }

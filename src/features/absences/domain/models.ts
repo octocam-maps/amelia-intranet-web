@@ -70,3 +70,28 @@ export interface ReviewAbsenceRequestInput {
 /** `own`: propias (o las de `userId` si el admin lo pasa) · `pending`: bandeja
  * de aprobación (solo admin) · `all`: calendario global (solo admin). */
 export type ListAbsenceRequestsMode = 'own' | 'pending' | 'all';
+
+/** Fila del "Calendario general de la plantilla" (LOTE 4,
+ * `GET /absences/calendar/all` — exclusivo del admin en el backend). A
+ * diferencia de `AbsenceRequest`, ya trae `absenceTypeName`/
+ * `absenceTypeColor` resueltos: tanto la pantalla como los exports
+ * PDF/Excel los necesitan siempre, así que el backend hace el JOIN una
+ * sola vez. Solo incluye solicitudes `pending`/`approved` — una `rejected`
+ * o `cancelled` no describe una ausencia real. */
+export interface AbsenceCalendarEntry {
+  requestId: string;
+  userId: string;
+  userFullName: string;
+  absenceTypeId: string;
+  absenceTypeName: string;
+  absenceTypeColor: string | null;
+  startDate: string;
+  endDate: string;
+  daysCount: number;
+  status: AbsenceRequestStatus;
+}
+
+export interface AbsenceCalendarRangeParams {
+  dateFrom: string;
+  dateTo: string;
+}

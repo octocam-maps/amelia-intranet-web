@@ -1,7 +1,6 @@
 import { Plus } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
-import { useDashboardSummary } from '@/features/dashboard/application/useDashboardSummary';
 import { useHolidays } from '@/features/holidays/application/useHolidays';
 import { useAbsenceBalance } from '../application/useAbsenceBalance';
 import { useAbsenceRequests } from '../application/useAbsenceRequests';
@@ -26,7 +25,6 @@ export function EmployeeAbsencesView() {
   const { data: types = [] } = useAbsenceTypes();
   const { data: balances = [] } = useAbsenceBalance();
   const { data: requests = [] } = useAbsenceRequests({ mode: 'own' });
-  const { data: summary } = useDashboardSummary();
   const currentYear = new Date().getFullYear();
   const { data: holidays = [] } = useHolidays({ year: currentYear });
 
@@ -92,7 +90,7 @@ export function EmployeeAbsencesView() {
         </div>
 
         <div className={styles.rightColumn}>
-          <AbsenceMonthCalendar requests={requests} types={types} holidays={summary?.upcomingHolidays ?? []} />
+          <AbsenceMonthCalendar requests={requests} types={types} />
 
           <Card>
             <CardHeader>
