@@ -9,7 +9,6 @@ import { AdminOnboardingSummaryCard } from '../components/AdminOnboardingSummary
 import { AdminQuickLinksCard } from '../components/AdminQuickLinksCard';
 import { AnnouncementsCard } from '../components/AnnouncementsCard';
 import { AnonymousMailboxCard } from '../components/AnonymousMailboxCard';
-import { AttendanceRadarCard } from '../components/AttendanceRadarCard';
 import { RecentAbsenceRequestsCard } from '../components/RecentAbsenceRequestsCard';
 import { UpcomingBirthdaysCard } from '../components/UpcomingBirthdaysCard';
 import { UpcomingHolidaysCard } from '../components/UpcomingHolidaysCard';
@@ -27,10 +26,10 @@ const TODAY_LABEL = new Date().toLocaleDateString('es-ES', {
 /**
  * Dashboard condicionado por rol (docs/permisos-roles.md § Inicio):
  * empleado ve sus propios widgets (deck 01-home-empleado); admin ve el Home
- * ampliado (filtros de Sede/Departamento, KPIs con sparklines, radar de
- * asistencia, pestañas operativas y columna de seguimiento). El backend
- * (`/dashboard/summary`, `/dashboard/admin/metrics`) decide qué llega y
- * quién puede pedirlo — aquí solo se condiciona qué RENDERIZAR.
+ * ampliado (filtros de Sede/Departamento, KPIs, pestañas operativas y
+ * columna de seguimiento — sin gráficos, solo tarjetas de información). El
+ * backend (`/dashboard/summary`, `/dashboard/admin/metrics`) decide qué
+ * llega y quién puede pedirlo — aquí solo se condiciona qué RENDERIZAR.
  */
 export function DashboardPage() {
   const user = useStore((s) => s.user);
@@ -62,14 +61,11 @@ export function DashboardPage() {
           <AdminKpiRow metrics={metrics} isLoading={isMetricsLoading} />
 
           <div className={styles.adminMainGrid}>
-            <div className={styles.mainColumn}>
-              <AttendanceRadarCard items={metrics?.attendanceRadar ?? []} isLoading={isMetricsLoading} />
-              <AdminHomeTabs
-                pendingAbsenceRequests={summary.pendingAbsenceRequests ?? []}
-                metricsKpis={metrics?.kpis}
-                isMetricsLoading={isMetricsLoading}
-              />
-            </div>
+            <AdminHomeTabs
+              pendingAbsenceRequests={summary.pendingAbsenceRequests ?? []}
+              metricsKpis={metrics?.kpis}
+              isMetricsLoading={isMetricsLoading}
+            />
 
             <div className={styles.sideColumn}>
               <UpcomingBirthdaysCard title="Cumpleaños esta semana" />

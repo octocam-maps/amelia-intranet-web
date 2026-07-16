@@ -44,22 +44,16 @@
   gap: var(--space-4);
 }
 
-/* Home admin: dos columnas que fluyen en vertical, para evitar los huecos
- * escalonados de un grid de columnas de distinta altura. Izquierda (ancha):
- * lo operativo y prioritario — radar de asistencia + pestañas. Derecha
- * (angosta): seguimiento — cumpleaños, vacaciones, accesos, onboarding, buzón.
- * `align-items: start` para que cada columna conserve su alto natural. */
+/* Home admin: dos columnas. Izquierda (ancha): lo operativo y prioritario —
+ * pestañas con la bandeja de aprobación, control horario y documentos.
+ * Derecha (angosta): seguimiento — cumpleaños, vacaciones, accesos,
+ * onboarding, buzón. `align-items: start` para que cada columna conserve su
+ * alto natural (sin estirar la corta para igualar a la otra). */
 .adminMainGrid {
   display: grid;
   grid-template-columns: 2fr 1fr;
   gap: var(--space-4);
   align-items: start;
-}
-
-.mainColumn {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-4);
 }
 
 @media (max-width: 1100px) {
