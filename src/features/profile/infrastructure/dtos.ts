@@ -12,4 +12,15 @@ export interface UserProfileDTO {
   department_name: string | null;
   manager_name: string | null;
   is_external: boolean;
+  phone: string | null;
+  city: string | null;
+}
+
+/** Body de `PATCH /profile/me` — contrato verificado contra
+ * `amelia-intranet-back/src/features/profile/infrastructure/schemas.py`
+ * (`UpdateMyProfileDTO`). Sin `user_id`: RGPD, el backend lo resuelve del
+ * token, nunca del body. */
+export interface UpdateMyProfileDTO {
+  phone?: string;
+  city?: string;
 }

@@ -1,4 +1,22 @@
-import { Building2, CalendarDays, Hourglass, Mail, UserCog, Users } from 'lucide-react';
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import {
+  Building2,
+  CalendarDays,
+  Check,
+  Hourglass,
+  Mail,
+  MapPin,
+  Pencil,
+  Phone,
+  UserCog,
+  Users,
+  X,
+} from 'lucide-react';
+import { Button } from '@/components/ui/Button';
+import { Input } from '@/components/ui/Input';
+import { Label } from '@/components/ui/Label';
+import { useUpdateMyProfile } from '../application/useUpdateMyProfile';
 import type { UserProfile } from '../domain/models';
 import styles from './ProfileDetails.module.css';
 
@@ -44,8 +62,34 @@ interface ProfileDetailsProps {
   profile: UserProfile;
 }
 
+interface ContactFormValues {
+  phone: string;
+  city: string;
+}
+
+/**
+ * docs/brief-diseno.md § C8 "Mi perfil" — Lote 2: teléfono y ciudad son los
+ * ÚNICOS dos campos que el propio usuario puede editar aquí (`PATCH
+ * /profile/me`); el resto de la ficha (correo, entidad, departamento,
+ * responsable, fecha de alta) sigue siendo de solo lectura — lo gestiona el
+ * admin desde `/staff`, no "Mi perfil".
+ */
 export function ProfileDetails({ profile }: ProfileDetailsProps) {
-  const rows = [
+  const [isEditing, setIsEditing] = useState(false);
+  const { mutate, isPending, error, reset: resetMutation } = useUpdateMyProfile();
+  const {
+    register,
+    handleSubmit,
+    reset: resetForm,
+    formState: { errors },
+  } = useForm<ContactFormValues>({
+    // `values` (no `defaultValues`): mantiene el formulario sincronizado si
+    // `profile` cambia por debajo (p. ej. tras invalidar la query al
+    // guardar) sin pisar lo que el usuario esté tecleando mientras no edita.
+    values: { phone: profile.phone ?? '', city: profile.city ?? '' },
+  });
+
+  const readOnlyRows = [
     { icon: Mail, label: 'Correo', value: profile.email },
     { icon: Building2, label: 'Entidad', value: profile.entityName ?? 'Sin asignar' },
     { icon: Users, label: 'Departamento', value: profile.departmentName ?? 'Sin asignar' },
@@ -54,17 +98,115 @@ export function ProfileDetails({ profile }: ProfileDetailsProps) {
     { icon: Hourglass, label: 'Antigüedad', value: formatTenure(profile.hireDate) },
   ];
 
+  const startEditing = () => {
+    resetMutation();
+    setIsEditing(true);
+  };
+
+  const cancelEditing = () => {
+    resetForm({ phone: profile.phone ?? '', city: profile.city ?? '' });
+    resetMutation();
+    setIsEditing(false);
+  };
+
+  const onSubmit = (values: ContactFormValues) => {
+    mutate(
+      { phone: values.phone.trim(), city: values.city.trim() },
+      { onSuccess: () => setIsEditing(false) }
+    );
+  };
+
   return (
-    <dl className={styles.root}>
-      {rows.map(({ icon: Icon, label, value }) => (
-        <div key={label} className={styles.row}>
-          <dt className={styles.label}>
-            <Icon className={styles.icon} />
-            {label}
-          </dt>
-          <dd className={styles.value}>{value}</dd>
-        </div>
-      ))}
-    </dl>
+    <div>
+      <div className={styles.header}>
+        <h2 className={styles.title}>Datos personales</h2>
+        {!isEditing && (
+          <Button type="button" variant="ghost" size="sm" onClick={startEditing}>
+            <Pencil className={styles.actionIcon} />
+            Editar
+          </Button>
+        )}
+      </div>
+
+      <dl className={styles.root}>
+        {readOnlyRows.map(({ icon: Icon, label, value }) => (
+          <div key={label} className={styles.row}>
+            <dt className={styles.label}>
+              <Icon className={styles.icon} />
+              {label}
+            </dt>
+            <dd className={styles.value}>{value}</dd>
+          </div>
+        ))}
+
+        {!isEditing && (
+          <>
+            <div className={styles.row}>
+              <dt className={styles.label}>
+                <Phone className={styles.icon} />
+                Teléfono
+              </dt>
+              <dd className={styles.value}>{profile.phone ?? '—'}</dd>
+            </div>
+            <div className={styles.row}>
+              <dt className={styles.label}>
+                <MapPin className={styles.icon} />
+                Ciudad
+              </dt>
+              <dd className={styles.value}>{profile.city ?? '—'}</dd>
+            </div>
+          </>
+        )}
+      </dl>
+
+      {isEditing && (
+        <form className={styles.editForm} onSubmit={handleSubmit(onSubmit)}>
+          <div className={styles.field}>
+            <Label htmlFor="profile-phone">Teléfono</Label>
+            <Input
+              id="profile-phone"
+              placeholder="+34 600 000 000"
+              {...register('phone', {
+                pattern: {
+                  value: /^\+?[0-9 ]{6,20}$/,
+                  message: 'Indica un teléfono válido (solo dígitos y espacios, 6-20 caracteres).',
+                },
+              })}
+            />
+            {errors.phone && <p className={styles.fieldError}>{errors.phone.message}</p>}
+          </div>
+
+          <div className={styles.field}>
+            <Label htmlFor="profile-city">Ciudad</Label>
+            <Input
+              id="profile-city"
+              placeholder="Madrid"
+              {...register('city', {
+                minLength: { value: 2, message: 'Indica una ciudad válida.' },
+                maxLength: { value: 120, message: 'La ciudad es demasiado larga.' },
+              })}
+            />
+            {errors.city && <p className={styles.fieldError}>{errors.city.message}</p>}
+          </div>
+
+          {error && (
+            <p className={styles.fieldError}>
+              {error instanceof Error ? error.message : 'No se pudieron guardar los cambios.'}
+            </p>
+          )}
+
+          <div className={styles.formActions}>
+            <Button type="button" variant="outline" size="sm" onClick={cancelEditing} disabled={isPending}>
+              <X className={styles.actionIcon} />
+              Cancelar
+            </Button>
+            <Button type="submit" size="sm" disabled={isPending}>
+              <Check className={styles.actionIcon} />
+              {isPending ? 'Guardando…' : 'Guardar'}
+            </Button>
+          </div>
+        </form>
+      )}
+    </div>
   );
 }

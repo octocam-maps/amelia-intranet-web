@@ -1,17 +1,9 @@
 import type { CSSProperties } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/Avatar';
 import { Badge } from '@/components/ui/Badge';
-import type { UserRole } from '@/features/auth/domain/models';
+import { USER_ROLE_LABEL } from '@/features/auth/domain/models';
 import type { UserProfile } from '../domain/models';
 import styles from './ProfileHeader.module.css';
-
-// docs/brief-diseno.md § C8 "Mi perfil" — tres roles de producto, mismas
-// etiquetas legibles que docs/permisos-roles.md.
-const ROLE_LABEL: Record<UserRole, string> = {
-  administrador: 'Administrador',
-  empleado: 'Empleado',
-  externo_invitado: 'Externo-invitado',
-};
 
 // El hero es navy (`--header-bg`), así que las variantes de Badge pensadas
 // para tarjeta blanca ('dark' == el propio fondo, 'outline' == texto oscuro)
@@ -56,7 +48,7 @@ export function ProfileHeader({ profile }: ProfileHeaderProps) {
         <div className={styles.nameRow}>
           <h1 className={styles.name}>{profile.fullName}</h1>
           <Badge variant="outline" style={ROLE_BADGE_STYLE}>
-            {ROLE_LABEL[profile.role]}
+            {USER_ROLE_LABEL[profile.role]}
           </Badge>
         </div>
         <p className={styles.jobTitle}>{profile.jobTitle ?? '—'}</p>
