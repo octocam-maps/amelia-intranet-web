@@ -2,6 +2,7 @@ import {
   Bell,
   CalendarClock,
   CalendarDays,
+  CalendarRange,
   Clock,
   FileText,
   GraduationCap,
@@ -50,6 +51,18 @@ const perfil: NavItem = { label: 'Mi perfil', to: '/perfil', icon: UserCircle };
 // engram: "Onboarding — nav por rol y contrato backend").
 const onboarding: NavItem = { label: 'Onboarding', to: '/onboarding', icon: GraduationCap };
 
+// "Calendario general" (LOTE 4) — vista de RRHH de TODA la plantilla (no
+// solo el propio departamento como `TeamCalendar`), con exportación
+// PDF/Excel con logo de Amelia. Se define una sola vez y se reutiliza tanto
+// dentro de "Administración" (admin) como suelto en el navbar de `socio`
+// (ver `NAV_BY_ROLE.socio` más abajo) — ambos apuntan al mismo backend
+// RBAC-real (`require_role("administrador", "socio")`).
+const calendarioGeneral: NavItem = {
+  label: 'Calendario general',
+  to: '/administracion/calendario',
+  icon: CalendarRange,
+};
+
 // docs/deck-fase3/02-home-admin-bandeja.png § sidebar — sección exclusiva
 // del admin. "Aprobar ausencias" reutiliza la misma página de Ausencias
 // (con la bandeja ya visible para su rol); el resto son módulos de fases
@@ -60,6 +73,7 @@ const onboarding: NavItem = { label: 'Onboarding', to: '/onboarding', icon: Grad
 export const ADMIN_SECTION_ITEMS: NavItem[] = [
   { label: 'Plantilla', to: '/administracion/plantilla', icon: Users },
   { label: 'Aprobar ausencias', to: '/ausencias', icon: Inbox },
+  calendarioGeneral,
   { label: 'Anuncios', to: '/administracion/anuncios', icon: Bell },
   { label: 'Buzón (recepción)', to: '/administracion/buzon', icon: Mailbox },
   { label: 'Onboarding', to: '/administracion/onboarding', icon: GraduationCap },
@@ -69,8 +83,26 @@ export const ADMIN_SECTION_ITEMS: NavItem[] = [
 ];
 
 // docs/permisos-roles.md § "Navbar por rol" — copiado literal, un ítem por rol.
+// `socio` (migración 024, fuera de `docs/permisos-roles.md` todavía): igual
+// que `empleado` + el único ítem extra "Calendario general" — NUNCA la
+// sección "Administración" completa (Sidebar.tsx solo la muestra si
+// `isAdmin`). "Ocultar ≠ proteger": el backend ya rechaza a `empleado` con
+// 403 en los 3 endpoints de `/absences/calendar/*`, esto es solo la
+// composición visual del navbar de `socio`.
 export const NAV_BY_ROLE: Record<UserRole, NavItem[]> = {
   empleado: [inicio, onboarding, ausencias, controlHorario, nominas, documentos, equipo, buzonAnonimo, perfil],
   administrador: [inicio, onboarding, ausencias, controlHorario, nominas, documentos, equipo, perfil],
   externo_invitado: [onboarding, equipo, perfil],
+  socio: [
+    inicio,
+    onboarding,
+    ausencias,
+    controlHorario,
+    nominas,
+    documentos,
+    equipo,
+    buzonAnonimo,
+    perfil,
+    calendarioGeneral,
+  ],
 };
