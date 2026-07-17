@@ -1,5 +1,4 @@
 import { useMemo, useState } from 'react';
-import { useForm } from 'react-hook-form';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Label } from '@/components/ui/Label';
@@ -26,11 +25,28 @@ function titleFromFilename(name: string): string {
   return name.replace(/\.pdf$/i, '').trim() || name;
 }
 
-interface FormValues {
-  userId: string;
+/**
+ * Preselección de tipo/período por el nombre del archivo — MISMA convención
+ * que el sync desde Drive (`NOMINA_YYYY-MM*`, `CONTRATO*`), para que un lote
+ * llegue ya casi categorizado. Es solo un default: el admin lo ajusta por fila.
+ */
+function detectCategory(name: string): { category: DocumentCategory; period: string } {
+  const base = name.replace(/\.pdf$/i, '');
+  const nomina = base.match(/^NOMINA[_\-\s]?(\d{4})-(\d{2})/i);
+  if (nomina && nomina[1] && nomina[2]) {
+    return { category: 'payslip', period: `${nomina[1]}-${nomina[2]}` };
+  }
+  if (/^CONTRATO/i.test(base)) {
+    return { category: 'contract', period: '' };
+  }
+  return { category: 'general', period: '' };
+}
+
+interface UploadItem {
+  file: File;
   category: DocumentCategory;
-  title: string;
   period: string;
+  title: string;
 }
 
 interface AdminDocumentUploadFormProps {
@@ -40,72 +56,85 @@ interface AdminDocumentUploadFormProps {
 
 /**
  * deck-fase4 · admin "Subir documento" — sube uno o VARIOS PDF al MISMO
- * empleado (misma categoría/período) y registra los metadatos
- * (`POST /documents`, multipart, un archivo por request; el form hace N
- * llamadas). La carga masiva entre empleados distintos se resuelve por el
- * sync desde Drive, no aquí. El backend es la autoridad final (MIME, tamaño,
- * `user_id` existente); aquí solo se valida lo básico.
+ * empleado, y CADA archivo lleva su propio tipo/período/título (un lote puede
+ * mezclar nómina + contrato + otros). `POST /documents` es un archivo por
+ * request, así que el form hace N llamadas. La carga masiva entre empleados
+ * distintos se resuelve por el sync desde Drive, no aquí. El backend es la
+ * autoridad final (MIME, tamaño, `user_id` existente).
  */
 export function AdminDocumentUploadForm({ onSaved, onCancel }: AdminDocumentUploadFormProps) {
-  const [files, setFiles] = useState<File[]>([]);
+  const [userId, setUserId] = useState('');
+  const [items, setItems] = useState<UploadItem[]>([]);
   const [formError, setFormError] = useState<string | null>(null);
   const [progress, setProgress] = useState<{ done: number; total: number } | null>(null);
+  const [busy, setBusy] = useState(false);
+
   const { data: staff, isLoading: isLoadingStaff } = useStaffList({ pageSize: STAFF_PICKER_CAP });
   const members = useMemo(
     () => [...(staff?.members ?? [])].sort((a, b) => a.fullName.localeCompare(b.fullName, 'es')),
     [staff]
   );
-
-  const {
-    register,
-    handleSubmit,
-    watch,
-    setValue,
-    formState: { isSubmitting },
-  } = useForm<FormValues>({
-    defaultValues: { userId: '', category: 'general', title: '', period: '' },
-  });
   const { mutateAsync: upload } = useUploadDocument();
-  const [userId, category] = watch(['userId', 'category']);
-  const multiple = files.length > 1;
 
-  const onSubmit = async (values: FormValues) => {
-    if (!values.userId) {
+  const onFilesSelected = (fileList: FileList | null) => {
+    const selected = Array.from(fileList ?? []);
+    if (selected.some((f) => f.type !== 'application/pdf')) {
+      setItems([]);
+      setFormError('Todos los archivos deben ser PDF.');
+      return;
+    }
+    setItems(
+      selected.map((file) => {
+        const detected = detectCategory(file.name);
+        return { file, category: detected.category, period: detected.period, title: titleFromFilename(file.name) };
+      })
+    );
+    setFormError(null);
+  };
+
+  const updateItem = (index: number, patch: Partial<UploadItem>) => {
+    setItems((prev) => prev.map((item, i) => (i === index ? { ...item, ...patch } : item)));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!userId) {
       setFormError('Selecciona un empleado.');
       return;
     }
-    if (files.length === 0) {
+    if (items.length === 0) {
       setFormError('Selecciona al menos un archivo PDF.');
       return;
     }
     setFormError(null);
-    setProgress({ done: 0, total: files.length });
+    setBusy(true);
+    setProgress({ done: 0, total: items.length });
 
     // Secuencial a propósito: evita ráfagas contra la API de Drive y permite
     // reportar exactamente cuáles fallaron sin abortar los demás.
     const failures: string[] = [];
-    for (const [i, file] of files.entries()) {
-      const title = !multiple && values.title.trim() ? values.title.trim() : titleFromFilename(file.name);
+    for (const [i, item] of items.entries()) {
       try {
         await upload({
-          file,
-          userId: values.userId,
-          category: values.category,
-          title,
-          period: values.period || undefined,
+          file: item.file,
+          userId,
+          category: item.category,
+          title: item.title.trim() || titleFromFilename(item.file.name),
+          period: item.period || undefined,
         });
       } catch {
-        failures.push(file.name);
+        failures.push(item.file.name);
       }
-      setProgress({ done: i + 1, total: files.length });
+      setProgress({ done: i + 1, total: items.length });
     }
     setProgress(null);
+    setBusy(false);
 
     if (failures.length > 0) {
       setFormError(
-        failures.length === files.length
+        failures.length === items.length
           ? 'No se pudo subir ningún archivo. Revisa que sean PDF y no superen el límite.'
-          : `Subidos ${files.length - failures.length} de ${files.length}. Fallaron: ${failures.join(', ')}.`
+          : `Subidos ${items.length - failures.length} de ${items.length}. Fallaron: ${failures.join(', ')}.`
       );
       return;
     }
@@ -113,14 +142,10 @@ export function AdminDocumentUploadForm({ onSaved, onCancel }: AdminDocumentUplo
   };
 
   return (
-    <form className={styles.form} onSubmit={handleSubmit(onSubmit)}>
+    <form className={styles.form} onSubmit={handleSubmit}>
       <div className={styles.field}>
         <Label htmlFor="documentUserId">Empleado *</Label>
-        <Select
-          value={userId}
-          disabled={isLoadingStaff}
-          onValueChange={(value) => setValue('userId', value, { shouldValidate: true })}
-        >
+        <Select value={userId} disabled={isLoadingStaff} onValueChange={setUserId}>
           <SelectTrigger id="documentUserId">
             <SelectValue placeholder={isLoadingStaff ? 'Cargando plantilla…' : 'Selecciona una persona'} />
           </SelectTrigger>
@@ -134,48 +159,6 @@ export function AdminDocumentUploadForm({ onSaved, onCancel }: AdminDocumentUplo
         </Select>
       </div>
 
-      <div className={styles.row}>
-        <div className={styles.field}>
-          <Label htmlFor="documentCategory">Categoría *</Label>
-          <Select
-            value={category}
-            onValueChange={(value) => setValue('category', value as DocumentCategory, { shouldValidate: true })}
-          >
-            <SelectTrigger id="documentCategory">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {CATEGORIES.map((code) => (
-                <SelectItem key={code} value={code}>
-                  {CATEGORY_LABEL[code]}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-        <div className={styles.field}>
-          <Label htmlFor="documentPeriod">Período</Label>
-          {/* 'YYYY-MM' — solo lo usa realmente la categoría "Nómina"; se deja
-              opcional en el resto por si sirve de fecha de referencia. */}
-          <Input id="documentPeriod" type="month" {...register('period')} />
-        </div>
-      </div>
-
-      <div className={styles.field}>
-        <Label htmlFor="documentTitle">Título{multiple ? '' : ' *'}</Label>
-        <Input
-          id="documentTitle"
-          placeholder="Ej. Nómina julio 2026"
-          disabled={multiple}
-          {...register('title')}
-        />
-        <p className={styles.hint}>
-          {multiple
-            ? 'Con varios archivos se usa el nombre de cada archivo como título.'
-            : 'Opcional: si lo dejas vacío se usa el nombre del archivo.'}
-        </p>
-      </div>
-
       <div className={styles.field}>
         <Label htmlFor="documentFile">Archivos (PDF) *</Label>
         <Input
@@ -183,24 +166,53 @@ export function AdminDocumentUploadForm({ onSaved, onCancel }: AdminDocumentUplo
           type="file"
           accept="application/pdf,.pdf"
           multiple
-          onChange={(e) => {
-            const selected = Array.from(e.target.files ?? []);
-            const nonPdf = selected.find((f) => f.type !== 'application/pdf');
-            if (nonPdf) {
-              setFiles([]);
-              setFormError('Todos los archivos deben ser PDF.');
-              return;
-            }
-            setFiles(selected);
-            setFormError(null);
-          }}
+          onChange={(e) => onFilesSelected(e.target.files)}
         />
-        {files.length > 0 && (
-          <p className={styles.hint}>
-            {files.length === 1 ? '1 archivo seleccionado' : `${files.length} archivos seleccionados`}
-          </p>
-        )}
+        <p className={styles.hint}>
+          Puedes subir varios; cada archivo lleva su propio tipo, período y título (se preseleccionan por el nombre).
+        </p>
       </div>
+
+      {items.length > 0 && (
+        <div className={styles.fileList}>
+          {items.map((item, i) => (
+            <div className={styles.fileRow} key={`${item.file.name}-${i}`}>
+              <p className={styles.fileName} title={item.file.name}>
+                {item.file.name}
+              </p>
+              <div className={styles.fileControls}>
+                <Select
+                  value={item.category}
+                  onValueChange={(value) => updateItem(i, { category: value as DocumentCategory })}
+                >
+                  <SelectTrigger aria-label={`Categoría de ${item.file.name}`}>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {CATEGORIES.map((code) => (
+                      <SelectItem key={code} value={code}>
+                        {CATEGORY_LABEL[code]}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <Input
+                  type="month"
+                  aria-label={`Período de ${item.file.name}`}
+                  value={item.period}
+                  onChange={(e) => updateItem(i, { period: e.target.value })}
+                />
+                <Input
+                  aria-label={`Título de ${item.file.name}`}
+                  placeholder="Título"
+                  value={item.title}
+                  onChange={(e) => updateItem(i, { title: e.target.value })}
+                />
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
 
       {formError && <p className={styles.error}>{formError}</p>}
       {progress && (
@@ -210,15 +222,11 @@ export function AdminDocumentUploadForm({ onSaved, onCancel }: AdminDocumentUplo
       )}
 
       <div className={styles.footer}>
-        <Button type="button" variant="outline" onClick={onCancel} disabled={isSubmitting}>
+        <Button type="button" variant="outline" onClick={onCancel} disabled={busy}>
           Cancelar
         </Button>
-        <Button type="submit" variant="dark" disabled={isSubmitting}>
-          {isSubmitting
-            ? 'Subiendo…'
-            : files.length > 1
-              ? `Subir ${files.length} documentos`
-              : 'Subir documento'}
+        <Button type="submit" variant="dark" disabled={busy}>
+          {busy ? 'Subiendo…' : items.length > 1 ? `Subir ${items.length} documentos` : 'Subir documento'}
         </Button>
       </div>
     </form>
