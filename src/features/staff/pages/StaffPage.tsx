@@ -3,6 +3,10 @@ import { AlertTriangle, ChevronLeft, ChevronRight, Search, UserPlus } from 'luci
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { Input } from '@/components/ui/Input';
+import { useCancelInvitation } from '@/features/invitations/application/useCancelInvitation';
+import { useInvitations } from '@/features/invitations/application/useInvitations';
+import { useResendInvitation } from '@/features/invitations/application/useResendInvitation';
+import type { Invitation } from '@/features/invitations/domain/models';
 import { cn } from '@/lib/utils';
 import { useStaffList } from '../application/useStaffList';
 import { useUpdateStaffMember } from '../application/useUpdateStaffMember';
@@ -19,6 +23,7 @@ const CLIENT_PAGE_CAP = 200;
 // Referencia estable — evita que `data?.members ?? []` invalide en cada
 // render los `useMemo` que dependen de `members` cuando todavía no hay datos.
 const EMPTY_MEMBERS: StaffMember[] = [];
+const EMPTY_INVITATIONS: Invitation[] = [];
 
 /** Quita acentos para que "Marc" encuentre a "Márc" — mismo helper que
  * `TeamDirectory` (Fase 5), duplicado aquí para no acoplar features. */
@@ -49,6 +54,20 @@ export function StaffPage() {
   const members = data?.members ?? EMPTY_MEMBERS;
   const reachedClientCap = members.length >= CLIENT_PAGE_CAP;
   const { mutate: updateMember } = useUpdateStaffMember();
+
+  // Solo para pintar el badge/las acciones de invitación en `StaffTable` —
+  // el guardado real de quién sigue "pendiente" ya lo resuelve el backend
+  // (ver `invitations/infrastructure/repositories/invitation_repository.py`).
+  const { data: pendingInvitations } = useInvitations('pending');
+  const pendingInvitationByEmail = useMemo(() => {
+    const byEmail = new Map<string, Invitation>();
+    for (const invitation of pendingInvitations ?? EMPTY_INVITATIONS) {
+      byEmail.set(invitation.email.toLowerCase(), invitation);
+    }
+    return byEmail;
+  }, [pendingInvitations]);
+  const { mutate: resendInvitation } = useResendInvitation();
+  const { mutate: cancelInvitation } = useCancelInvitation();
 
   const entities = useMemo(() => {
     const byCode = new Map<EntityCode, string>();
@@ -160,6 +179,9 @@ export function StaffPage() {
           isLoading={isLoading}
           onEdit={setDialogMember}
           onToggleActive={(member) => updateMember({ id: member.id, input: { isActive: !member.isActive } })}
+          pendingInvitationByEmail={pendingInvitationByEmail}
+          onResendInvitation={(invitation) => resendInvitation(invitation.id)}
+          onCancelInvitation={(invitation) => cancelInvitation(invitation.id)}
         />
 
         {filtered.length > 0 && (

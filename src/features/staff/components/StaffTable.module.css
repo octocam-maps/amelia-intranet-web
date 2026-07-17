@@ -38,6 +38,10 @@
   color: hsl(var(--muted-foreground));
 }
 
+.pendingBadge {
+  margin-top: var(--space-1);
+}
+
 .status {
   display: inline-flex;
   align-items: center;
