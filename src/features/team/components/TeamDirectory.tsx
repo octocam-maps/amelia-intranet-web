@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
-import { Mail, Phone, Search } from 'lucide-react';
+import { EnvelopeClosedIcon, MagnifyingGlassIcon } from '@radix-ui/react-icons';
+import { PhoneIcon } from '@/components/icons';
 import { Avatar, AvatarFallback } from '@/components/ui/Avatar';
 import { Badge } from '@/components/ui/Badge';
 import { Card, CardContent } from '@/components/ui/Card';
@@ -92,7 +93,7 @@ export function TeamDirectory({ members, isLoading }: TeamDirectoryProps) {
         </div>
 
         <div className={styles.searchWrapper}>
-          <Search className={styles.searchIcon} />
+          <MagnifyingGlassIcon className={styles.searchIcon} />
           <Input
             className={styles.searchInput}
             placeholder="Buscar por nombre…"
@@ -130,12 +131,12 @@ export function TeamDirectory({ members, isLoading }: TeamDirectoryProps) {
                 <div className={styles.contact}>
                   {member.phone && (
                     <span className={styles.contactRow}>
-                      <Phone />
+                      <PhoneIcon />
                       {member.phone}
                     </span>
                   )}
                   <span className={styles.contactRow}>
-                    <Mail />
+                    <EnvelopeClosedIcon />
                     {member.email}
                   </span>
                 </div>

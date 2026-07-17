@@ -1,4 +1,4 @@
-import { Cake } from 'lucide-react';
+import { CakeIcon } from '@/components/icons';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/Avatar';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { useTeamBirthdays } from '@/features/team/application/useTeamBirthdays';
@@ -31,7 +31,7 @@ export function UpcomingBirthdaysCard({ title = 'Próximos cumpleaños' }: { tit
     <Card>
       <CardHeader className={styles.headerRow}>
         <CardTitle>{title}</CardTitle>
-        <Cake className={styles.icon} />
+        <CakeIcon className={styles.icon} />
       </CardHeader>
       <CardContent>
         {isLoading ? (

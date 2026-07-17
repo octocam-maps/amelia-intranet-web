@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
-import { CalendarRange, ChevronDown, Download, FileText } from 'lucide-react';
+import { ChevronDownIcon, DownloadIcon, FileTextIcon } from '@radix-ui/react-icons';
+import { CalendarRangeIcon } from '@/components/icons';
 import { Button } from '@/components/ui/Button';
 import {
   DropdownMenu,
@@ -81,7 +82,7 @@ export function AbsenceGeneralCalendarPage() {
             disabled={isExportingPdf}
             onClick={() => exportPdf(range)}
           >
-            <FileText size={16} />
+            <FileTextIcon />
             {isExportingPdf ? 'Generando…' : 'Exportar PDF'}
           </Button>
           <Button
@@ -89,24 +90,24 @@ export function AbsenceGeneralCalendarPage() {
             disabled={isExportingXlsx}
             onClick={() => exportXlsx(range)}
           >
-            <Download size={16} />
+            <DownloadIcon />
             {isExportingXlsx ? 'Generando…' : 'Exportar Excel'}
           </Button>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" disabled={isExportingAnnual}>
-                <CalendarRange size={16} />
+                <CalendarRangeIcon />
                 {isExportingAnnual ? 'Generando…' : `Exportar año completo (${visibleYear})`}
-                <ChevronDown size={14} />
+                <ChevronDownIcon />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuItem onClick={() => exportPdf(annualRange)}>
-                <FileText size={16} />
+                <FileTextIcon />
                 PDF — {visibleYear} completo
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => exportXlsx(annualRange)}>
-                <Download size={16} />
+                <DownloadIcon />
                 Excel — {visibleYear} completo
               </DropdownMenuItem>
             </DropdownMenuContent>

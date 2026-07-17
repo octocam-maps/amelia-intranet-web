@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { Bold, Italic, LinkIcon, Send } from 'lucide-react';
+import { FontBoldIcon, FontItalicIcon, Link2Icon, PaperPlaneIcon } from '@radix-ui/react-icons';
 import { useForm } from 'react-hook-form';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
@@ -156,7 +156,7 @@ export function AnnouncementFormPanel({ announcement, onSaved }: AnnouncementFor
             aria-label="Negrita"
             onClick={() => applyFormatting('bold')}
           >
-            <Bold />
+            <FontBoldIcon />
           </button>
           <button
             type="button"
@@ -165,7 +165,7 @@ export function AnnouncementFormPanel({ announcement, onSaved }: AnnouncementFor
             aria-label="Cursiva"
             onClick={() => applyFormatting('italic')}
           >
-            <Italic />
+            <FontItalicIcon />
           </button>
           <button
             type="button"
@@ -174,7 +174,7 @@ export function AnnouncementFormPanel({ announcement, onSaved }: AnnouncementFor
             aria-label="Enlace"
             onClick={() => applyFormatting('link')}
           >
-            <LinkIcon />
+            <Link2Icon />
           </button>
         </div>
         <Textarea
@@ -222,7 +222,7 @@ export function AnnouncementFormPanel({ announcement, onSaved }: AnnouncementFor
           Guardar borrador
         </Button>
         <Button type="button" variant="dark" disabled={isSaving} onClick={handleSubmit((v) => save(v, 'published'))}>
-          <Send />
+          <PaperPlaneIcon />
           Publicar
         </Button>
       </div>

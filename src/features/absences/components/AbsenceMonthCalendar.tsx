@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeftIcon, ChevronRightIcon } from '@radix-ui/react-icons';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { useHolidays } from '@/features/holidays/application/useHolidays';
 import type { AbsenceRequest, AbsenceType } from '../domain/models';
@@ -107,11 +107,11 @@ export function AbsenceMonthCalendar({ requests, types }: AbsenceMonthCalendarPr
         </div>
         <div className={styles.monthNav}>
           <button type="button" onClick={goToPreviousMonth} aria-label="Mes anterior">
-            <ChevronLeft />
+            <ChevronLeftIcon />
           </button>
           <span>{MONTH_LABELS[month]} {year}</span>
           <button type="button" onClick={goToNextMonth} aria-label="Mes siguiente">
-            <ChevronRight />
+            <ChevronRightIcon />
           </button>
         </div>
       </CardHeader>

@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Check, X } from 'lucide-react';
+import { CheckIcon, Cross2Icon } from '@radix-ui/react-icons';
 import { Avatar, AvatarFallback } from '@/components/ui/Avatar';
 import { Button } from '@/components/ui/Button';
 import { cn } from '@/lib/utils';
@@ -117,7 +117,7 @@ export function AbsenceApprovalList({ requests, filterable = false }: AbsenceApp
                   onClick={() => review({ requestId: request.id, input: { decision: 'rejected' } })}
                   aria-label="Rechazar"
                 >
-                  <X />
+                  <Cross2Icon />
                 </Button>
                 <Button
                   size="icon"
@@ -125,7 +125,7 @@ export function AbsenceApprovalList({ requests, filterable = false }: AbsenceApp
                   onClick={() => review({ requestId: request.id, input: { decision: 'approved' } })}
                   aria-label="Aprobar"
                 >
-                  <Check />
+                  <CheckIcon />
                 </Button>
               </li>
             );

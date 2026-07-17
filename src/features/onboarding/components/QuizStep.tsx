@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { AlertTriangle, CheckCircle2, XCircle } from 'lucide-react';
+import { CheckCircledIcon, CrossCircledIcon, ExclamationTriangleIcon } from '@radix-ui/react-icons';
 import { Button } from '@/components/ui/Button';
 import { cn } from '@/lib/utils';
 import { useSubmitQuiz } from '../application/useSubmitQuiz';
@@ -63,9 +63,9 @@ export function QuizStep({ step }: QuizStepProps) {
         <div className={styles.resultCard}>
           <div className={cn(styles.resultRing, result.passed ? styles.resultRingPassed : styles.resultRingFailed)}>
             {result.passed ? (
-              <CheckCircle2 className={styles.resultRingIcon} />
+              <CheckCircledIcon className={styles.resultRingIcon} />
             ) : (
-              <XCircle className={styles.resultRingIcon} />
+              <CrossCircledIcon className={styles.resultRingIcon} />
             )}
           </div>
           <h2 className={styles.resultTitle}>
@@ -84,7 +84,7 @@ export function QuizStep({ step }: QuizStepProps) {
     <div className={styles.root}>
       <h2 className={styles.title}>{step.title}</h2>
       <div className={styles.warningBanner}>
-        <AlertTriangle className={styles.warningIcon} />
+        <ExclamationTriangleIcon className={styles.warningIcon} />
         Solo tienes un intento. Revisa cada respuesta antes de enviar.
       </div>
 

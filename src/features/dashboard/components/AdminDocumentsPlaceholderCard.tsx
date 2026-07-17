@@ -1,4 +1,4 @@
-import { FileText } from 'lucide-react';
+import { FileTextIcon } from '@radix-ui/react-icons';
 import styles from './AdminDocumentsPlaceholderCard.module.css';
 
 /** Pestaña "Documentos" del Home admin — Fase 4 (Documentos + Drive) todavía
@@ -7,7 +7,7 @@ import styles from './AdminDocumentsPlaceholderCard.module.css';
 export function AdminDocumentsPlaceholderCard() {
   return (
     <div className={styles.root}>
-      <FileText className={styles.icon} />
+      <FileTextIcon className={styles.icon} />
       <p className={styles.title}>Próximamente</p>
       <p className={styles.body}>
         La gestión de documentos y la integración con Google Drive llegan en la Fase 4.

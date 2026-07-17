@@ -1,4 +1,4 @@
-import { ArrowUpRight } from 'lucide-react';
+import { ArrowTopRightIcon } from '@radix-ui/react-icons';
 import { Link } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import type { UserRole } from '@/features/auth/domain/models';
@@ -56,7 +56,7 @@ export function ProfileQuickLinks({ role }: ProfileQuickLinksProps) {
                 <Link key={item.to} to={item.to} className={styles.tile}>
                   <Icon className={styles.icon} />
                   <span className={styles.label}>{item.label}</span>
-                  <ArrowUpRight className={styles.arrow} />
+                  <ArrowTopRightIcon className={styles.arrow} />
                 </Link>
               );
             })}

@@ -1,5 +1,12 @@
 import { useEffect, useMemo, useState } from 'react';
-import { ArrowRight, CalendarDays, CheckCircle2, Clock3, LayoutDashboard, Users } from 'lucide-react';
+import {
+  ArrowRightIcon,
+  CalendarIcon,
+  CheckCircledIcon,
+  ClockIcon,
+  DashboardIcon,
+} from '@radix-ui/react-icons';
+import { UsersIcon } from '@/components/icons';
 import { Link } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/Card';
 import { useStore } from '@/store';
@@ -81,7 +88,7 @@ export function OnboardingPage() {
     return (
       <div className={styles.completedHero}>
         <div className={styles.completedIconWrap}>
-          <CheckCircle2 className={styles.completedIcon} />
+          <CheckCircledIcon className={styles.completedIcon} />
         </div>
         <h1 className={styles.completedTitle}>
           ¡Onboarding completado{currentUser?.fullName ? `, ${currentUser.fullName.split(' ')[0]}` : ''}!
@@ -91,24 +98,24 @@ export function OnboardingPage() {
         </p>
         <div className={styles.completedCards}>
           <Link to="/" className={styles.completedCard}>
-            <LayoutDashboard className={styles.completedCardIcon} />
+            <DashboardIcon className={styles.completedCardIcon} />
             <span className={styles.completedCardTitle}>Tu dashboard</span>
             <span className={styles.completedCardSubtitle}>Festivos, anuncios y accesos</span>
           </Link>
           <Link to="/control-horario" className={styles.completedCard}>
-            <Clock3 className={styles.completedCardIcon} />
+            <ClockIcon className={styles.completedCardIcon} />
             <span className={styles.completedCardTitle}>Ficha tu jornada</span>
             <span className={styles.completedCardSubtitle}>Control horario y pausas</span>
           </Link>
           <div className={styles.completedCardDisabled}>
-            <Users className={styles.completedCardIcon} />
+            <UsersIcon className={styles.completedCardIcon} />
             <span className={styles.completedCardTitle}>Conoce al equipo</span>
             <span className={styles.completedCardSubtitle}>Directorio y organigrama · próximamente</span>
           </div>
         </div>
         <Link to="/" className={styles.completedCta}>
           Entrar en mi dashboard
-          <ArrowRight className={styles.completedCtaIcon} />
+          <ArrowRightIcon className={styles.completedCtaIcon} />
         </Link>
       </div>
     );
@@ -133,7 +140,7 @@ export function OnboardingPage() {
             <div className={styles.progressFill} style={{ width: `${progressPct}%` }} />
           </div>
           <p className={styles.progressHint}>
-            <CalendarDays className={styles.progressHintIcon} />
+            <CalendarIcon className={styles.progressHintIcon} />
             {completedCount} de {steps.length} pasos completados
           </p>
         </CardContent>
@@ -161,7 +168,7 @@ export function OnboardingPage() {
                   onClick={() => setSelectedStepId(nextStep.id)}
                 >
                   Continuar al paso {nextStep.stepOrder}
-                  <ArrowRight className={styles.continueIcon} />
+                  <ArrowRightIcon className={styles.continueIcon} />
                 </button>
               </div>
             )}

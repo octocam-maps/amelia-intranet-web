@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeftIcon, ChevronRightIcon } from '@radix-ui/react-icons';
 import { Avatar, AvatarFallback } from '@/components/ui/Avatar';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import type { AbsenceRequest, AbsenceType } from '../domain/models';
@@ -84,11 +84,11 @@ export function TeamAbsenceGantt({ requests, types }: TeamAbsenceGanttProps) {
         <CardTitle>Calendario de la plantilla</CardTitle>
         <div className={styles.monthNav}>
           <button type="button" onClick={() => setCursor((c) => new Date(c.getFullYear(), c.getMonth() - 1, 1))} aria-label="Mes anterior">
-            <ChevronLeft />
+            <ChevronLeftIcon />
           </button>
           <span>{monthLabel.charAt(0).toUpperCase() + monthLabel.slice(1)}</span>
           <button type="button" onClick={() => setCursor((c) => new Date(c.getFullYear(), c.getMonth() + 1, 1))} aria-label="Mes siguiente">
-            <ChevronRight />
+            <ChevronRightIcon />
           </button>
         </div>
       </CardHeader>

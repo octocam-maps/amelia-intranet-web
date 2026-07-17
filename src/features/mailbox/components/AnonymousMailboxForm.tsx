@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { CheckCircle2, KeyRound, Send, ShieldCheck } from 'lucide-react';
+import { CheckCircledIcon, PaperPlaneIcon } from '@radix-ui/react-icons';
+import { KeyRoundIcon, ShieldCheckIcon } from '@/components/icons';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/Button';
 import { Label } from '@/components/ui/Label';
@@ -52,14 +53,14 @@ export function AnonymousMailboxForm() {
   if (referenceCode) {
     return (
       <div className={styles.success}>
-        <CheckCircle2 className={styles.successIcon} />
+        <CheckCircledIcon className={styles.successIcon} />
         <p className={styles.successTitle}>Mensaje enviado</p>
         <p className={styles.successBody}>
           Referencia <strong>{referenceCode}</strong>. Guarda este código: es la única forma de
           consultar la respuesta, ya que el mensaje es anónimo.
         </p>
         <Link to="/buzon-anonimo/seguimiento" className={styles.trackLink}>
-          <KeyRound />
+          <KeyRoundIcon />
           Ver estado de mi mensaje
         </Link>
         <Button variant="outline" onClick={() => setReferenceCode(null)}>
@@ -72,7 +73,7 @@ export function AnonymousMailboxForm() {
   return (
     <form className={styles.form} onSubmit={handleSubmit(onSubmit)}>
       <div className={styles.notice}>
-        <ShieldCheck className={styles.noticeIcon} />
+        <ShieldCheckIcon className={styles.noticeIcon} />
         <p>
           Tu mensaje llega a RRHH <strong>sin tu nombre</strong>. No registramos tu identidad ni tu IP.
           Al enviarlo recibirás un código de referencia: guárdalo, porque es la única forma de
@@ -117,7 +118,7 @@ export function AnonymousMailboxForm() {
       )}
 
       <Button type="submit" variant="dark" className={styles.submit} disabled={isSubmitting}>
-        <Send />
+        <PaperPlaneIcon />
         Enviar de forma anónima
       </Button>
     </form>

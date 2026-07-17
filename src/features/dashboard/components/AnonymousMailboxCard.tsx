@@ -1,4 +1,4 @@
-import { MessageSquareText } from 'lucide-react';
+import { ChatBubbleIcon } from '@radix-ui/react-icons';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent } from '@/components/ui/Card';
@@ -12,7 +12,7 @@ export function AnonymousMailboxCard() {
     <Card>
       <CardContent>
         <div className={styles.icon}>
-          <MessageSquareText />
+          <ChatBubbleIcon />
         </div>
         <p className={styles.title}>Buzón anónimo</p>
         <p className={styles.body}>Envía una sugerencia o consulta a RRHH sin identificarte.</p>

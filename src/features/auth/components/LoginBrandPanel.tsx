@@ -1,5 +1,5 @@
 import logoBlanco from '@/assets/brand/logo-amelia-blanco.png';
-import { Check } from 'lucide-react';
+import { CheckIcon } from '@radix-ui/react-icons';
 import styles from './LoginBrandPanel.module.css';
 
 const BULLETS = [
@@ -39,7 +39,7 @@ export function LoginBrandPanel() {
               style={{ animationDelay: `${150 + index * 120}ms` }}
             >
               <span className={styles.bulletCheck}>
-                <Check className={styles.checkIcon} strokeWidth={3} />
+                <CheckIcon className={styles.checkIcon} />
               </span>
               <span>{bullet}</span>
             </li>

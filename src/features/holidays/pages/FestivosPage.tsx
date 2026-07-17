@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { CalendarPlus, CalendarRange, DownloadCloud } from 'lucide-react';
+import { DownloadIcon } from '@radix-ui/react-icons';
+import { CalendarPlusIcon, CalendarRangeIcon } from '@/components/icons';
 import { ConfigTabsNav } from '@/components/composites/ConfigTabsNav';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
@@ -82,7 +83,7 @@ export function FestivosPage() {
         </div>
         <div className={styles.headerActions}>
           <Button variant="outline" onClick={() => importHolidays(selectedYear)} disabled={isImporting}>
-            <DownloadCloud />
+            <DownloadIcon />
             {isImporting ? 'Importando…' : `Importar oficiales ${selectedYear}`}
           </Button>
           <Button
@@ -90,11 +91,11 @@ export function FestivosPage() {
             onClick={handleImportCurrentAndNextYear}
             disabled={isImportingRange}
           >
-            <CalendarRange />
+            <CalendarRangeIcon />
             {isImportingRange ? 'Importando…' : 'Importar festivos (año actual y siguiente)'}
           </Button>
           <Button onClick={() => setDialogHoliday('new')}>
-            <CalendarPlus />
+            <CalendarPlusIcon />
             Añadir festivo
           </Button>
         </div>

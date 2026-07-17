@@ -1,5 +1,5 @@
-import { BookMarked, BookOpen, FileSignature, Pencil, Play, UserCheck } from 'lucide-react';
-import type { LucideIcon } from 'lucide-react';
+import { BookmarkIcon, Pencil2Icon, PlayIcon, ReaderIcon } from '@radix-ui/react-icons';
+import { FileSignatureIcon, type IconComponent, UserCheckIcon } from '@/components/icons';
 import { Badge } from '@/components/ui/Badge';
 import { Switch } from '@/components/ui/Switch';
 import { cn } from '@/lib/utils';
@@ -8,12 +8,12 @@ import type { AdminOnboardingStep } from '../domain/models';
 import type { OnboardingStepType } from '../../domain/models';
 import styles from './OnboardingStepsList.module.css';
 
-const STEP_ICON: Record<OnboardingStepType, LucideIcon> = {
-  video: Play,
-  quiz: BookOpen,
-  signature: FileSignature,
-  manual: BookMarked,
-  profile: UserCheck,
+const STEP_ICON: Record<OnboardingStepType, IconComponent> = {
+  video: PlayIcon,
+  quiz: ReaderIcon,
+  signature: FileSignatureIcon,
+  manual: BookmarkIcon,
+  profile: UserCheckIcon,
 };
 
 // deck-fase6/16-onboarding-config.png — subtítulo fijo por tipo, copiado
@@ -81,7 +81,7 @@ export function OnboardingStepsList({ steps, isLoading, onEdit }: OnboardingStep
               onClick={() => onEdit(step)}
               aria-label={`Editar paso ${step.stepOrder}: ${step.title}`}
             >
-              <Pencil />
+              <Pencil2Icon />
             </button>
           </li>
         );

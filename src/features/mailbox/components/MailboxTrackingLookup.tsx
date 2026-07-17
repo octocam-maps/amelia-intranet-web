@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { AlertTriangle, Clock3, MailQuestion, Search } from 'lucide-react';
+import { ExclamationTriangleIcon, ClockIcon, MagnifyingGlassIcon } from '@radix-ui/react-icons';
+import { MailQuestionIcon } from '@/components/icons';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
@@ -87,14 +88,14 @@ export function MailboxTrackingLookup() {
         </div>
 
         <Button type="submit" variant="dark" className={styles.submit} disabled={isPending}>
-          <Search />
+          <MagnifyingGlassIcon />
           Consultar estado
         </Button>
       </form>
 
       {error && (
         <div className={styles.notice}>
-          <AlertTriangle className={styles.noticeIcon} />
+          <ExclamationTriangleIcon className={styles.noticeIcon} />
           <p>
             {notFound
               ? 'No encontramos ningún mensaje con ese código. Revisa que esté escrito tal y como te lo mostramos al enviarlo.'
@@ -122,14 +123,14 @@ export function MailboxTrackingLookup() {
             </div>
           ) : (
             <div className={styles.pendingNotice}>
-              <Clock3 className={styles.pendingIcon} />
+              <ClockIcon className={styles.pendingIcon} />
               <p>Aún no hay respuesta. Guarda el código y vuelve a consultarlo más tarde.</p>
             </div>
           )}
 
           {!data.adminReply && data.status === 'new' && (
             <p className={styles.hintRow}>
-              <MailQuestion className={styles.hintIcon} />
+              <MailQuestionIcon className={styles.hintIcon} />
               RRHH todavía no ha abierto tu mensaje.
             </p>
           )}

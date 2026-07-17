@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
-import { AlertTriangle, ChevronLeft, ChevronRight, Search, UserPlus } from 'lucide-react';
+import { ChevronLeftIcon, ChevronRightIcon, ExclamationTriangleIcon, MagnifyingGlassIcon } from '@radix-ui/react-icons';
+import { UserPlusIcon } from '@/components/icons';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { Input } from '@/components/ui/Input';
@@ -108,7 +109,7 @@ export function StaffPage() {
           </p>
         </div>
         <Button onClick={() => setDialogMember('new')}>
-          <UserPlus />
+          <UserPlusIcon />
           Añadir persona
         </Button>
       </div>
@@ -119,14 +120,14 @@ export function StaffPage() {
           personas) sin ninguna pista de que algo había fallado. */}
       {error && (
         <div className={styles.errorBanner}>
-          <AlertTriangle className={styles.errorBannerIcon} />
+          <ExclamationTriangleIcon className={styles.errorBannerIcon} />
           No se pudo cargar la plantilla: {error instanceof Error ? error.message : 'error desconocido'}.
         </div>
       )}
 
       {reachedClientCap && (
         <div className={styles.capWarning}>
-          <AlertTriangle className={styles.capWarningIcon} />
+          <ExclamationTriangleIcon className={styles.capWarningIcon} />
           Mostrando los primeros {CLIENT_PAGE_CAP} — puede haber más personas en la plantilla. La
           paginación completa llegará con el contrato del backend.
         </div>
@@ -161,7 +162,7 @@ export function StaffPage() {
           </div>
 
           <div className={styles.searchWrapper}>
-            <Search className={styles.searchIcon} />
+            <MagnifyingGlassIcon className={styles.searchIcon} />
             <Input
               className={styles.searchInput}
               placeholder="Buscar persona…"
@@ -197,7 +198,7 @@ export function StaffPage() {
                 disabled={currentPage === 1}
                 aria-label="Página anterior"
               >
-                <ChevronLeft />
+                <ChevronLeftIcon />
               </button>
               <span className={styles.pageCurrent}>{currentPage}</span>
               <button
@@ -207,7 +208,7 @@ export function StaffPage() {
                 disabled={currentPage === totalPages}
                 aria-label="Página siguiente"
               >
-                <ChevronRight />
+                <ChevronRightIcon />
               </button>
             </div>
           </div>

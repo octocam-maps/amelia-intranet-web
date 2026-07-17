@@ -1,4 +1,4 @@
-import { LogOut, Plus } from 'lucide-react';
+import { ExitIcon, PlusIcon } from '@radix-ui/react-icons';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/Avatar';
 import { Button } from '@/components/ui/Button';
 import {
@@ -59,7 +59,7 @@ function LiveClockPill() {
       <NewAbsenceRequestDialog
         trigger={
           <Button variant="dark" size="sm">
-            <Plus />
+            <PlusIcon />
             Solicitar ausencia
           </Button>
         }
@@ -99,7 +99,7 @@ export function Topbar() {
             <DropdownMenuLabel>{user?.email}</DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem onSelect={() => logout()}>
-              <LogOut className={styles.logoutIcon} />
+              <ExitIcon className={styles.logoutIcon} />
               Cerrar sesión
             </DropdownMenuItem>
           </DropdownMenuContent>

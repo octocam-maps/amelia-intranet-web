@@ -1,13 +1,13 @@
-import { CheckCircle2, Clock3, XCircle } from 'lucide-react';
-import type { LucideIcon } from 'lucide-react';
+import { CheckCircledIcon, ClockIcon, CrossCircledIcon } from '@radix-ui/react-icons';
+import type { IconComponent } from '@/components/icons';
 import type { AbsenceRequest, AbsenceType } from '../domain/models';
 import styles from './AbsenceCompactList.module.css';
 
-const STATUS_ICON: Record<AbsenceRequest['status'], LucideIcon> = {
-  approved: CheckCircle2,
-  pending: Clock3,
-  rejected: XCircle,
-  cancelled: XCircle,
+const STATUS_ICON: Record<AbsenceRequest['status'], IconComponent> = {
+  approved: CheckCircledIcon,
+  pending: ClockIcon,
+  rejected: CrossCircledIcon,
+  cancelled: CrossCircledIcon,
 };
 
 const STATUS_ICON_CLASS: Record<AbsenceRequest['status'], string | undefined> = {

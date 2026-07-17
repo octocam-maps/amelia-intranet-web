@@ -1,4 +1,4 @@
-import { Plus } from 'lucide-react';
+import { PlusIcon } from '@radix-ui/react-icons';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { useHolidays } from '@/features/holidays/application/useHolidays';
@@ -41,7 +41,7 @@ export function EmployeeAbsencesView() {
         <NewAbsenceRequestDialog
           trigger={
             <Button>
-              <Plus />
+              <PlusIcon />
               Solicitar ausencia
             </Button>
           }

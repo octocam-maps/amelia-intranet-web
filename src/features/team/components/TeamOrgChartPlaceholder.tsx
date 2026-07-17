@@ -1,4 +1,4 @@
-import { Network } from 'lucide-react';
+import { NetworkIcon } from '@/components/icons';
 import { Card, CardContent } from '@/components/ui/Card';
 import styles from './TeamOrgChartPlaceholder.module.css';
 
@@ -13,7 +13,7 @@ export function TeamOrgChartPlaceholder() {
     <Card>
       <CardContent className={styles.root}>
         <span className={styles.iconWrap}>
-          <Network className={styles.icon} />
+          <NetworkIcon className={styles.icon} />
         </span>
         <h2 className={styles.title}>Organigrama disponible próximamente</h2>
         <p className={styles.description}>

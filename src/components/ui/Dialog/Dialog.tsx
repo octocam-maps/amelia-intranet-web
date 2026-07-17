@@ -1,7 +1,7 @@
 import { forwardRef } from 'react';
 import type { ElementRef, ComponentPropsWithoutRef, HTMLAttributes } from 'react';
 import * as DialogPrimitive from '@radix-ui/react-dialog';
-import { X } from 'lucide-react';
+import { Cross2Icon } from '@radix-ui/react-icons';
 import { cn } from '@/lib/utils';
 import styles from './Dialog.module.css';
 
@@ -17,7 +17,7 @@ export const DialogContent = forwardRef<
     <DialogPrimitive.Content ref={ref} className={cn(styles.content, className)} {...props}>
       {children}
       <DialogPrimitive.Close className={styles.close} aria-label="Cerrar">
-        <X className={styles.closeIcon} />
+        <Cross2Icon className={styles.closeIcon} />
       </DialogPrimitive.Close>
     </DialogPrimitive.Content>
   </DialogPrimitive.Portal>

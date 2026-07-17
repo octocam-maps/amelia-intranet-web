@@ -1,4 +1,4 @@
-import { Waves } from 'lucide-react';
+import { WavesIcon } from '@/components/icons';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { useAbsenceBalance } from '@/features/absences/application/useAbsenceBalance';
 import { useAbsenceTypes } from '@/features/absences/application/useAbsenceTypes';
@@ -27,7 +27,7 @@ export function ProfileVacationCard() {
     <Card>
       <CardHeader className={styles.headerRow}>
         <CardTitle>Vacaciones {new Date().getFullYear()}</CardTitle>
-        <Waves className={styles.headerIcon} />
+        <WavesIcon className={styles.headerIcon} />
       </CardHeader>
       <CardContent>
         {isLoading ? (

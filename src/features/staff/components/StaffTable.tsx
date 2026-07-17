@@ -1,4 +1,4 @@
-import { MoreHorizontal, Pencil } from 'lucide-react';
+import { DotsHorizontalIcon, Pencil2Icon } from '@radix-ui/react-icons';
 import { Avatar, AvatarFallback } from '@/components/ui/Avatar';
 import { Badge } from '@/components/ui/Badge';
 import {
@@ -142,12 +142,12 @@ export function StaffTable({
                     onClick={() => onEdit(member)}
                     aria-label={`Editar a ${member.fullName}`}
                   >
-                    <Pencil />
+                    <Pencil2Icon />
                   </button>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <button type="button" className={styles.iconButton} aria-label={`Más acciones para ${member.fullName}`}>
-                        <MoreHorizontal />
+                        <DotsHorizontalIcon />
                       </button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent>

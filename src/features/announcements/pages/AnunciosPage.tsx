@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Plus } from 'lucide-react';
+import { PlusIcon } from '@radix-ui/react-icons';
 import { Button } from '@/components/ui/Button';
 import { useAnnouncements } from '../application/useAnnouncements';
 import { AnnouncementFormPanel } from '../components/AnnouncementFormPanel';
@@ -22,7 +22,7 @@ export function AnunciosPage() {
           <p className={styles.subtitle}>Comunicados para toda la plantilla</p>
         </div>
         <Button onClick={() => setSelectedId(null)}>
-          <Plus />
+          <PlusIcon />
           Nuevo anuncio
         </Button>
       </div>

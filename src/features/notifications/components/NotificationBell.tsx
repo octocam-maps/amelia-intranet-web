@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Bell } from 'lucide-react';
+import { BellIcon } from '@radix-ui/react-icons';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from '@/components/ui/DropdownMenu';
 import { useMarkAllRead } from '../application/useMarkAllRead';
 import { useMarkRead } from '../application/useMarkRead';
@@ -45,7 +45,7 @@ export function NotificationBell() {
   return (
     <DropdownMenu open={open} onOpenChange={setOpen}>
       <DropdownMenuTrigger className={styles.trigger} title="Notificaciones">
-        <Bell className={styles.bellIcon} />
+        <BellIcon className={styles.bellIcon} />
         {unreadCount > 0 && <span className={styles.badge}>{unreadCount > 99 ? '99+' : unreadCount}</span>}
       </DropdownMenuTrigger>
       <DropdownMenuContent>

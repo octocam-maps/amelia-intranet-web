@@ -1,4 +1,4 @@
-import { CalendarClock } from 'lucide-react';
+import { CalendarClockIcon } from '@/components/icons';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/Tabs';
 import type { AdminMetricsKpis, PendingAbsenceRequestSummary } from '../domain/models';
@@ -24,7 +24,7 @@ export function AdminHomeTabs({ pendingAbsenceRequests, metricsKpis, isMetricsLo
     <Card>
       <CardHeader className={styles.headerRow}>
         <CardTitle>Resumen operativo</CardTitle>
-        <CalendarClock className={styles.headerIcon} />
+        <CalendarClockIcon className={styles.headerIcon} />
       </CardHeader>
       <CardContent>
         <Tabs defaultValue="ausencias">

@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { ChevronLeft, ChevronRight, Download } from 'lucide-react';
+import { ChevronLeftIcon, ChevronRightIcon, DownloadIcon } from '@radix-ui/react-icons';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { useStaffList } from '@/features/staff/application/useStaffList';
@@ -125,7 +125,7 @@ export function TimeClockPage() {
               del cliente: admin recibe TODA la plantilla, empleado recibe
               SOLO sus propios fichajes (RGPD) — mismo botón para los dos. */}
           <Button variant="outline" disabled={isExportingXlsx} onClick={() => exportXlsx()}>
-            <Download size={16} />
+            <DownloadIcon />
             {isExportingXlsx ? 'Generando…' : 'Descargar Excel'}
           </Button>
         </div>
@@ -194,7 +194,7 @@ export function TimeClockPage() {
                       disabled={currentPage === 1}
                       aria-label="Página anterior"
                     >
-                      <ChevronLeft />
+                      <ChevronLeftIcon />
                     </button>
                     <span className={styles.pageCurrent}>{currentPage}</span>
                     <button
@@ -204,7 +204,7 @@ export function TimeClockPage() {
                       disabled={currentPage === totalPages}
                       aria-label="Página siguiente"
                     >
-                      <ChevronRight />
+                      <ChevronRightIcon />
                     </button>
                   </div>
                 </div>

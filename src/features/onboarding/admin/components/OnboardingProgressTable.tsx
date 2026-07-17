@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { RotateCcw } from 'lucide-react';
+import { ResetIcon } from '@radix-ui/react-icons';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/Avatar';
 import { Button } from '@/components/ui/Button';
 import { cn } from '@/lib/utils';
@@ -149,7 +149,7 @@ export function OnboardingProgressTable({ employees, isLoading, quizStepId }: On
                       onClick={() => handleReopen(employee)}
                       title={!quizStepId ? 'No se ha podido cargar el paso del cuestionario' : undefined}
                     >
-                      <RotateCcw />
+                      <ResetIcon />
                       Reabrir cuestionario
                     </Button>
                   ) : (

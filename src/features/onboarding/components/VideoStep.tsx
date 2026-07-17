@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { CheckCircle2, Lock, Play } from 'lucide-react';
+import { CheckCircledIcon, LockClosedIcon, PlayIcon } from '@radix-ui/react-icons';
 import hincatorVideo from '@/assets/videos/hincator.mp4';
 import { useReportVideoProgress } from '../application/useReportVideoProgress';
 import type { OnboardingStep, VideoStepConfig } from '../domain/models';
@@ -191,13 +191,13 @@ export function VideoStep({ step }: VideoStepProps) {
 
       <div className={styles.playerWrapper}>
         <span className={styles.lockBadge}>
-          <Lock className={styles.lockIcon} />
+          <LockClosedIcon className={styles.lockIcon} />
           No se puede adelantar
         </span>
 
         {isCompleted ? (
           <div className={styles.completedOverlay}>
-            <CheckCircle2 className={styles.completedIcon} />
+            <CheckCircledIcon className={styles.completedIcon} />
             <span className={styles.completedLabel}>Vídeo completado</span>
           </div>
         ) : null}
@@ -222,7 +222,7 @@ export function VideoStep({ step }: VideoStepProps) {
             onClick={togglePlay}
             aria-label="Reproducir vídeo"
           >
-            <Play className={styles.playIcon} />
+            <PlayIcon className={styles.playIcon} />
           </button>
         ) : null}
 
@@ -243,12 +243,12 @@ export function VideoStep({ step }: VideoStepProps) {
       <div className={styles.footer}>
         {isCompleted ? (
           <span className={styles.footerHint}>
-            <CheckCircle2 className={styles.footerHintIcon} />
+            <CheckCircledIcon className={styles.footerHintIcon} />
             ¡Buen comienzo! Paso 1 completado
           </span>
         ) : (
           <span className={styles.footerHint}>
-            <Lock className={styles.footerHintIcon} />
+            <LockClosedIcon className={styles.footerHintIcon} />
             Termina el vídeo para desbloquear el siguiente paso · {displayPct}%
           </span>
         )}

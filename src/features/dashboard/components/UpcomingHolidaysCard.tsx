@@ -1,4 +1,4 @@
-import { CalendarHeart } from 'lucide-react';
+import { CalendarHeartIcon } from '@/components/icons';
 import { Badge } from '@/components/ui/Badge';
 import type { BadgeProps } from '@/components/ui/Badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
@@ -29,7 +29,7 @@ export function UpcomingHolidaysCard({ holidays }: { holidays: UpcomingHoliday[]
     <Card>
       <CardHeader className={styles.headerRow}>
         <CardTitle>Próximos festivos</CardTitle>
-        <CalendarHeart className={styles.icon} />
+        <CalendarHeartIcon className={styles.icon} />
       </CardHeader>
       <CardContent>
         {holidays.length === 0 ? (

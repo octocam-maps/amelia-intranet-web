@@ -1,4 +1,4 @@
-import { Building2, Filter } from 'lucide-react';
+import { BuildingIcon, FilterIcon } from '@/components/icons';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/Select';
 import { useOrgFilterOptions } from '../application/useOrgFilterOptions';
 import styles from './AdminFiltersBar.module.css';
@@ -44,12 +44,12 @@ export function AdminFiltersBar({ value, onChange }: AdminFiltersBarProps) {
   return (
     <div className={styles.bar}>
       <span className={styles.label}>
-        <Filter className={styles.labelIcon} />
+        <FilterIcon className={styles.labelIcon} />
         Filtrar por
       </span>
 
       <div className={styles.field}>
-        <Building2 className={styles.fieldIcon} />
+        <BuildingIcon className={styles.fieldIcon} />
         <Select value={value.entityId ?? ALL_VALUE} onValueChange={handleEntityChange} disabled={isLoading}>
           <SelectTrigger className={styles.trigger} aria-label="Filtrar por sede">
             <SelectValue placeholder="Sede" />

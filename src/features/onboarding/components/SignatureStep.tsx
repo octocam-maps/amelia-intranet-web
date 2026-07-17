@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { CheckCircle2, FileText, ShieldCheck } from 'lucide-react';
+import { CheckCircledIcon, FileTextIcon } from '@radix-ui/react-icons';
+import { ShieldCheckIcon } from '@/components/icons';
 import { Button } from '@/components/ui/Button';
 import { useSignDocument } from '../application/useSignDocument';
 import type { OnboardingStep, SignDocumentResult } from '../domain/models';
@@ -56,7 +57,7 @@ export function SignatureStep({ step }: SignatureStepProps) {
     return (
       <div className={styles.root}>
         <div className={styles.signedCard}>
-          <CheckCircle2 className={styles.signedIcon} />
+          <CheckCircledIcon className={styles.signedIcon} />
           <h2 className={styles.signedTitle}>Documento firmado</h2>
           <p className={styles.signedSubtitle}>
             Tu firma ha quedado registrada de forma trazable: fecha, hora, dirección IP y huella del
@@ -86,7 +87,7 @@ export function SignatureStep({ step }: SignatureStepProps) {
 
       <div className={styles.documentPreview}>
         <div className={styles.documentHeader}>
-          <FileText className={styles.documentIcon} />
+          <FileTextIcon className={styles.documentIcon} />
           <span>Acuerdo de confidencialidad.pdf</span>
         </div>
         <div className={styles.documentPlaceholder}>
@@ -101,7 +102,7 @@ export function SignatureStep({ step }: SignatureStepProps) {
 
       <div className={styles.registerCard}>
         <div className={styles.registerHeader}>
-          <ShieldCheck className={styles.registerIcon} />
+          <ShieldCheckIcon className={styles.registerIcon} />
           Datos que se registrarán al firmar
         </div>
         <p className={styles.registerText}>

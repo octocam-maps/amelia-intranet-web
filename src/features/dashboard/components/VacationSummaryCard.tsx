@@ -1,4 +1,4 @@
-import { Waves } from 'lucide-react';
+import { WavesIcon } from '@/components/icons';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import type { VacationBalance } from '../domain/models';
 import styles from './VacationSummaryCard.module.css';
@@ -15,7 +15,7 @@ export function VacationSummaryCard({ title, balance }: VacationSummaryCardProps
     <Card>
       <CardHeader className={styles.headerRow}>
         <CardTitle>{title}</CardTitle>
-        <Waves className={styles.icon} />
+        <WavesIcon className={styles.icon} />
       </CardHeader>
       <CardContent>
         {balance ? (

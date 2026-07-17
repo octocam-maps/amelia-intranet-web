@@ -1,4 +1,4 @@
-import { Pencil, Trash2 } from 'lucide-react';
+import { Pencil2Icon, TrashIcon } from '@radix-ui/react-icons';
 import { Badge } from '@/components/ui/Badge';
 import type { Holiday, HolidayScope } from '../domain/models';
 import styles from './HolidaysTable.module.css';
@@ -80,7 +80,7 @@ export function HolidaysTable({ holidays, isLoading, year, onEdit, onDelete }: H
                   onClick={() => onEdit(holiday)}
                   aria-label={`Editar ${holiday.name}`}
                 >
-                  <Pencil />
+                  <Pencil2Icon />
                 </button>
                 <button
                   type="button"
@@ -88,7 +88,7 @@ export function HolidaysTable({ holidays, isLoading, year, onEdit, onDelete }: H
                   onClick={() => onDelete(holiday)}
                   aria-label={`Eliminar ${holiday.name}`}
                 >
-                  <Trash2 />
+                  <TrashIcon />
                 </button>
               </div>
             </td>

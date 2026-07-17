@@ -1,18 +1,14 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import {
-  Building2,
-  CalendarDays,
-  Check,
-  Hourglass,
-  Mail,
-  MapPin,
-  Pencil,
-  Phone,
-  UserCog,
-  Users,
-  X,
-} from 'lucide-react';
+  CalendarIcon,
+  CheckIcon,
+  Cross2Icon,
+  EnvelopeClosedIcon,
+  Pencil2Icon,
+  SewingPinIcon,
+} from '@radix-ui/react-icons';
+import { BuildingIcon, HourglassIcon, PhoneIcon, UserCogIcon, UsersIcon } from '@/components/icons';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Label } from '@/components/ui/Label';
@@ -90,12 +86,12 @@ export function ProfileDetails({ profile }: ProfileDetailsProps) {
   });
 
   const readOnlyRows = [
-    { icon: Mail, label: 'Correo', value: profile.email },
-    { icon: Building2, label: 'Entidad', value: profile.entityName ?? 'Sin asignar' },
-    { icon: Users, label: 'Departamento', value: profile.departmentName ?? 'Sin asignar' },
-    { icon: UserCog, label: 'Responsable', value: profile.managerName ?? 'Sin asignar' },
-    { icon: CalendarDays, label: 'Fecha de incorporación', value: formatHireDate(profile.hireDate) },
-    { icon: Hourglass, label: 'Antigüedad', value: formatTenure(profile.hireDate) },
+    { icon: EnvelopeClosedIcon, label: 'Correo', value: profile.email },
+    { icon: BuildingIcon, label: 'Entidad', value: profile.entityName ?? 'Sin asignar' },
+    { icon: UsersIcon, label: 'Departamento', value: profile.departmentName ?? 'Sin asignar' },
+    { icon: UserCogIcon, label: 'Responsable', value: profile.managerName ?? 'Sin asignar' },
+    { icon: CalendarIcon, label: 'Fecha de incorporación', value: formatHireDate(profile.hireDate) },
+    { icon: HourglassIcon, label: 'Antigüedad', value: formatTenure(profile.hireDate) },
   ];
 
   const startEditing = () => {
@@ -122,7 +118,7 @@ export function ProfileDetails({ profile }: ProfileDetailsProps) {
         <h2 className={styles.title}>Datos personales</h2>
         {!isEditing && (
           <Button type="button" variant="ghost" size="sm" onClick={startEditing}>
-            <Pencil className={styles.actionIcon} />
+            <Pencil2Icon className={styles.actionIcon} />
             Editar
           </Button>
         )}
@@ -143,14 +139,14 @@ export function ProfileDetails({ profile }: ProfileDetailsProps) {
           <>
             <div className={styles.row}>
               <dt className={styles.label}>
-                <Phone className={styles.icon} />
+                <PhoneIcon className={styles.icon} />
                 Teléfono
               </dt>
               <dd className={styles.value}>{profile.phone ?? '—'}</dd>
             </div>
             <div className={styles.row}>
               <dt className={styles.label}>
-                <MapPin className={styles.icon} />
+                <SewingPinIcon className={styles.icon} />
                 Ciudad
               </dt>
               <dd className={styles.value}>{profile.city ?? '—'}</dd>
@@ -197,11 +193,11 @@ export function ProfileDetails({ profile }: ProfileDetailsProps) {
 
           <div className={styles.formActions}>
             <Button type="button" variant="outline" size="sm" onClick={cancelEditing} disabled={isPending}>
-              <X className={styles.actionIcon} />
+              <Cross2Icon className={styles.actionIcon} />
               Cancelar
             </Button>
             <Button type="submit" size="sm" disabled={isPending}>
-              <Check className={styles.actionIcon} />
+              <CheckIcon className={styles.actionIcon} />
               {isPending ? 'Guardando…' : 'Guardar'}
             </Button>
           </div>

@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import * as DropdownMenuPrimitive from '@radix-ui/react-dropdown-menu';
-import { Check, ChevronDown, Users } from 'lucide-react';
+import { CheckIcon, ChevronDownIcon } from '@radix-ui/react-icons';
+import { UsersIcon } from '@/components/icons';
 import { cn } from '@/lib/utils';
 import styles from './PersonMultiSelect.module.css';
 
@@ -52,9 +53,9 @@ export function PersonMultiSelect({
           className={cn(styles.trigger, className)}
           aria-label="Filtrar por persona"
         >
-          <Users className={styles.triggerLeadingIcon} />
+          <UsersIcon className={styles.triggerLeadingIcon} />
           <span className={styles.triggerLabel}>{label}</span>
-          <ChevronDown className={styles.triggerIcon} />
+          <ChevronDownIcon className={styles.triggerIcon} />
         </button>
       </DropdownMenuPrimitive.Trigger>
       <DropdownMenuPrimitive.Portal>
@@ -69,7 +70,7 @@ export function PersonMultiSelect({
             onCheckedChange={() => onChange([])}
           >
             <span className={styles.itemIndicator}>
-              {selectedIds.length === 0 && <Check className={styles.checkIcon} />}
+              {selectedIds.length === 0 && <CheckIcon className={styles.checkIcon} />}
             </span>
             Todas las personas
           </DropdownMenuPrimitive.CheckboxItem>
@@ -85,7 +86,7 @@ export function PersonMultiSelect({
               onCheckedChange={() => toggle(person.id)}
             >
               <span className={styles.itemIndicator}>
-                {selectedSet.has(person.id) && <Check className={styles.checkIcon} />}
+                {selectedSet.has(person.id) && <CheckIcon className={styles.checkIcon} />}
               </span>
               {person.fullName}
             </DropdownMenuPrimitive.CheckboxItem>

@@ -1,4 +1,4 @@
-import { ArrowLeft, Search } from 'lucide-react';
+import { ArrowLeftIcon, MagnifyingGlassIcon } from '@radix-ui/react-icons';
 import { Link } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/Card';
 import { MailboxTrackingLookup } from '../components/MailboxTrackingLookup';
@@ -16,7 +16,7 @@ export function MailboxTrackingPage() {
       <Card className={styles.card}>
         <div className={styles.header}>
           <div className={styles.icon}>
-            <Search />
+            <MagnifyingGlassIcon />
           </div>
           <p className={styles.title}>Seguimiento de tu mensaje</p>
           <p className={styles.subtitle}>
@@ -27,7 +27,7 @@ export function MailboxTrackingPage() {
         <CardContent className={styles.body}>
           <MailboxTrackingLookup />
           <Link to="/buzon-anonimo" className={styles.back}>
-            <ArrowLeft />
+            <ArrowLeftIcon />
             Volver al buzón anónimo
           </Link>
         </CardContent>

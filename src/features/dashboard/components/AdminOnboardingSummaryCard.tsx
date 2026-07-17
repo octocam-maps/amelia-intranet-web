@@ -1,4 +1,4 @@
-import { UserPlus } from 'lucide-react';
+import { UserPlusIcon } from '@/components/icons';
 import { Link } from 'react-router-dom';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/Avatar';
 import { Badge } from '@/components/ui/Badge';
@@ -48,7 +48,7 @@ export function AdminOnboardingSummaryCard() {
     <Card>
       <CardHeader className={styles.headerRow}>
         <CardTitle>Onboarding en curso</CardTitle>
-        <UserPlus className={styles.headerIcon} />
+        <UserPlusIcon className={styles.headerIcon} />
       </CardHeader>
       <CardContent className={styles.content}>
         {isLoading ? (

@@ -1,5 +1,6 @@
-import { ChevronRight, Megaphone, Users, Zap } from 'lucide-react';
+import { ChevronRightIcon, LightningBoltIcon } from '@radix-ui/react-icons';
 import type { ComponentType } from 'react';
+import { MegaphoneIcon, UsersIcon } from '@/components/icons';
 import { Link } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import styles from './AdminQuickLinksCard.module.css';
@@ -11,8 +12,8 @@ interface QuickLink {
 }
 
 const LINKS: QuickLink[] = [
-  { to: '/administracion/plantilla', label: 'Gestionar plantilla', icon: Users },
-  { to: '/administracion/anuncios', label: 'Crear anuncio', icon: Megaphone },
+  { to: '/administracion/plantilla', label: 'Gestionar plantilla', icon: UsersIcon },
+  { to: '/administracion/anuncios', label: 'Crear anuncio', icon: MegaphoneIcon },
 ];
 
 /** "Accesos rápidos" de la columna derecha del Home admin — atajos a las
@@ -22,14 +23,14 @@ export function AdminQuickLinksCard() {
     <Card>
       <CardHeader className={styles.headerRow}>
         <CardTitle>Accesos rápidos</CardTitle>
-        <Zap className={styles.headerIcon} />
+        <LightningBoltIcon className={styles.headerIcon} />
       </CardHeader>
       <CardContent className={styles.list}>
         {LINKS.map(({ to, label, icon: Icon }) => (
           <Link key={to} to={to} className={styles.link}>
             <Icon className={styles.linkIcon} />
             <span className={styles.linkLabel}>{label}</span>
-            <ChevronRight className={styles.chevron} />
+            <ChevronRightIcon className={styles.chevron} />
           </Link>
         ))}
       </CardContent>

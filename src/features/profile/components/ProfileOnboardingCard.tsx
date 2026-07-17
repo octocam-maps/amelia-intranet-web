@@ -1,4 +1,5 @@
-import { CheckCircle2, GraduationCap } from 'lucide-react';
+import { CheckCircledIcon } from '@radix-ui/react-icons';
+import { GraduationCapIcon } from '@/components/icons';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { useMyOnboarding } from '@/features/onboarding/application/useMyOnboarding';
 import styles from './ProfileOnboardingCard.module.css';
@@ -20,7 +21,7 @@ export function ProfileOnboardingCard() {
     <Card>
       <CardHeader className={styles.headerRow}>
         <CardTitle>Onboarding</CardTitle>
-        <GraduationCap className={styles.headerIcon} />
+        <GraduationCapIcon className={styles.headerIcon} />
       </CardHeader>
       <CardContent>
         {isLoading ? (
@@ -31,7 +32,7 @@ export function ProfileOnboardingCard() {
           <p className={styles.empty}>No tienes pasos de onboarding asignados.</p>
         ) : allCompleted ? (
           <div className={styles.completedRow}>
-            <CheckCircle2 className={styles.completedIcon} />
+            <CheckCircledIcon className={styles.completedIcon} />
             <span className={styles.completedLabel}>Onboarding completado</span>
           </div>
         ) : (

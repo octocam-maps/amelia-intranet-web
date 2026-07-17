@@ -1,4 +1,4 @@
-import { Plus, X } from 'lucide-react';
+import { Cross2Icon, PlusIcon } from '@radix-ui/react-icons';
 import { useFieldArray, useFormContext } from 'react-hook-form';
 import { Input } from '@/components/ui/Input';
 import type { StepFormValues } from './step-form.types';
@@ -53,7 +53,7 @@ function QuestionRow({ index, canRemove, onRemove }: QuestionRowProps) {
           disabled={!canRemove}
           aria-label={`Eliminar pregunta ${index + 1}`}
         >
-          <X />
+          <Cross2Icon />
         </button>
       </div>
 
@@ -82,7 +82,7 @@ function QuestionRow({ index, canRemove, onRemove }: QuestionRowProps) {
               disabled={optionFields.length <= MIN_OPTIONS}
               aria-label={`Eliminar opción ${optionIndex + 1}`}
             >
-              <X />
+              <Cross2Icon />
             </button>
           </div>
         ))}
@@ -92,7 +92,7 @@ function QuestionRow({ index, canRemove, onRemove }: QuestionRowProps) {
         className={styles.addOptionButton}
         onClick={() => appendOption({ value: '' })}
       >
-        <Plus />
+        <PlusIcon />
         Añadir opción
       </button>
     </fieldset>
@@ -130,7 +130,7 @@ export function QuizQuestionsEditor() {
           })
         }
       >
-        <Plus />
+        <PlusIcon />
         Añadir pregunta
       </button>
     </div>
