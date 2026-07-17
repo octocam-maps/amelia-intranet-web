@@ -29,6 +29,11 @@ export const SelectContent = forwardRef<
     <SelectPrimitive.Content
       ref={ref}
       position={position}
+      // Consistencia en TODA la app: el desplegable siempre se abre hacia
+      // abajo (sin el auto-flip de Radix, que volteaba hacia arriba las listas
+      // largas). La altura se acota al espacio disponible vía CSS
+      // (--radix-select-content-available-height) y hace scroll si no entra.
+      {...(position === 'popper' ? { side: 'bottom' as const, avoidCollisions: false } : {})}
       className={cn(styles.content, position === 'popper' && styles.contentPopper, className)}
       {...props}
     >
