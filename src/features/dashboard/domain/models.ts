@@ -53,31 +53,8 @@ export interface AdminMetricsKpis {
   punctualityPct: number;
 }
 
-/** Series diarias del periodo (cronológicas, un punto por día) — alimentan
- * los sparklines de `AdminKpiRow`. No existe serie para `pendingApprovals`
- * (el backend no la calcula, es un conteo puntual): esa tarjeta se pinta
- * sin sparkline en vez de inventar una. */
-export interface AdminMetricsTrends {
-  absences: number[];
-  clockedIn: number[];
-  punctuality: number[];
-}
-
-export type AttendanceRadarKind = 'late_in' | 'overtime_out' | 'on_time' | 'negative_balance';
-
-export interface AttendanceRadarItem {
-  userId: string;
-  fullName: string;
-  avatarUrl: string | null;
-  kind: AttendanceRadarKind;
-  valueMinutes: number;
-  detail: string;
-}
-
 export interface AdminDashboardMetrics {
   kpis: AdminMetricsKpis;
-  trends: AdminMetricsTrends;
-  attendanceRadar: AttendanceRadarItem[];
 }
 
 // --- Filtros globales (Sede/Departamento) -----------------------------------

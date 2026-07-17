@@ -1,7 +1,6 @@
 import { parseEnum } from '@/lib/parseEnum';
 import type {
   AdminDashboardMetrics,
-  AttendanceRadarKind,
   DashboardSummary,
   OrgDepartmentOption,
   OrgEntityCode,
@@ -10,7 +9,6 @@ import type {
 } from '../domain/models';
 import type { AdminMetricsDTO, DashboardSummaryDTO, StaffLookupMemberDTO } from './dtos';
 
-const RADAR_KINDS: AttendanceRadarKind[] = ['late_in', 'overtime_out', 'on_time', 'negative_balance'];
 const ENTITY_CODES: OrgEntityCode[] = ['hub', 'lab', 'ops'];
 
 // Nombre para mostrar por código de entidad — el backend solo manda el
@@ -60,19 +58,6 @@ export function metricsFromDTO(dto: AdminMetricsDTO): AdminDashboardMetrics {
       clockedInNow: dto.kpis.clocked_in_now,
       punctualityPct: dto.kpis.punctuality_pct,
     },
-    trends: {
-      absences: dto.trends.absences,
-      clockedIn: dto.trends.clocked_in,
-      punctuality: dto.trends.punctuality,
-    },
-    attendanceRadar: dto.attendance_radar.map((item) => ({
-      userId: item.user_id,
-      fullName: item.full_name,
-      avatarUrl: item.avatar_url,
-      kind: parseEnum(item.kind, RADAR_KINDS, 'on_time'),
-      valueMinutes: item.value_minutes,
-      detail: item.detail,
-    })),
   };
 }
 

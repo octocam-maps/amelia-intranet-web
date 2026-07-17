@@ -44,25 +44,8 @@ export interface AdminMetricsKpisDTO {
   punctuality_pct: number;
 }
 
-export interface AdminMetricsTrendsDTO {
-  absences: number[];
-  clocked_in: number[];
-  punctuality: number[];
-}
-
-export interface AttendanceRadarItemDTO {
-  user_id: string;
-  full_name: string;
-  avatar_url: string | null;
-  kind: string;
-  value_minutes: number;
-  detail: string;
-}
-
 export interface AdminMetricsDTO {
   kpis: AdminMetricsKpisDTO;
-  trends: AdminMetricsTrendsDTO;
-  attendance_radar: AttendanceRadarItemDTO[];
 }
 
 // --- `GET /staff` — solo los campos usados para resolver los filtros de
