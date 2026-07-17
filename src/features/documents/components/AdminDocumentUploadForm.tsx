@@ -16,6 +16,21 @@ const CATEGORY_LABEL: Record<DocumentCategory, string> = {
 };
 const CATEGORIES = Object.keys(CATEGORY_LABEL) as DocumentCategory[];
 
+const MONTHS: { value: string; label: string }[] = [
+  { value: '01', label: 'Enero' },
+  { value: '02', label: 'Febrero' },
+  { value: '03', label: 'Marzo' },
+  { value: '04', label: 'Abril' },
+  { value: '05', label: 'Mayo' },
+  { value: '06', label: 'Junio' },
+  { value: '07', label: 'Julio' },
+  { value: '08', label: 'Agosto' },
+  { value: '09', label: 'Septiembre' },
+  { value: '10', label: 'Octubre' },
+  { value: '11', label: 'Noviembre' },
+  { value: '12', label: 'Diciembre' },
+];
+
 // Techo "generoso" de plantilla para el selector — mismo criterio que
 // `StaffPage` (el backend todavía no pagina de verdad `GET /staff`).
 const STAFF_PICKER_CAP = 200;
@@ -30,22 +45,23 @@ function titleFromFilename(name: string): string {
  * que el sync desde Drive (`NOMINA_YYYY-MM*`, `CONTRATO*`), para que un lote
  * llegue ya casi categorizado. Es solo un default: el admin lo ajusta por fila.
  */
-function detectCategory(name: string): { category: DocumentCategory; period: string } {
+function detectFromFilename(name: string): { category: DocumentCategory; periodYear: string; periodMonth: string } {
   const base = name.replace(/\.pdf$/i, '');
   const nomina = base.match(/^NOMINA[_\-\s]?(\d{4})-(\d{2})/i);
   if (nomina && nomina[1] && nomina[2]) {
-    return { category: 'payslip', period: `${nomina[1]}-${nomina[2]}` };
+    return { category: 'payslip', periodYear: nomina[1], periodMonth: nomina[2] };
   }
   if (/^CONTRATO/i.test(base)) {
-    return { category: 'contract', period: '' };
+    return { category: 'contract', periodYear: '', periodMonth: '' };
   }
-  return { category: 'general', period: '' };
+  return { category: 'general', periodYear: '', periodMonth: '' };
 }
 
 interface UploadItem {
   file: File;
   category: DocumentCategory;
-  period: string;
+  periodYear: string;
+  periodMonth: string;
   title: string;
 }
 
@@ -57,10 +73,10 @@ interface AdminDocumentUploadFormProps {
 /**
  * deck-fase4 · admin "Subir documento" — sube uno o VARIOS PDF al MISMO
  * empleado, y CADA archivo lleva su propio tipo/período/título (un lote puede
- * mezclar nómina + contrato + otros). `POST /documents` es un archivo por
- * request, así que el form hace N llamadas. La carga masiva entre empleados
- * distintos se resuelve por el sync desde Drive, no aquí. El backend es la
- * autoridad final (MIME, tamaño, `user_id` existente).
+ * mezclar nómina + contrato + otros). El período (Mes + Año) solo aplica a
+ * nóminas. `POST /documents` es un archivo por request, así que el form hace N
+ * llamadas. La carga masiva entre empleados distintos se resuelve por el sync
+ * desde Drive. El backend es la autoridad final (MIME, tamaño, `user_id`).
  */
 export function AdminDocumentUploadForm({ onSaved, onCancel }: AdminDocumentUploadFormProps) {
   const [userId, setUserId] = useState('');
@@ -68,6 +84,11 @@ export function AdminDocumentUploadForm({ onSaved, onCancel }: AdminDocumentUplo
   const [formError, setFormError] = useState<string | null>(null);
   const [progress, setProgress] = useState<{ done: number; total: number } | null>(null);
   const [busy, setBusy] = useState(false);
+
+  const years = useMemo(() => {
+    const current = new Date().getFullYear();
+    return Array.from({ length: 8 }, (_, i) => String(current + 1 - i));
+  }, []);
 
   const { data: staff, isLoading: isLoadingStaff } = useStaffList({ pageSize: STAFF_PICKER_CAP });
   const members = useMemo(
@@ -85,8 +106,14 @@ export function AdminDocumentUploadForm({ onSaved, onCancel }: AdminDocumentUplo
     }
     setItems(
       selected.map((file) => {
-        const detected = detectCategory(file.name);
-        return { file, category: detected.category, period: detected.period, title: titleFromFilename(file.name) };
+        const detected = detectFromFilename(file.name);
+        return {
+          file,
+          category: detected.category,
+          periodYear: detected.periodYear,
+          periodMonth: detected.periodMonth,
+          title: titleFromFilename(file.name),
+        };
       })
     );
     setFormError(null);
@@ -114,13 +141,14 @@ export function AdminDocumentUploadForm({ onSaved, onCancel }: AdminDocumentUplo
     // reportar exactamente cuáles fallaron sin abortar los demás.
     const failures: string[] = [];
     for (const [i, item] of items.entries()) {
+      const period = item.periodYear && item.periodMonth ? `${item.periodYear}-${item.periodMonth}` : undefined;
       try {
         await upload({
           file: item.file,
           userId,
           category: item.category,
           title: item.title.trim() || titleFromFilename(item.file.name),
-          period: item.period || undefined,
+          period,
         });
       } catch {
         failures.push(item.file.name);
@@ -181,33 +209,71 @@ export function AdminDocumentUploadForm({ onSaved, onCancel }: AdminDocumentUplo
                 {item.file.name}
               </p>
               <div className={styles.fileControls}>
-                <Select
-                  value={item.category}
-                  onValueChange={(value) => updateItem(i, { category: value as DocumentCategory })}
-                >
-                  <SelectTrigger aria-label={`Categoría de ${item.file.name}`}>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {CATEGORIES.map((code) => (
-                      <SelectItem key={code} value={code}>
-                        {CATEGORY_LABEL[code]}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <Input
-                  type="month"
-                  aria-label={`Período de ${item.file.name}`}
-                  value={item.period}
-                  onChange={(e) => updateItem(i, { period: e.target.value })}
-                />
-                <Input
-                  aria-label={`Título de ${item.file.name}`}
-                  placeholder="Título"
-                  value={item.title}
-                  onChange={(e) => updateItem(i, { title: e.target.value })}
-                />
+                <div className={styles.control}>
+                  <Select
+                    value={item.category}
+                    onValueChange={(value) => updateItem(i, { category: value as DocumentCategory })}
+                  >
+                    <SelectTrigger aria-label={`Categoría de ${item.file.name}`}>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {CATEGORIES.map((code) => (
+                        <SelectItem key={code} value={code}>
+                          {CATEGORY_LABEL[code]}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {item.category === 'payslip' && (
+                  <>
+                    <div className={styles.control}>
+                      <Select
+                        value={item.periodMonth}
+                        onValueChange={(value) => updateItem(i, { periodMonth: value })}
+                      >
+                        <SelectTrigger aria-label={`Mes de ${item.file.name}`}>
+                          <SelectValue placeholder="Mes" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {MONTHS.map((month) => (
+                            <SelectItem key={month.value} value={month.value}>
+                              {month.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className={styles.control}>
+                      <Select
+                        value={item.periodYear}
+                        onValueChange={(value) => updateItem(i, { periodYear: value })}
+                      >
+                        <SelectTrigger aria-label={`Año de ${item.file.name}`}>
+                          <SelectValue placeholder="Año" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {years.map((year) => (
+                            <SelectItem key={year} value={year}>
+                              {year}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </>
+                )}
+
+                <div className={styles.controlTitle}>
+                  <Input
+                    aria-label={`Título de ${item.file.name}`}
+                    placeholder="Título"
+                    value={item.title}
+                    onChange={(e) => updateItem(i, { title: e.target.value })}
+                  />
+                </div>
               </div>
             </div>
           ))}
