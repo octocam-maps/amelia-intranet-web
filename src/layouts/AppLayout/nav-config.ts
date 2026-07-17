@@ -1,4 +1,12 @@
-import { AvatarIcon, BellIcon, CalendarIcon, ClockIcon, FileTextIcon, HomeIcon } from '@radix-ui/react-icons';
+import {
+  ArchiveIcon,
+  AvatarIcon,
+  BellIcon,
+  CalendarIcon,
+  ClockIcon,
+  FileTextIcon,
+  HomeIcon,
+} from '@radix-ui/react-icons';
 import {
   CalendarClockIcon,
   CalendarRangeIcon,
@@ -66,10 +74,15 @@ const calendarioGeneral: NavItem = {
 // Fase 6 R1: "Plantilla" y "Buzón (recepción)" ya tienen página real.
 // Fase 6 R2: "Anuncios", "Festivos" y "Tipos de ausencia" se suman.
 // Fase 6 R3: "Onboarding" (gestión de pasos + progreso de la plantilla) se suma.
+// Fase 4: "Documentos" (subida manual + "Sincronizar ahora" con Drive) se
+// suma — icono distinto (ArchiveIcon) del "Documentos" del navbar general
+// (FileTextIcon, `documentos` más arriba) para diferenciar la vista de
+// gestión de toda la plantilla de la carpeta personal de cada persona.
 export const ADMIN_SECTION_ITEMS: NavItem[] = [
   { label: 'Plantilla', to: '/administracion/plantilla', icon: UsersIcon },
   { label: 'Aprobar ausencias', to: '/ausencias', icon: InboxIcon },
   calendarioGeneral,
+  { label: 'Documentos', to: '/administracion/documentos', icon: ArchiveIcon },
   { label: 'Anuncios', to: '/administracion/anuncios', icon: BellIcon },
   { label: 'Buzón (recepción)', to: '/administracion/buzon', icon: MailboxIcon },
   { label: 'Onboarding', to: '/administracion/onboarding', icon: GraduationCapIcon },
