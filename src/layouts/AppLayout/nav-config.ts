@@ -78,7 +78,7 @@ export const ADMIN_SECTION_ITEMS: NavItem[] = [
 ];
 
 // docs/permisos-roles.md § "Navbar por rol" — copiado literal, un ítem por rol.
-// `socio` (migración 024, fuera de `docs/permisos-roles.md` todavía): igual
+// `socio` (migración 024, ya documentado en `docs/permisos-roles.md`): igual
 // que `empleado` + el único ítem extra "Calendario general" — NUNCA la
 // sección "Administración" completa (Sidebar.tsx solo la muestra si
 // `isAdmin`). "Ocultar ≠ proteger": el backend ya rechaza a `empleado` con
