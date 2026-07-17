@@ -155,7 +155,7 @@
 }
 
 .fileCell {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: var(--space-2);
   font-weight: 500;

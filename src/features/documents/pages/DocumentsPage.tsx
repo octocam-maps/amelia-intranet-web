@@ -112,9 +112,11 @@ export function DocumentsPage() {
             <tbody>
               {visibleDocuments.map((doc) => (
                 <tr key={doc.id}>
-                  <td className={styles.fileCell}>
-                    <FileTextIcon className={styles.fileIcon} />
-                    {doc.title}
+                  <td>
+                    <span className={styles.fileCell}>
+                      <FileTextIcon className={styles.fileIcon} />
+                      {doc.title}
+                    </span>
                   </td>
                   <td>{CATEGORY_LABEL[doc.category as Exclude<DocumentCategory, 'payslip'>]}</td>
                   <td className={styles.date}>{formatDate(doc.uploadedAt)}</td>

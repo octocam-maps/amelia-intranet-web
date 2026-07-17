@@ -189,9 +189,11 @@ export function AdminDocumentsPage() {
                 return (
                   <tr key={doc.id}>
                     <td>{member?.fullName ?? doc.userId}</td>
-                    <td className={styles.fileCell}>
-                      <FileTextIcon className={styles.fileIcon} />
-                      {doc.title}
+                    <td>
+                      <span className={styles.fileCell}>
+                        <FileTextIcon className={styles.fileIcon} />
+                        {doc.title}
+                      </span>
                     </td>
                     <td>{CATEGORY_LABEL[doc.category]}</td>
                     <td className={styles.muted}>{doc.period ?? '—'}</td>
