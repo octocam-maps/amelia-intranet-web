@@ -37,12 +37,17 @@ export interface DashboardSummary {
 
 // --- `GET /dashboard/admin/metrics` — Home del administrador ---------------
 
-/** Filtros globales del Home admin. `entityId`/`departmentId` son el UUID
+/** Filtros globales del Home admin. `entityId`/`departmentIds` son el UUID
  * real de fila (`entities.id`/`departments.id`), no el código ('hub'…): el
- * backend hace `u.entity_id = $n::uuid`, no admite el código corto. */
+ * backend hace `u.entity_id = $n::uuid`, no admite el código corto.
+ *
+ * `departmentIds` es una LISTA porque el mismo nombre de departamento existe
+ * una vez POR SEDE (`department_id` distinto) — el selector agrupa por
+ * nombre (`AdminFiltersBar`) y al elegir un nombre hay que filtrar por TODOS
+ * los ids que lo comparten, no por uno solo. */
 export interface AdminMetricsFilters {
   entityId?: string;
-  departmentId?: string;
+  departmentIds?: string[];
   periodDays?: number;
 }
 
