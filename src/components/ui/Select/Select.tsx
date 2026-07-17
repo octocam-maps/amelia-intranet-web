@@ -1,7 +1,7 @@
 import { forwardRef } from 'react';
 import type { ElementRef, ComponentPropsWithoutRef } from 'react';
 import * as SelectPrimitive from '@radix-ui/react-select';
-import { Check, ChevronDown } from 'lucide-react';
+import { CheckIcon, ChevronDownIcon } from '@radix-ui/react-icons';
 import { cn } from '@/lib/utils';
 import styles from './Select.module.css';
 
@@ -15,7 +15,7 @@ export const SelectTrigger = forwardRef<
   <SelectPrimitive.Trigger ref={ref} className={cn(styles.trigger, className)} {...props}>
     {children}
     <SelectPrimitive.Icon asChild>
-      <ChevronDown className={styles.triggerIcon} />
+      <ChevronDownIcon className={styles.triggerIcon} />
     </SelectPrimitive.Icon>
   </SelectPrimitive.Trigger>
 ));
@@ -49,7 +49,7 @@ export const SelectItem = forwardRef<
   <SelectPrimitive.Item ref={ref} className={cn(styles.item, className)} {...props}>
     <span className={styles.itemIndicator}>
       <SelectPrimitive.ItemIndicator>
-        <Check className={styles.checkIcon} />
+        <CheckIcon className={styles.checkIcon} />
       </SelectPrimitive.ItemIndicator>
     </span>
     <SelectPrimitive.ItemText>{children}</SelectPrimitive.ItemText>

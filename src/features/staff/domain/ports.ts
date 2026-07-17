@@ -1,7 +1,13 @@
-import type { StaffListParams, StaffListResult, StaffMember, StaffMemberInput } from './models';
+import type {
+  CreateStaffMemberInput,
+  StaffListParams,
+  StaffListResult,
+  StaffMember,
+  UpdateStaffMemberInput,
+} from './models';
 
 export interface StaffRepository {
   list(params?: StaffListParams): Promise<StaffListResult>;
-  create(input: StaffMemberInput): Promise<StaffMember>;
-  update(id: string, input: Partial<StaffMemberInput>): Promise<StaffMember>;
+  create(input: CreateStaffMemberInput): Promise<StaffMember>;
+  update(id: string, input: UpdateStaffMemberInput): Promise<StaffMember>;
 }

@@ -99,6 +99,14 @@
   padding-bottom: var(--space-2);
 }
 
+/* Fin de semana (LOTE 5b): cabecera S/D en el navy de marca, más marcada que
+   el resto de días laborables para que el patrón semanal se lea de un
+   vistazo. */
+.weekday[data-weekend='true'] {
+  color: hsl(var(--foreground));
+  font-weight: 700;
+}
+
 .days {
   margin-top: var(--space-1);
 }
@@ -125,4 +133,20 @@
 .dayContent[data-today='true'] {
   box-shadow: inset 0 0 0 2px hsl(var(--primary));
   font-weight: 700;
+}
+
+/* Fin de semana (LOTE 5b): fondo navy translúcido para diferenciarlo
+   claramente de los días laborables sin llegar a negro puro (mantiene el
+   contraste y la calidez de la paleta). Menor especificidad que el `style`
+   inline de festivo/ausencia -> esos colores siempre mandan sobre este. */
+.dayContent[data-weekend='true'] {
+  background-color: hsl(var(--foreground) / 0.12);
+  color: hsl(var(--foreground));
+  font-weight: 700;
+}
+
+/* "Hoy" en fin de semana: el anillo verde de marca sigue siendo el borde;
+   solo se refuerza el fondo para que ambas señales convivan sin pisarse. */
+.dayContent[data-weekend='true'][data-today='true'] {
+  background-color: hsl(var(--foreground) / 0.16);
 }

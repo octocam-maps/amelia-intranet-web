@@ -1,4 +1,4 @@
-import { Plus } from 'lucide-react';
+import { PlusIcon } from '@radix-ui/react-icons';
 import { Switch } from '@/components/ui/Switch';
 import { useUpdateAbsenceType } from '../application/useUpdateAbsenceType';
 import type { AbsenceType } from '../domain/models';
@@ -74,7 +74,7 @@ export function AbsenceTypesGrid({ types, isLoading, onEdit, onAdd }: AbsenceTyp
       ))}
 
       <button type="button" className={styles.addCard} onClick={onAdd}>
-        <Plus />
+        <PlusIcon />
         Añadir tipo de ausencia
       </button>
     </div>

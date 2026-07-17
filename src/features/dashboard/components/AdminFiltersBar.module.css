@@ -1,0 +1,50 @@
+.bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.label {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1_5);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: hsl(var(--muted-foreground));
+}
+
+.labelIcon {
+  height: var(--space-4);
+  width: var(--space-4);
+}
+
+.field {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 11rem;
+}
+
+.fieldIcon {
+  height: var(--space-4);
+  width: var(--space-4);
+  flex-shrink: 0;
+  color: hsl(var(--muted-foreground));
+}
+
+.trigger {
+  height: 2.25rem;
+  width: 12rem;
+}
+
+@media (max-width: 640px) {
+  .field {
+    min-width: 0;
+    flex: 1;
+  }
+
+  .trigger {
+    width: 100%;
+  }
+}

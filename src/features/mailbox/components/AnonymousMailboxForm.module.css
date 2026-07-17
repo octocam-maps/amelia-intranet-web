@@ -100,3 +100,23 @@
   color: hsl(var(--muted-foreground));
   margin-bottom: var(--space-3);
 }
+
+.trackLink {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1_5);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: hsl(var(--primary));
+  text-decoration: none;
+  margin-bottom: var(--space-3);
+}
+
+.trackLink:hover {
+  text-decoration: underline;
+}
+
+.trackLink svg {
+  height: 0.875rem;
+  width: 0.875rem;
+}

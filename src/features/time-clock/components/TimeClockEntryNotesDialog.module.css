@@ -1,0 +1,72 @@
+.content {
+  max-width: 32rem;
+}
+
+.description {
+  font-size: 0.8125rem;
+  color: hsl(var(--muted-foreground));
+}
+
+.loading,
+.empty {
+  font-size: 0.875rem;
+  color: hsl(var(--muted-foreground));
+}
+
+.noteList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  max-height: 14rem;
+  overflow-y: auto;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.note {
+  border-radius: calc(var(--radius) - 2px);
+  border: 1px solid hsl(var(--border));
+  background-color: hsl(var(--muted) / 0.4);
+  padding: var(--space-3);
+}
+
+.noteMeta {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-2);
+  margin-bottom: var(--space-1);
+}
+
+.noteAuthor {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: hsl(var(--foreground));
+}
+
+.noteDate {
+  font-size: 0.75rem;
+  color: hsl(var(--muted-foreground));
+}
+
+.noteBody {
+  font-size: 0.875rem;
+  color: hsl(var(--foreground));
+  white-space: pre-wrap;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin-top: var(--space-4);
+}
+
+.submit {
+  align-self: flex-end;
+}
+
+.error {
+  font-size: 0.8125rem;
+  color: hsl(var(--destructive));
+}

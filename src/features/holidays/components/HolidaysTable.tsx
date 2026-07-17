@@ -1,4 +1,4 @@
-import { Pencil, Trash2 } from 'lucide-react';
+import { Pencil2Icon, TrashIcon } from '@radix-ui/react-icons';
 import { Badge } from '@/components/ui/Badge';
 import type { Holiday, HolidayScope } from '../domain/models';
 import styles from './HolidaysTable.module.css';
@@ -28,16 +28,18 @@ function formatShortDate(iso: string): string {
 interface HolidaysTableProps {
   holidays: Holiday[];
   isLoading: boolean;
+  /** Año que se está mostrando — solo para el mensaje de lista vacía. */
+  year: number;
   onEdit: (holiday: Holiday) => void;
   onDelete: (holiday: Holiday) => void;
 }
 
-export function HolidaysTable({ holidays, isLoading, onEdit, onDelete }: HolidaysTableProps) {
+export function HolidaysTable({ holidays, isLoading, year, onEdit, onDelete }: HolidaysTableProps) {
   if (isLoading) {
     return <p className={styles.empty}>Cargando festivos…</p>;
   }
   if (holidays.length === 0) {
-    return <p className={styles.empty}>No hay festivos configurados para este año.</p>;
+    return <p className={styles.empty}>No hay festivos configurados para {year}. Impórtalos o añádelos a mano.</p>;
   }
 
   return (
@@ -78,7 +80,7 @@ export function HolidaysTable({ holidays, isLoading, onEdit, onDelete }: Holiday
                   onClick={() => onEdit(holiday)}
                   aria-label={`Editar ${holiday.name}`}
                 >
-                  <Pencil />
+                  <Pencil2Icon />
                 </button>
                 <button
                   type="button"
@@ -86,7 +88,7 @@ export function HolidaysTable({ holidays, isLoading, onEdit, onDelete }: Holiday
                   onClick={() => onDelete(holiday)}
                   aria-label={`Eliminar ${holiday.name}`}
                 >
-                  <Trash2 />
+                  <TrashIcon />
                 </button>
               </div>
             </td>

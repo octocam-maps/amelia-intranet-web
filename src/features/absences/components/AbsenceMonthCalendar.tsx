@@ -1,11 +1,14 @@
 import { useMemo, useState } from 'react';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeftIcon, ChevronRightIcon } from '@radix-ui/react-icons';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
-import type { UpcomingHoliday } from '@/features/dashboard/domain/models';
+import { useHolidays } from '@/features/holidays/application/useHolidays';
 import type { AbsenceRequest, AbsenceType } from '../domain/models';
 import styles from './AbsenceMonthCalendar.module.css';
 
 const WEEKDAY_LABELS = ['L', 'M', 'X', 'J', 'V', 'S', 'D'];
+// Índices (semana empieza en lunes) de sábado y domingo — para el resaltado
+// de fines de semana en la cabecera y en las celdas (LOTE 5b).
+const WEEKEND_LABEL_INDEXES = new Set([5, 6]);
 const MONTH_LABELS = [
   'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
   'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre',
@@ -18,6 +21,11 @@ function toDateOnly(iso: string): Date {
 
 function isSameDay(a: Date, b: Date): boolean {
   return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
+}
+
+function isWeekend(date: Date): boolean {
+  const day = date.getDay(); // 0 = domingo, 6 = sábado
+  return day === 0 || day === 6;
 }
 
 function isWithinRange(day: Date, request: AbsenceRequest): boolean {
@@ -40,18 +48,22 @@ function monthCells(year: number, month: number): Array<Date | null> {
 interface AbsenceMonthCalendarProps {
   requests: AbsenceRequest[];
   types: AbsenceType[];
-  holidays: UpcomingHoliday[];
 }
 
 /**
  * Calendario MES A MES — a pedido explícito del usuario, sustituye la
  * versión anual (12 mini-meses) para que las celdas del mes visible ocupen
  * bien el espacio de la columna derecha en vez de quedar minúsculas.
- * Navegación con ‹ Mes Año ›. Grid nativo, sin librería de calendario. Los
- * festivos solo cubren los "próximos" que trae `dashboard/summary` (Fase 5
- * no tiene todavía un endpoint de festivos del año completo).
+ * Navegación con ‹ Mes Año ›. Grid nativo, sin librería de calendario.
+ *
+ * Los festivos se piden a `GET /holidays?year=` (feature `holidays`) para el
+ * AÑO DEL MES VISIBLE, no al top-5 de `dashboard/summary` — así se resaltan
+ * correctamente aunque el usuario navegue a cualquier mes (antes solo se
+ * veían los "próximos 5" festivos, ver B-3c). `monthCells` nunca genera
+ * celdas de un mes/año distinto al visible, así que un único fetch por año
+ * basta (no hace falta pedir el año siguiente al cruzar dic→ene).
  */
-export function AbsenceMonthCalendar({ requests, types, holidays }: AbsenceMonthCalendarProps) {
+export function AbsenceMonthCalendar({ requests, types }: AbsenceMonthCalendarProps) {
   const [viewDate, setViewDate] = useState(() => {
     const now = new Date();
     return new Date(now.getFullYear(), now.getMonth(), 1);
@@ -63,8 +75,9 @@ export function AbsenceMonthCalendar({ requests, types, holidays }: AbsenceMonth
   const goToPreviousMonth = () => setViewDate((d) => new Date(d.getFullYear(), d.getMonth() - 1, 1));
   const goToNextMonth = () => setViewDate((d) => new Date(d.getFullYear(), d.getMonth() + 1, 1));
 
+  const { data: holidays = [] } = useHolidays({ year });
   const typeById = useMemo(() => new Map(types.map((t) => [t.id, t])), [types]);
-  const holidayDates = useMemo(() => holidays.map((h) => toDateOnly(h.day)), [holidays]);
+  const holidayDates = useMemo(() => holidays.map((h) => toDateOnly(h.date)), [holidays]);
   const cells = useMemo(() => monthCells(year, month), [year, month]);
   const rows = Math.ceil(cells.length / 7);
   const vacacionesColor = types.find((t) => t.code === 'vacaciones')?.color ?? 'hsl(var(--warning))';
@@ -94,18 +107,22 @@ export function AbsenceMonthCalendar({ requests, types, holidays }: AbsenceMonth
         </div>
         <div className={styles.monthNav}>
           <button type="button" onClick={goToPreviousMonth} aria-label="Mes anterior">
-            <ChevronLeft />
+            <ChevronLeftIcon />
           </button>
           <span>{MONTH_LABELS[month]} {year}</span>
           <button type="button" onClick={goToNextMonth} aria-label="Mes siguiente">
-            <ChevronRight />
+            <ChevronRightIcon />
           </button>
         </div>
       </CardHeader>
       <CardContent className={styles.calendar}>
         <div className={styles.weekdays}>
-          {WEEKDAY_LABELS.map((w) => (
-            <span key={w} className={styles.weekday}>
+          {WEEKDAY_LABELS.map((w, index) => (
+            <span
+              key={w}
+              className={styles.weekday}
+              data-weekend={WEEKEND_LABEL_INDEXES.has(index) || undefined}
+            >
               {w}
             </span>
           ))}
@@ -118,12 +135,17 @@ export function AbsenceMonthCalendar({ requests, types, holidays }: AbsenceMonth
             const type = matchingRequest ? typeById.get(matchingRequest.absenceTypeId) : undefined;
             const isHoliday = !matchingRequest && holidayDates.some((h) => isSameDay(h, date));
             const isToday = isSameDay(date, today);
+            // Fin de semana más oscuro (LOTE 5b) — solo aporta fondo cuando la
+            // celda no tiene ya el color de un festivo o de una ausencia, que
+            // siempre mandan (se aplican vía `style`, con más especificidad).
+            const isWeekendDay = isWeekend(date);
 
             return (
               <span key={date.toISOString()} className={styles.dayCell}>
                 <span
                   className={styles.dayContent}
                   data-today={isToday}
+                  data-weekend={isWeekendDay || undefined}
                   style={
                     matchingRequest
                       ? {

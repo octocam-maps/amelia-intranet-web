@@ -1,4 +1,4 @@
-import { BookOpen, CheckCircle2 } from 'lucide-react';
+import { CheckCircledIcon, ReaderIcon } from '@radix-ui/react-icons';
 import { Button } from '@/components/ui/Button';
 import { useAcknowledgeManual } from '../application/useAcknowledgeManual';
 import type { OnboardingStep } from '../domain/models';
@@ -32,7 +32,7 @@ export function ManualStep({ step }: ManualStepProps) {
 
       <div className={styles.manualCard}>
         <div className={styles.manualHeader}>
-          <BookOpen className={styles.manualIcon} />
+          <ReaderIcon className={styles.manualIcon} />
           <span>Manual de ClickUp</span>
         </div>
         <div className={styles.manualBody}>
@@ -50,7 +50,7 @@ export function ManualStep({ step }: ManualStepProps) {
 
       {isCompleted ? (
         <div className={styles.confirmedBanner}>
-          <CheckCircle2 className={styles.confirmedIcon} />
+          <CheckCircledIcon className={styles.confirmedIcon} />
           Lectura confirmada
         </div>
       ) : (

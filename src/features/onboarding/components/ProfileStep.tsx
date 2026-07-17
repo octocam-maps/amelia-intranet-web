@@ -1,5 +1,5 @@
 import { useForm } from 'react-hook-form';
-import { CheckCircle2 } from 'lucide-react';
+import { CheckCircledIcon } from '@radix-ui/react-icons';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Label } from '@/components/ui/Label';
@@ -52,7 +52,7 @@ export function ProfileStep({ step }: ProfileStepProps) {
     return (
       <div className={styles.root}>
         <div className={styles.completedCard}>
-          <CheckCircle2 className={styles.completedIcon} />
+          <CheckCircledIcon className={styles.completedIcon} />
           <h2 className={styles.completedTitle}>Perfil completado</h2>
           <p className={styles.completedSubtitle}>
             Ya formas parte del equipo. Hemos guardado tus datos de contacto.

@@ -57,3 +57,20 @@ export interface AbsenceRequestDTO {
 export interface AbsenceRequestListDTO {
   requests: AbsenceRequestDTO[];
 }
+
+export interface AbsenceCalendarEntryDTO {
+  request_id: string;
+  user_id: string;
+  user_full_name: string;
+  absence_type_id: string;
+  absence_type_name: string;
+  absence_type_color: string | null;
+  start_date: string;
+  end_date: string;
+  days_count: number;
+  status: string;
+}
+
+export interface AbsenceCalendarEntryListDTO {
+  entries: AbsenceCalendarEntryDTO[];
+}

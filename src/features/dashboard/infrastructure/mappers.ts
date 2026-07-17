@@ -1,5 +1,24 @@
-import type { DashboardSummary } from '../domain/models';
-import type { DashboardSummaryDTO } from './dtos';
+import { parseEnum } from '@/lib/parseEnum';
+import type {
+  AdminDashboardMetrics,
+  DashboardSummary,
+  OrgDepartmentOption,
+  OrgEntityCode,
+  OrgEntityOption,
+  OrgFilterOptions,
+} from '../domain/models';
+import type { AdminMetricsDTO, DashboardSummaryDTO, StaffLookupMemberDTO } from './dtos';
+
+const ENTITY_CODES: OrgEntityCode[] = ['hub', 'lab', 'ops'];
+
+// Nombre para mostrar por código de entidad — el backend solo manda el
+// código corto en `/staff` (`entity_code`), no un nombre; mismo criterio que
+// `ENTITY_LABEL` en `announcements`/`team`.
+const ENTITY_NAME: Record<OrgEntityCode, string> = {
+  hub: 'Amelia Hub',
+  lab: 'Amelia Lab',
+  ops: 'Amelia Ops',
+};
 
 export function summaryFromDTO(dto: DashboardSummaryDTO): DashboardSummary {
   return {
@@ -28,5 +47,50 @@ export function summaryFromDTO(dto: DashboardSummaryDTO): DashboardSummary {
         }))
       : null,
     employeesClockedInNow: dto.employees_clocked_in_now,
+  };
+}
+
+export function metricsFromDTO(dto: AdminMetricsDTO): AdminDashboardMetrics {
+  return {
+    kpis: {
+      absentToday: dto.kpis.absent_today,
+      pendingApprovals: dto.kpis.pending_approvals,
+      clockedInNow: dto.kpis.clocked_in_now,
+      punctualityPct: dto.kpis.punctuality_pct,
+    },
+  };
+}
+
+/** Deriva las opciones de Sede/Departamento a partir de la plantilla real
+ * (`GET /staff`) — no hay endpoint de catálogo (ver nota en `dtos.ts`). Solo
+ * cubre los primeros `page_size` empleados que devuelva esa llamada: si la
+ * plantilla supera ese límite, alguna combinación entidad/departamento poco
+ * frecuente podría no aparecer en el selector. Documentado como limitación
+ * conocida, no como dato inventado. */
+export function orgFilterOptionsFromStaffLookup(members: StaffLookupMemberDTO[]): OrgFilterOptions {
+  const entitiesById = new Map<string, OrgEntityOption>();
+  const departmentsById = new Map<string, OrgDepartmentOption>();
+
+  for (const member of members) {
+    if (member.entity_id && member.entity_code && !entitiesById.has(member.entity_id)) {
+      const code = parseEnum(member.entity_code, ENTITY_CODES, 'hub');
+      entitiesById.set(member.entity_id, {
+        id: member.entity_id,
+        code,
+        name: ENTITY_NAME[code],
+      });
+    }
+    if (member.department_id && member.department_name && member.entity_id && !departmentsById.has(member.department_id)) {
+      departmentsById.set(member.department_id, {
+        id: member.department_id,
+        name: member.department_name,
+        entityId: member.entity_id,
+      });
+    }
+  }
+
+  return {
+    entities: [...entitiesById.values()].sort((a, b) => a.name.localeCompare(b.name, 'es')),
+    departments: [...departmentsById.values()].sort((a, b) => a.name.localeCompare(b.name, 'es')),
   };
 }

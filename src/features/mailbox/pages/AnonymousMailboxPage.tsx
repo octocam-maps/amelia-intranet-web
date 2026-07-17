@@ -1,4 +1,4 @@
-import { MessageSquareText } from 'lucide-react';
+import { ChatBubbleIcon } from '@radix-ui/react-icons';
 import { Card, CardContent } from '@/components/ui/Card';
 import { AnonymousMailboxForm } from '../components/AnonymousMailboxForm';
 import styles from './AnonymousMailboxPage.module.css';
@@ -11,7 +11,7 @@ export function AnonymousMailboxPage() {
       <Card className={styles.card}>
         <div className={styles.header}>
           <div className={styles.icon}>
-            <MessageSquareText />
+            <ChatBubbleIcon />
           </div>
           <p className={styles.title}>Buzón anónimo</p>
         </div>

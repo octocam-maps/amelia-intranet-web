@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { CheckCircle2, Send, ShieldAlert, UserRound } from 'lucide-react';
+import { CheckCircledIcon, PaperPlaneIcon, PersonIcon } from '@radix-ui/react-icons';
+import { ShieldAlertIcon } from '@/components/icons';
 import { Avatar, AvatarFallback } from '@/components/ui/Avatar';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
@@ -90,7 +91,7 @@ export function MailboxInbox() {
               >
                 <Avatar className={styles.avatar}>
                   <AvatarFallback>
-                    <UserRound />
+                    <PersonIcon />
                   </AvatarFallback>
                 </Avatar>
                 <span className={styles.listItemBody}>
@@ -101,7 +102,7 @@ export function MailboxInbox() {
                   </span>
                 </span>
                 {message.status === 'unread' && <span className={styles.unreadDot} aria-hidden />}
-                {message.status === 'resolved' && <CheckCircle2 className={styles.resolvedIcon} />}
+                {message.status === 'resolved' && <CheckCircledIcon className={styles.resolvedIcon} />}
               </button>
             ))
           )}
@@ -141,7 +142,7 @@ function MailboxDetail({ message, onResolve, isResolving }: MailboxDetailProps) 
         <div className={styles.detailHeaderInfo}>
           <Avatar className={styles.avatarLg}>
             <AvatarFallback>
-              <UserRound />
+              <PersonIcon />
             </AvatarFallback>
           </Avatar>
           <div>
@@ -172,8 +173,9 @@ function MailboxDetail({ message, onResolve, isResolving }: MailboxDetailProps) 
         )}
 
         <p className={styles.protectionNotice}>
-          <ShieldAlert />
-          No puedes ver quién lo envió. La respuesta le llega por notificación anónima.
+          <ShieldAlertIcon />
+          No puedes ver quién lo envió. Tu respuesta queda guardada en el mensaje: solo podrá leerla
+          si consulta su código de referencia.
         </p>
       </div>
 
@@ -193,7 +195,7 @@ function MailboxDetail({ message, onResolve, isResolving }: MailboxDetailProps) 
             disabled={isReplying || !reply.trim()}
             aria-label="Enviar respuesta"
           >
-            <Send />
+            <PaperPlaneIcon />
           </Button>
         </div>
       )}

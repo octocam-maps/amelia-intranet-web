@@ -1,4 +1,5 @@
-import { Calendar, Eye, MoreHorizontal, Users } from 'lucide-react';
+import { CalendarIcon, DotsHorizontalIcon, EyeOpenIcon } from '@radix-ui/react-icons';
+import { UsersIcon } from '@/components/icons';
 import { Badge } from '@/components/ui/Badge';
 import {
   DropdownMenu,
@@ -86,7 +87,7 @@ export function AnnouncementsList({ announcements, isLoading, selectedId, onSele
                   onClick={(e) => e.stopPropagation()}
                   aria-label={`Más acciones para ${announcement.title}`}
                 >
-                  <MoreHorizontal />
+                  <DotsHorizontalIcon />
                 </button>
               </DropdownMenuTrigger>
               <DropdownMenuContent onClick={(e) => e.stopPropagation()}>
@@ -115,13 +116,13 @@ export function AnnouncementsList({ announcements, isLoading, selectedId, onSele
 
           <div className={styles.cardMeta}>
             <span>
-              <Calendar /> {formatFullDate(announcement.publishedAt ?? announcement.createdAt)}
+              <CalendarIcon /> {formatFullDate(announcement.publishedAt ?? announcement.createdAt)}
             </span>
             <span>
-              <Users /> {audienceLabel(announcement)}
+              <UsersIcon /> {audienceLabel(announcement)}
             </span>
             <span>
-              <Eye /> {announcement.viewCount} vistas
+              <EyeOpenIcon /> {announcement.viewCount} vistas
             </span>
           </div>
         </article>

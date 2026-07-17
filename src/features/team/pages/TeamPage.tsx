@@ -1,16 +1,16 @@
 import { useMemo, useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/Tabs';
 import { useTeamDirectory } from '../application/useTeamDirectory';
+import { TeamCalendar } from '../components/TeamCalendar';
 import { TeamDirectory } from '../components/TeamDirectory';
 import { TeamOrgChartPlaceholder } from '../components/TeamOrgChartPlaceholder';
-import { TeamVacationCalendar } from '../components/TeamVacationCalendar';
 import styles from './TeamPage.module.css';
 
 type TeamTab = 'directorio' | 'calendario' | 'organigrama';
 
 const SUBTITLE_BY_TAB: Record<TeamTab, string> = {
   directorio: '',
-  calendario: 'Quién está de vacaciones',
+  calendario: 'Quién está fuera en tu departamento',
   organigrama: 'Estructura del grupo Amelia',
 };
 
@@ -42,7 +42,7 @@ export function TeamPage() {
       <Tabs value={tab} onValueChange={(value) => setTab(value as TeamTab)}>
         <TabsList>
           <TabsTrigger value="directorio">Directorio</TabsTrigger>
-          <TabsTrigger value="calendario">Calendario de vacaciones</TabsTrigger>
+          <TabsTrigger value="calendario">Calendario del equipo</TabsTrigger>
           <TabsTrigger value="organigrama">Organigrama</TabsTrigger>
         </TabsList>
 
@@ -50,7 +50,7 @@ export function TeamPage() {
           <TeamDirectory members={members} isLoading={isLoading} />
         </TabsContent>
         <TabsContent value="calendario" className={styles.content}>
-          <TeamVacationCalendar members={members} />
+          <TeamCalendar />
         </TabsContent>
         <TabsContent value="organigrama" className={styles.content}>
           <TeamOrgChartPlaceholder />

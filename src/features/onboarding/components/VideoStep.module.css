@@ -22,7 +22,7 @@
   overflow: hidden;
   background-color: hsl(var(--header-bg));
   aspect-ratio: 16 / 9;
-  max-height: 32rem;
+  max-height: 38rem;
 }
 
 .video {
@@ -79,6 +79,60 @@
   font-size: 1rem;
   font-weight: 700;
   color: hsl(var(--header-foreground));
+}
+
+.playButton {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: var(--z-elevate);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 4rem;
+  width: 4rem;
+  border: none;
+  border-radius: 999px;
+  background-color: hsl(var(--header-bg) / 0.55);
+  color: hsl(var(--header-foreground));
+  cursor: pointer;
+  backdrop-filter: blur(4px);
+  transition: background-color 0.15s ease, transform 0.15s ease;
+}
+
+.playButton:hover {
+  background-color: hsl(var(--primary) / 0.9);
+  transform: translate(-50%, -50%) scale(1.05);
+}
+
+.playButton:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px hsl(var(--ring));
+}
+
+.playIcon {
+  height: 1.75rem;
+  width: 1.75rem;
+}
+
+/* Barra de progreso de SOLO LECTURA: sin pointer-events, no admite click ni
+   arrastre — a diferencia de la barra de scrubbing nativa. */
+.progressTrack {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: var(--z-elevate);
+  height: var(--space-1_5);
+  background-color: hsl(var(--header-foreground) / 0.2);
+  pointer-events: none;
+}
+
+.progressFill {
+  height: 100%;
+  background-color: hsl(var(--primary));
+  transition: width 0.2s linear;
 }
 
 .footer {

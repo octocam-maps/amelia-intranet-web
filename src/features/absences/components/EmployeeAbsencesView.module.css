@@ -95,3 +95,40 @@
   font-size: 0.8125rem;
   color: hsl(var(--muted-foreground));
 }
+
+.holidaysEmpty {
+  font-size: 0.8125rem;
+  color: hsl(var(--muted-foreground));
+}
+
+.holidaysList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.holidayRow {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-3);
+  font-size: 0.875rem;
+  padding-bottom: var(--space-2);
+  border-bottom: 1px solid hsl(var(--border));
+}
+
+.holidayRow:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.holidayDate {
+  flex-shrink: 0;
+  min-width: 4.5rem;
+  font-weight: 700;
+  color: hsl(var(--primary));
+  text-transform: capitalize;
+}
+
+.holidayName {
+  color: hsl(var(--foreground));
+}

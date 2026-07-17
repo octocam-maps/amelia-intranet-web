@@ -1,6 +1,9 @@
-import { apiClient } from '@/lib/http/api-client';
+import { apiClient, ApiError } from '@/lib/http/api-client';
+import { useStore } from '@/store';
 import type {
   AbsenceBalance,
+  AbsenceCalendarEntry,
+  AbsenceCalendarRangeParams,
   AbsenceRequest,
   AbsenceType,
   AbsenceTypeInput,
@@ -11,6 +14,7 @@ import type {
 import type { AbsencesRepository } from '../domain/ports';
 import type {
   AbsenceBalanceListDTO,
+  AbsenceCalendarEntryListDTO,
   AbsenceRequestDTO,
   AbsenceRequestListDTO,
   AbsenceTypeDTO,
@@ -19,10 +23,18 @@ import type {
 import {
   absenceTypeInputToDTO,
   balanceFromDTO,
+  calendarEntryFromDTO,
   partialAbsenceTypeInputToDTO,
   requestFromDTO,
   typeFromDTO,
 } from './mappers';
+
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
+
+function calendarQuery(params: AbsenceCalendarRangeParams): string {
+  const search = new URLSearchParams({ date_from: params.dateFrom, date_to: params.dateTo });
+  return `?${search.toString()}`;
+}
 
 export const absencesApiAdapter: AbsencesRepository = {
   async listTypes(): Promise<AbsenceType[]> {
@@ -99,5 +111,44 @@ export const absencesApiAdapter: AbsencesRepository = {
       body: JSON.stringify({ decision: input.decision, note: input.note ?? null }),
     });
     return requestFromDTO(dto);
+  },
+
+  async listCalendar(params: AbsenceCalendarRangeParams): Promise<AbsenceCalendarEntry[]> {
+    const dto = await apiClient<AbsenceCalendarEntryListDTO>(
+      `/absences/calendar/all${calendarQuery(params)}`
+    );
+    return dto.entries.map(calendarEntryFromDTO);
+  },
+
+  async exportCalendarXlsx(params: AbsenceCalendarRangeParams): Promise<Blob> {
+    // No usa `apiClient`: la respuesta es un binario (xlsx), no JSON —
+    // mismo motivo que `time-clock/infrastructure/time-clock-api.adapter.ts::exportXlsx`.
+    const accessToken = useStore.getState().getAccessToken();
+    const response = await fetch(
+      `${API_BASE_URL}/absences/calendar/export.xlsx${calendarQuery(params)}`,
+      {
+        credentials: 'include',
+        headers: accessToken ? { Authorization: `Bearer ${accessToken}` } : {},
+      }
+    );
+    if (!response.ok) {
+      throw new ApiError('No se pudo generar el Excel del calendario.', response.status);
+    }
+    return response.blob();
+  },
+
+  async exportCalendarPdf(params: AbsenceCalendarRangeParams): Promise<Blob> {
+    const accessToken = useStore.getState().getAccessToken();
+    const response = await fetch(
+      `${API_BASE_URL}/absences/calendar/export.pdf${calendarQuery(params)}`,
+      {
+        credentials: 'include',
+        headers: accessToken ? { Authorization: `Bearer ${accessToken}` } : {},
+      }
+    );
+    if (!response.ok) {
+      throw new ApiError('No se pudo generar el PDF del calendario.', response.status);
+    }
+    return response.blob();
   },
 };

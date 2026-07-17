@@ -1,0 +1,161 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.question {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2_5);
+  border-radius: var(--radius);
+  border: 1px solid hsl(var(--border));
+  padding: var(--space-3_5);
+}
+
+.questionHeader {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+}
+
+.questionNumber {
+  flex-shrink: 0;
+  margin-top: var(--space-2_5);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: hsl(var(--muted-foreground));
+}
+
+.questionText {
+  flex: 1;
+}
+
+.removeQuestionButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  height: 2.25rem;
+  width: 2.25rem;
+  margin-top: var(--space-0_5);
+  border-radius: calc(var(--radius) - 2px);
+  border: 1px solid hsl(var(--border));
+  background-color: hsl(var(--card));
+  color: hsl(var(--destructive));
+  cursor: pointer;
+}
+
+.removeQuestionButton:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.removeQuestionButton svg {
+  height: 0.875rem;
+  width: 0.875rem;
+}
+
+.optionsLabel {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: hsl(var(--muted-foreground));
+}
+
+.options {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1_5);
+}
+
+.option {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.optionRadio {
+  flex-shrink: 0;
+  height: var(--space-4);
+  width: var(--space-4);
+  accent-color: hsl(var(--primary));
+}
+
+.optionInput {
+  flex: 1;
+}
+
+.removeOptionButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  height: 1.75rem;
+  width: 1.75rem;
+  border-radius: calc(var(--radius) - 2px);
+  border: 1px solid transparent;
+  background-color: transparent;
+  color: hsl(var(--muted-foreground));
+  cursor: pointer;
+}
+
+.removeOptionButton:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.removeOptionButton svg {
+  height: 0.8125rem;
+  width: 0.8125rem;
+}
+
+.addOptionButton {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  border: none;
+  background-color: transparent;
+  color: hsl(var(--primary));
+  font-family: inherit;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: var(--space-1) 0;
+}
+
+.addOptionButton svg {
+  height: var(--space-3_5);
+  width: var(--space-3_5);
+}
+
+.addQuestionButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  border-radius: var(--radius);
+  border: 1px dashed hsl(var(--border));
+  background-color: transparent;
+  color: hsl(var(--muted-foreground));
+  padding: var(--space-3);
+  font-family: inherit;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.addQuestionButton:hover {
+  color: hsl(var(--foreground));
+  border-color: hsl(var(--primary) / 0.4);
+}
+
+.addQuestionButton svg {
+  height: var(--space-4);
+  width: var(--space-4);
+}
+
+.hint {
+  font-size: 0.75rem;
+  color: hsl(var(--muted-foreground));
+}

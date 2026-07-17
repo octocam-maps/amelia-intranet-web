@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Check, X } from 'lucide-react';
+import { CheckIcon, Cross2Icon } from '@radix-ui/react-icons';
 import { Avatar, AvatarFallback } from '@/components/ui/Avatar';
 import { Button } from '@/components/ui/Button';
 import { cn } from '@/lib/utils';
@@ -12,11 +12,21 @@ import styles from './AbsenceApprovalList.module.css';
  * `dashboard` para no acoplar `absences` a su dominio. */
 export interface ApprovableAbsenceRequest {
   id: string;
-  userFullName: string;
+  /** Nullable como en el dominio (`AbsenceRequest.userFullName`) — el
+   * backend solo lo rellena vía JOIN, y ese JOIN puede fallar en
+   * silencio. Ver `nameOf`/`initialsOf` para el fallback. */
+  userFullName: string | null;
   absenceTypeName: string;
   startDate: string;
   endDate: string;
   daysCount: number;
+}
+
+/** Mismo criterio que `TeamAbsenceGantt`: cuando el backend no resuelve el
+ * nombre (`userFullName` nulo), se identifica a la persona por los últimos
+ * caracteres del id de la solicitud en vez de romper el render. */
+function nameOf(request: ApprovableAbsenceRequest): string {
+  return request.userFullName || `Empleado #${request.id.slice(-4).toUpperCase()}`;
 }
 
 function initialsOf(fullName: string): string {
@@ -83,6 +93,7 @@ export function AbsenceApprovalList({ requests, filterable = false }: AbsenceApp
         <ul className={styles.list}>
           {filtered.map((request) => {
             const { day, month } = formatDay(request.startDate);
+            const displayName = nameOf(request);
             return (
               <li key={request.id} className={styles.row}>
                 <span className={styles.date}>
@@ -90,9 +101,9 @@ export function AbsenceApprovalList({ requests, filterable = false }: AbsenceApp
                   <span className={styles.dateNumber}>{day}</span>
                 </span>
                 <Avatar className={styles.avatar}>
-                  <AvatarFallback>{initialsOf(request.userFullName)}</AvatarFallback>
+                  <AvatarFallback>{initialsOf(displayName)}</AvatarFallback>
                 </Avatar>
-                <span className={styles.name}>{request.userFullName}</span>
+                <span className={styles.name}>{displayName}</span>
                 <span className={styles.days}>{request.daysCount} días</span>
                 <span className={styles.type}>{request.absenceTypeName}</span>
                 <Button
@@ -106,7 +117,7 @@ export function AbsenceApprovalList({ requests, filterable = false }: AbsenceApp
                   onClick={() => review({ requestId: request.id, input: { decision: 'rejected' } })}
                   aria-label="Rechazar"
                 >
-                  <X />
+                  <Cross2Icon />
                 </Button>
                 <Button
                   size="icon"
@@ -114,7 +125,7 @@ export function AbsenceApprovalList({ requests, filterable = false }: AbsenceApp
                   onClick={() => review({ requestId: request.id, input: { decision: 'approved' } })}
                   aria-label="Aprobar"
                 >
-                  <Check />
+                  <CheckIcon />
                 </Button>
               </li>
             );

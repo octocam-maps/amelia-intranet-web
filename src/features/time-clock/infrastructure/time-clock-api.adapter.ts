@@ -1,23 +1,43 @@
 import { apiClient, ApiError } from '@/lib/http/api-client';
 import { useStore } from '@/store';
 import type {
+  AddTimeClockEntryNoteInput,
   CreateTimeClockEntryInput,
   ListTimeClockEntriesParams,
   TimeClockCurrentStatus,
   TimeClockEntry,
+  TimeClockEntryNote,
+  TimeClockEntryPage,
   UpdateTimeClockEntryInput,
 } from '../domain/models';
 import type { TimeClockRepository } from '../domain/ports';
-import type { TimeClockCurrentStatusDTO, TimeClockEntryDTO, TimeClockEntryListDTO } from './dtos';
-import { currentStatusFromDTO, entryFromDTO } from './mappers';
+import type {
+  TimeClockCurrentStatusDTO,
+  TimeClockEntryDTO,
+  TimeClockEntryListDTO,
+  TimeClockEntryNoteDTO,
+  TimeClockEntryNoteListDTO,
+} from './dtos';
+import { currentStatusFromDTO, entryFromDTO, noteFromDTO } from './mappers';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
 
 function buildQuery(params: ListTimeClockEntriesParams): string {
   const search = new URLSearchParams();
-  if (params.userId) search.set('user_id', params.userId);
+  // `userIds` (multi-selector) gana sobre `userId` si llegan los dos —
+  // mismo criterio que el use case del backend.
+  if (params.userIds && params.userIds.length > 0) {
+    search.set('user_ids', params.userIds.join(','));
+  } else if (params.userId) {
+    search.set('user_id', params.userId);
+  }
   if (params.dateFrom) search.set('date_from', params.dateFrom);
   if (params.dateTo) search.set('date_to', params.dateTo);
+  // `limit`/`offset` no aplican al export CSV — ese endpoint siempre exporta
+  // el rango completo, así que `exportCsv` reutiliza esta misma función sin
+  // pasarlos nunca en `params`.
+  if (params.limit !== undefined) search.set('limit', String(params.limit));
+  if (params.offset !== undefined) search.set('offset', String(params.offset));
   const query = search.toString();
   return query ? `?${query}` : '';
 }
@@ -35,11 +55,16 @@ export const timeClockApiAdapter: TimeClockRepository = {
     return entryFromDTO(dto);
   },
 
-  async list(params: ListTimeClockEntriesParams): Promise<TimeClockEntry[]> {
+  async list(params: ListTimeClockEntriesParams): Promise<TimeClockEntryPage> {
     const dto = await apiClient<TimeClockEntryListDTO>(
       `/time-clock/entries${buildQuery(params)}`
     );
-    return dto.entries.map(entryFromDTO);
+    return {
+      entries: dto.entries.map(entryFromDTO),
+      total: dto.total,
+      limit: dto.limit,
+      offset: dto.offset,
+    };
   },
 
   async update(entryId: string, input: UpdateTimeClockEntryInput): Promise<TimeClockEntry> {
@@ -54,6 +79,21 @@ export const timeClockApiAdapter: TimeClockRepository = {
     await apiClient<null>(`/time-clock/entries/${entryId}`, { method: 'DELETE' });
   },
 
+  async listNotes(entryId: string): Promise<TimeClockEntryNote[]> {
+    const dto = await apiClient<TimeClockEntryNoteListDTO>(
+      `/time-clock/entries/${entryId}/notes`
+    );
+    return dto.notes.map(noteFromDTO);
+  },
+
+  async addNote(entryId: string, input: AddTimeClockEntryNoteInput): Promise<TimeClockEntryNote> {
+    const dto = await apiClient<TimeClockEntryNoteDTO>(`/time-clock/entries/${entryId}/notes`, {
+      method: 'POST',
+      body: JSON.stringify({ body: input.body }),
+    });
+    return noteFromDTO(dto);
+  },
+
   async exportCsv(params: ListTimeClockEntriesParams): Promise<Blob> {
     // No usa `apiClient`: la respuesta es `text/csv`, no JSON, y `apiClient`
     // asume siempre `response.json()`.
@@ -64,6 +104,20 @@ export const timeClockApiAdapter: TimeClockRepository = {
     });
     if (!response.ok) {
       throw new ApiError('No se pudo exportar el fichaje.', response.status);
+    }
+    return response.blob();
+  },
+
+  async exportXlsx(): Promise<Blob> {
+    // Mismo motivo que `exportCsv`: la respuesta es un binario (xlsx), no
+    // JSON, así que no puede pasar por `apiClient`.
+    const accessToken = useStore.getState().getAccessToken();
+    const response = await fetch(`${API_BASE_URL}/time-clock/entries/export.xlsx`, {
+      credentials: 'include',
+      headers: accessToken ? { Authorization: `Bearer ${accessToken}` } : {},
+    });
+    if (!response.ok) {
+      throw new ApiError('No se pudo generar el Excel de fichajes.', response.status);
     }
     return response.blob();
   },

@@ -1,12 +1,9 @@
 .root {
-  display: flex;
-  justify-content: center;
   padding-top: var(--space-4);
 }
 
 .card {
   width: 100%;
-  max-width: 32rem;
   overflow: hidden;
 }
 

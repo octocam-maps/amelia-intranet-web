@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Plus } from 'lucide-react';
+import { PlusIcon } from '@radix-ui/react-icons';
 import { ConfigTabsNav } from '@/components/composites/ConfigTabsNav';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
@@ -22,7 +22,7 @@ export function AbsenceTypesAdminPage() {
           <p className={styles.subtitle}>Catálogo de ausencias disponible para toda la plantilla</p>
         </div>
         <Button onClick={() => setDialogType('new')}>
-          <Plus />
+          <PlusIcon />
           Nuevo tipo
         </Button>
       </div>

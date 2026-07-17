@@ -1,4 +1,4 @@
-import { LogOut, Plus } from 'lucide-react';
+import { ExitIcon, PlusIcon } from '@radix-ui/react-icons';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/Avatar';
 import { Button } from '@/components/ui/Button';
 import {
@@ -10,20 +10,14 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/DropdownMenu';
 import { NewAbsenceRequestDialog } from '@/features/absences/components/NewAbsenceRequestDialog';
-import type { UserRole } from '@/features/auth/domain/models';
 import { useLogout } from '@/features/auth/application/useLogout';
 import { formatHms, useElapsedSeconds } from '@/hooks/useElapsedSeconds';
 import { useClockIn } from '@/features/time-clock/application/useTimeClockLiveActions';
 import { useTimeClockCurrent } from '@/features/time-clock/application/useTimeClockCurrent';
 import { NotificationBell } from '@/features/notifications/components/NotificationBell';
+import { USER_ROLE_LABEL } from '@/features/auth/domain/models';
 import { useStore } from '@/store';
 import styles from './Topbar.module.css';
-
-const ROLE_LABEL: Record<UserRole, string> = {
-  administrador: 'Administrador',
-  empleado: 'Empleado',
-  externo_invitado: 'Externo-invitado',
-};
 
 function initialsOf(fullName: string | undefined): string {
   if (!fullName) return '??';
@@ -65,7 +59,7 @@ function LiveClockPill() {
       <NewAbsenceRequestDialog
         trigger={
           <Button variant="dark" size="sm">
-            <Plus />
+            <PlusIcon />
             Solicitar ausencia
           </Button>
         }
@@ -76,7 +70,11 @@ function LiveClockPill() {
 
 export function Topbar() {
   const user = useStore((s) => s.user);
-  const canUseTimeClock = user?.role === 'administrador' || user?.role === 'empleado';
+  // `socio` [migración 024] = igual que empleado -> ficha su propio
+  // horario, así que también ve el pill de fichaje (RBAC real en el
+  // backend vía `require_role`; esto es solo la composición visual).
+  const role = user?.role;
+  const canUseTimeClock = role === 'administrador' || role === 'empleado' || role === 'socio';
   const { mutate: logout } = useLogout();
 
   return (
@@ -90,7 +88,7 @@ export function Topbar() {
           <DropdownMenuTrigger className={styles.trigger}>
             <div className={styles.userInfo}>
               <p className={styles.userName}>{user?.fullName}</p>
-              <p className={styles.userRole}>{user ? ROLE_LABEL[user.role] : ''}</p>
+              <p className={styles.userRole}>{user ? USER_ROLE_LABEL[user.role] : ''}</p>
             </div>
             <Avatar>
               <AvatarImage src={user?.avatarUrl ?? undefined} alt={user?.fullName ?? ''} />
@@ -101,7 +99,7 @@ export function Topbar() {
             <DropdownMenuLabel>{user?.email}</DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem onSelect={() => logout()}>
-              <LogOut className={styles.logoutIcon} />
+              <ExitIcon className={styles.logoutIcon} />
               Cerrar sesión
             </DropdownMenuItem>
           </DropdownMenuContent>

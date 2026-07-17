@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
-import { Mail, Phone, Search } from 'lucide-react';
+import { EnvelopeClosedIcon, MagnifyingGlassIcon } from '@radix-ui/react-icons';
+import { PhoneIcon } from '@/components/icons';
 import { Avatar, AvatarFallback } from '@/components/ui/Avatar';
 import { Badge } from '@/components/ui/Badge';
 import { Card, CardContent } from '@/components/ui/Card';
@@ -48,7 +49,12 @@ export function TeamDirectory({ members, isLoading }: TeamDirectoryProps) {
 
   const entities = useMemo(() => {
     const byCode = new Map<EntityCode, string>();
-    for (const member of members) byCode.set(member.entityCode, member.entityName);
+    for (const member of members) {
+      // Los usuarios sin entidad asignada no generan pill de filtro; siguen
+      // apareciendo en "Todos".
+      if (!member.entityCode) continue;
+      byCode.set(member.entityCode, member.entityName ?? entityShortLabel(member.entityCode));
+    }
     return Array.from(byCode.entries()).map(([code, name]) => ({
       code,
       name,
@@ -87,7 +93,7 @@ export function TeamDirectory({ members, isLoading }: TeamDirectoryProps) {
         </div>
 
         <div className={styles.searchWrapper}>
-          <Search className={styles.searchIcon} />
+          <MagnifyingGlassIcon className={styles.searchIcon} />
           <Input
             className={styles.searchInput}
             placeholder="Buscar por nombre…"
@@ -110,25 +116,27 @@ export function TeamDirectory({ members, isLoading }: TeamDirectoryProps) {
                   <Avatar>
                     <AvatarFallback>{initialsOf(member.fullName)}</AvatarFallback>
                   </Avatar>
-                  <Badge variant={ENTITY_BADGE_VARIANT[member.entityCode]}>
-                    {entityShortLabel(member.entityCode)}
-                  </Badge>
+                  {member.entityCode && (
+                    <Badge variant={ENTITY_BADGE_VARIANT[member.entityCode]}>
+                      {entityShortLabel(member.entityCode)}
+                    </Badge>
+                  )}
                 </div>
 
                 <div className={styles.identity}>
                   <p className={styles.name}>{member.fullName}</p>
-                  <p className={styles.jobTitle}>{member.jobTitle}</p>
+                  <p className={styles.jobTitle}>{member.jobTitle ?? '—'}</p>
                 </div>
 
                 <div className={styles.contact}>
                   {member.phone && (
                     <span className={styles.contactRow}>
-                      <Phone />
+                      <PhoneIcon />
                       {member.phone}
                     </span>
                   )}
                   <span className={styles.contactRow}>
-                    <Mail />
+                    <EnvelopeClosedIcon />
                     {member.email}
                   </span>
                 </div>

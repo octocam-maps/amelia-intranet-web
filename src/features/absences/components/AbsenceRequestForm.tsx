@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { useForm } from 'react-hook-form';
-import { CheckCircle2, FileText, HeartPulse, Home, MoreHorizontal, Palmtree, User } from 'lucide-react';
-import type { LucideIcon } from 'lucide-react';
+import { CheckCircledIcon, DotsHorizontalIcon, FileTextIcon, HomeIcon, PersonIcon } from '@radix-ui/react-icons';
+import { HeartPulseIcon, type IconComponent, PalmtreeIcon } from '@/components/icons';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Label } from '@/components/ui/Label';
@@ -24,13 +24,13 @@ interface FormValues {
 // llegan con el resto del grid en cuanto el seed los incorpore (tarea
 // "actualizar seed absence_types a 6 tipos"). `MoreHorizontal` es el
 // fallback para cualquier `code` que todavía no esté en este mapa.
-const TYPE_ICON: Record<string, LucideIcon> = {
-  vacaciones: Palmtree,
-  baja_medica: HeartPulse,
-  asuntos_propios: User,
-  justificada: FileText,
-  remoto: Home,
-  otros: MoreHorizontal,
+const TYPE_ICON: Record<string, IconComponent> = {
+  vacaciones: PalmtreeIcon,
+  baja_medica: HeartPulseIcon,
+  asuntos_propios: PersonIcon,
+  justificada: FileTextIcon,
+  remoto: HomeIcon,
+  otros: DotsHorizontalIcon,
 };
 
 function toDateOnly(value: string): Date | null {
@@ -104,7 +104,7 @@ export function AbsenceRequestForm({ onSubmitted, onCancel }: AbsenceRequestForm
         <Label>Tipo de ausencia</Label>
         <div className={styles.typeGrid}>
           {types.map((type) => {
-            const Icon = TYPE_ICON[type.code] ?? MoreHorizontal;
+            const Icon = TYPE_ICON[type.code] ?? DotsHorizontalIcon;
             const isSelected = absenceTypeId === type.id;
             return (
               <button
@@ -135,7 +135,7 @@ export function AbsenceRequestForm({ onSubmitted, onCancel }: AbsenceRequestForm
 
       {requestedDays > 0 && (
         <div className={cn(styles.banner, remainingDays !== null && remainingDays < 0 && styles.bannerWarning)}>
-          <CheckCircle2 className={styles.bannerIcon} />
+          <CheckCircledIcon className={styles.bannerIcon} />
           <span className={styles.bannerText}>
             Solicitas {requestedDays} {requestedDays === 1 ? 'día' : 'días'}
             {remainingDays !== null && <> · te quedarían {remainingDays} disponibles</>}

@@ -1,10 +1,4 @@
-.grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: var(--space-4);
-}
-
-.card {
+.content {
   display: flex;
   align-items: center;
   gap: var(--space-4);
@@ -20,7 +14,7 @@
   border-radius: calc(var(--radius) - 2px);
 }
 
-.icon svg {
+.iconSvg {
   height: 1.5rem;
   width: 1.5rem;
 }

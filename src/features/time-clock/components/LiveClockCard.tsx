@@ -1,4 +1,5 @@
-import { Coffee, Pause, Play, Square } from 'lucide-react';
+import { PauseIcon, PlayIcon, StopIcon } from '@radix-ui/react-icons';
+import { CoffeeIcon } from '@/components/icons';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent } from '@/components/ui/Card';
 import { formatHms, useElapsedSeconds } from '@/hooks/useElapsedSeconds';
@@ -48,7 +49,7 @@ export function LiveClockCard() {
             <p className={styles.detail}>Todavía no has fichado entrada.</p>
           </div>
           <Button variant="dark" disabled={isClockingIn} onClick={() => clockIn()}>
-            <Play />
+            <PlayIcon />
             Fichar entrada
           </Button>
         </CardContent>
@@ -60,7 +61,7 @@ export function LiveClockCard() {
     <Card>
       <CardContent className={styles.root}>
         <div className={styles.statusIcon} data-on-break={openEntry.onBreak}>
-          {openEntry.onBreak ? <Coffee /> : <Play />}
+          {openEntry.onBreak ? <CoffeeIcon /> : <PlayIcon />}
         </div>
 
         <div className={styles.info}>
@@ -82,17 +83,17 @@ export function LiveClockCard() {
           <div className={styles.buttonRow}>
             {openEntry.onBreak ? (
               <Button variant="outline" disabled={isEndingBreak} onClick={() => endBreak()}>
-                <Play />
+                <PlayIcon />
                 Reanudar
               </Button>
             ) : (
               <Button variant="outline" disabled={isStartingBreak} onClick={() => startBreak()}>
-                <Pause />
+                <PauseIcon />
                 Pausa
               </Button>
             )}
             <Button variant="dark" disabled={isClockingOut} onClick={() => clockOut()}>
-              <Square />
+              <StopIcon />
               Fichar salida
             </Button>
           </div>

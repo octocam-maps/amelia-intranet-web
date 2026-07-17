@@ -1,4 +1,4 @@
-import { Megaphone } from 'lucide-react';
+import { MegaphoneIcon } from '@/components/icons';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { useAnnouncements } from '@/features/announcements/application/useAnnouncements';
 import { AnnouncementBody } from '@/features/announcements/components/AnnouncementBody';
@@ -17,7 +17,7 @@ export function AnnouncementsCard() {
     <Card>
       <CardHeader className={styles.headerRow}>
         <CardTitle>Anuncios</CardTitle>
-        <Megaphone className={styles.icon} />
+        <MegaphoneIcon className={styles.icon} />
       </CardHeader>
       <CardContent className={styles.list}>
         {isLoading ? (

@@ -1,5 +1,11 @@
+import { parseEnum, parseEnumNullable } from '@/lib/parseEnum';
 import type { Announcement, AnnouncementAudience, AnnouncementEntity, AnnouncementInput } from '../domain/models';
 import type { AnnouncementDTO, AnnouncementInputDTO } from './dtos';
+
+// `audience` decide si se muestra el selector de entidad; `entityCode` se
+// renderiza como badge (`ENTITY_LABEL[entityCode]` en AnnouncementsList).
+const ANNOUNCEMENT_AUDIENCES: AnnouncementAudience[] = ['all', 'entity'];
+const ANNOUNCEMENT_ENTITIES: AnnouncementEntity[] = ['hub', 'lab', 'ops'];
 
 export function announcementFromDTO(dto: AnnouncementDTO): Announcement {
   return {
@@ -9,8 +15,8 @@ export function announcementFromDTO(dto: AnnouncementDTO): Announcement {
     // El backend no envía `status`: se deriva de `published_at`.
     status: dto.published_at ? 'published' : 'draft',
     pinned: dto.is_pinned,
-    audience: dto.audience as AnnouncementAudience,
-    entityCode: dto.entity_code as AnnouncementEntity | null,
+    audience: parseEnum(dto.audience, ANNOUNCEMENT_AUDIENCES, 'all'),
+    entityCode: parseEnumNullable(dto.entity_code, ANNOUNCEMENT_ENTITIES),
     publishedAt: dto.published_at,
     createdAt: dto.created_at,
     // El backend aún no registra vistas (no hay columna view_count); se

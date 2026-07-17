@@ -24,18 +24,29 @@
 }
 
 .avatar {
-  height: 2rem;
-  width: 2rem;
+  height: 1.75rem;
+  width: 1.75rem;
+  flex-shrink: 0;
 }
 
 .name {
   flex: 1;
   font-size: 0.875rem;
-  font-weight: 500;
   color: hsl(var(--foreground));
 }
 
-.day {
+.date {
+  font-size: 0.8125rem;
+  color: hsl(var(--muted-foreground));
+}
+
+.dateToday {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: hsl(var(--primary));
+}
+
+.empty {
   font-size: 0.8125rem;
   color: hsl(var(--muted-foreground));
 }

@@ -27,3 +27,92 @@
   color: hsl(var(--muted-foreground));
   font-size: 0.875rem;
 }
+
+/* BUG: `.header` (Card.module.css) fija `flex-direction: column` en el
+   CardHeader base — como esta regla no la sobreescribía explícitamente, el
+   eje principal seguía siendo vertical y `align-items: center` centraba
+   TODO horizontalmente (título + filtro apilados y centrados) en vez de
+   dejarlos en fila a la izquierda. `flex-direction: row` + `justify-
+   content: flex-start` es la corrección: fila, alineada a la izquierda. */
+.historyHeader {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-start;
+  gap: var(--space-4);
+}
+
+.personFilter {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.staffError {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: hsl(var(--destructive));
+}
+
+.pagination {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin-top: var(--space-4);
+}
+
+.paginationLabel {
+  font-size: 0.8125rem;
+  color: hsl(var(--muted-foreground));
+}
+
+.paginationControls {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.pageButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 2rem;
+  width: 2rem;
+  border-radius: calc(var(--radius) - 2px);
+  border: 1px solid hsl(var(--border));
+  background-color: hsl(var(--card));
+  color: hsl(var(--foreground));
+  cursor: pointer;
+}
+
+.pageButton:disabled {
+  cursor: not-allowed;
+  opacity: 0.4;
+}
+
+.pageButton svg {
+  height: 0.875rem;
+  width: 0.875rem;
+}
+
+.pageCurrent {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 2rem;
+  width: 2rem;
+  border-radius: calc(var(--radius) - 2px);
+  background-color: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+  font-size: 0.8125rem;
+  font-weight: 700;
+}
+
+@media (max-width: 640px) {
+  .personFilter {
+    width: 100%;
+  }
+}

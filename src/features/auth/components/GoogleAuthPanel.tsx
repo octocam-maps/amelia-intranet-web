@@ -1,4 +1,3 @@
-import { Loader2 } from 'lucide-react';
 import { useGoogleOneTap } from '../application/useGoogleOneTap';
 import styles from './GoogleAuthPanel.module.css';
 
@@ -24,7 +23,7 @@ export function GoogleAuthPanel() {
     <div className={styles.root}>
       {(stage === 'checking' || stage === 'authenticating') && (
         <div className={styles.status}>
-          <Loader2 className={styles.spinner} aria-hidden />
+          <span className={styles.spinner} aria-hidden="true" />
           {stage === 'checking' ? 'Comprobando tu sesión de Google…' : 'Iniciando sesión…'}
         </div>
       )}

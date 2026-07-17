@@ -41,7 +41,11 @@
 
 .content {
   position: relative;
-  z-index: var(--z-dropdown);
+  /* El contenido se portalea al <body>: cuando el Select se abre DENTRO de un
+   * Dialog (p. ej. el modal "Añadir persona"), debe quedar por encima del
+   * modal (--z-modal: 1000) o el desplegable se renderiza detrás y no se puede
+   * seleccionar. Por eso usa --z-max, no --z-dropdown (50). */
+  z-index: var(--z-max);
   max-height: 20rem;
   min-width: 10rem;
   overflow: hidden;

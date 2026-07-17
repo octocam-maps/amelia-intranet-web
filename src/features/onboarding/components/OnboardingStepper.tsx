@@ -1,4 +1,4 @@
-import { Check, Lock } from 'lucide-react';
+import { CheckIcon, LockClosedIcon } from '@radix-ui/react-icons';
 import { cn } from '@/lib/utils';
 import type { OnboardingStep, OnboardingStepType } from '../domain/models';
 import styles from './OnboardingStepper.module.css';
@@ -51,9 +51,9 @@ export function OnboardingStepper({ steps, activeStepId, onSelectStep }: Onboard
               }`}
             >
               {isCompleted ? (
-                <Check className={styles.nodeIcon} />
+                <CheckIcon className={styles.nodeIcon} />
               ) : isLocked ? (
-                <Lock className={styles.nodeIcon} />
+                <LockClosedIcon className={styles.nodeIcon} />
               ) : (
                 step.stepOrder
               )}
