@@ -21,6 +21,11 @@
   color: hsl(var(--destructive));
 }
 
+.hint {
+  font-size: 0.8125rem;
+  color: hsl(var(--muted-foreground));
+}
+
 .footer {
   display: flex;
   justify-content: flex-end;
