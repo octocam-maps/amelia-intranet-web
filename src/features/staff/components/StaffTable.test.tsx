@@ -21,6 +21,8 @@ function buildMember(overrides: Partial<StaffMember> = {}): StaffMember {
     status: 'invited',
     hireDate: null,
     vacationDaysPerYear: null,
+    vacationDaysOverride: null,
+    vacationDaysCalculated: 0,
     isActive: false,
     ...overrides,
   };

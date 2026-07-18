@@ -18,3 +18,26 @@
   overflow-y: auto;
   padding: var(--space-6);
 }
+
+/* Scrim del drawer móvil (ver Sidebar.module.css) — arranca debajo de la
+   topbar (misma altura que `Topbar.module.css` .topbar, 4rem) para no tapar
+   nunca el botón hamburguesa. Navy translúcido, mismo recurso que el scrim
+   de LoginPage.module.css (fondo de marca, no un color nuevo). */
+.overlay {
+  position: fixed;
+  top: 4rem;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: var(--z-fixed);
+  background-color: hsl(var(--foreground) / 0.5);
+}
+
+@media (min-width: 769px) {
+  /* Salvaguarda: si el viewport cruza a escritorio con el drawer todavía
+     marcado como abierto (p. ej. tras rotar/redimensionar), el overlay no
+     debe quedar flotando sobre el layout fijo. */
+  .overlay {
+    display: none;
+  }
+}

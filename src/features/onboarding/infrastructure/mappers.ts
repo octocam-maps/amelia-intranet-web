@@ -1,5 +1,6 @@
 import type {
   AcknowledgeManualResult,
+  CompleteProfileResult,
   OnboardingStep,
   OnboardingStepStatus,
   OnboardingStepType,
@@ -9,6 +10,7 @@ import type {
 } from '../domain/models';
 import type {
   AcknowledgeManualDTO,
+  CompleteProfileResultDTO,
   OnboardingStepDTO,
   QuizResultDTO,
   SignDocumentDTO,
@@ -66,5 +68,16 @@ export function acknowledgeManualFromDTO(dto: AcknowledgeManualDTO): Acknowledge
     stepId: dto.step_id,
     documentId: dto.document_id,
     acknowledgedAt: dto.acknowledged_at,
+  };
+}
+
+export function completeProfileResultFromDTO(dto: CompleteProfileResultDTO): CompleteProfileResult {
+  return {
+    id: dto.id,
+    stepId: dto.step_id,
+    status: dto.status as OnboardingStepStatus,
+    progressPct: dto.progress_pct,
+    startedAt: dto.started_at,
+    completedAt: dto.completed_at,
   };
 }

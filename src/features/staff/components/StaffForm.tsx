@@ -27,7 +27,9 @@ interface FormValues {
   entityCode: EntityCode;
   role: UserRole;
   hireDate: string;
-  vacationDaysPerYear: string;
+  /** Vacío = automático (se calcula desde `hireDate`); un número = override
+   * manual. Ver `StaffMember.vacationDaysOverride`/`vacationDaysCalculated`. */
+  vacationDaysOverride: string;
   isActive: boolean;
 }
 
@@ -64,7 +66,11 @@ export function StaffForm({ member, onSaved, onCancel }: StaffFormProps) {
       entityCode: member?.entityCode ?? 'hub',
       role: member?.role ?? 'empleado',
       hireDate: member?.hireDate ?? '',
-      vacationDaysPerYear: member?.vacationDaysPerYear != null ? String(member.vacationDaysPerYear) : '',
+      // Se precarga con el OVERRIDE (no con `vacationDaysPerYear`, el valor
+      // efectivo) — si no hay override, el input debe verse vacío
+      // (automático), no con el número calculado.
+      vacationDaysOverride:
+        member?.vacationDaysOverride != null ? String(member.vacationDaysOverride) : '',
       isActive: member?.isActive ?? true,
     },
   });
@@ -79,7 +85,11 @@ export function StaffForm({ member, onSaved, onCancel }: StaffFormProps) {
   const error = createError ?? updateError;
 
   const onSubmit = async (values: FormValues) => {
-    const vacationDaysPerYear = values.vacationDaysPerYear ? Number(values.vacationDaysPerYear) : null;
+    // Vacío = automático (`null` -> el backend calcula desde `hireDate`);
+    // un número = override manual.
+    const vacationDaysOverride = values.vacationDaysOverride
+      ? Number(values.vacationDaysOverride)
+      : null;
 
     if (member) {
       // `PATCH /staff/{id}` no admite `full_name`/`email`/`hire_date` — el
@@ -91,7 +101,7 @@ export function StaffForm({ member, onSaved, onCancel }: StaffFormProps) {
           department: values.department || null,
           entityCode: values.entityCode,
           role: values.role,
-          vacationDaysPerYear,
+          vacationDaysOverride,
           isActive: values.isActive,
         },
       });
@@ -105,7 +115,7 @@ export function StaffForm({ member, onSaved, onCancel }: StaffFormProps) {
         entityCode: values.entityCode,
         role: values.role,
         hireDate: values.hireDate || null,
-        vacationDaysPerYear,
+        vacationDaysOverride,
       });
     }
     onSaved();
@@ -192,8 +202,27 @@ export function StaffForm({ member, onSaved, onCancel }: StaffFormProps) {
           <Input id="hireDate" type="date" disabled={Boolean(member)} {...register('hireDate')} />
         </div>
         <div className={styles.field}>
-          <Label htmlFor="vacationDaysPerYear">Días de vacaciones/año</Label>
-          <Input id="vacationDaysPerYear" type="number" min={0} {...register('vacationDaysPerYear')} />
+          <Label htmlFor="vacationDaysOverride">Días de vacaciones/año</Label>
+          <Input
+            id="vacationDaysOverride"
+            type="number"
+            min={0}
+            placeholder="Automático"
+            {...register('vacationDaysOverride')}
+          />
+          {/* Vacío = automático (se calcula desde la fecha de alta, 10 días
+           * por semestre completo trabajado) — el número que se ve aquí solo
+           * aparece cuando hay un override manual vigente. */}
+          {member ? (
+            <p className={styles.fieldHint}>
+              Calculado automáticamente: {member.vacationDaysCalculated} días
+              {member.vacationDaysOverride != null && ' (hay un override manual fijado)'}
+            </p>
+          ) : (
+            <p className={styles.fieldHint}>
+              Déjalo vacío para calcularlo automáticamente según la fecha de alta.
+            </p>
+          )}
         </div>
       </div>
 

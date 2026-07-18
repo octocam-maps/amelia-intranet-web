@@ -24,7 +24,18 @@ export interface StaffMember {
   role: UserRole;
   status: StaffStatus;
   hireDate: string | null;
+  /** Entitlement EFECTIVO y vigente (override si lo hay, si no el
+   * calculado) — lo que consume el widget del dashboard. */
   vacationDaysPerYear: number | null;
+  /** Override manual del admin. `null` = automático (calculado desde
+   * `hireDate`). Es el valor con el que se precarga el input del
+   * formulario: vacío cuando es `null` (automático). */
+  vacationDaysOverride: number | null;
+  /** Lo que daría el cálculo automático ahora mismo, exista o no un
+   * override — para mostrar "Calculado automáticamente: X días" en el
+   * formulario sin reimplementar la fórmula de negocio (deroga el "23
+   * días/año" fijo del RF, ver backend `vacation_entitlement.py`). */
+  vacationDaysCalculated: number;
   /** El backend NO manda `is_active` en la respuesta — se deriva de
    * `status === 'active'` en el mapper. */
   isActive: boolean;
@@ -40,18 +51,23 @@ export interface CreateStaffMemberInput {
   entityCode: EntityCode;
   role: UserRole;
   hireDate?: string | null;
-  vacationDaysPerYear?: number | null;
+  /** Vacío/`null` = automático (calculado desde `hireDate`); un número =
+   * override manual. */
+  vacationDaysOverride?: number | null;
 }
 
 /** Body de edición — todo opcional; solo aquí existe `isActive`
  * (activar/suspender acceso). No admite `hireDate` (el backend no lo
- * expone en `PATCH /staff/{id}`). */
+ * expone en `PATCH /staff/{id}`).
+ *
+ * `vacationDaysOverride` AUSENTE (`undefined`) = no tocar el override;
+ * `null` explícito = vaciarlo (vuelve a automático); un número = fijarlo. */
 export interface UpdateStaffMemberInput {
   jobTitle?: string | null;
   department?: string | null;
   entityCode?: EntityCode;
   role?: UserRole;
-  vacationDaysPerYear?: number | null;
+  vacationDaysOverride?: number | null;
   isActive?: boolean;
 }
 

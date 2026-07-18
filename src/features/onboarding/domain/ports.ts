@@ -1,6 +1,7 @@
 import type {
   AcknowledgeManualResult,
   CompleteProfileInput,
+  CompleteProfileResult,
   OnboardingStep,
   QuizResult,
   ReportVideoProgressInput,
@@ -15,5 +16,5 @@ export interface OnboardingRepository {
   submitQuiz(stepId: string, input: SubmitQuizInput): Promise<QuizResult>;
   signDocument(stepId: string): Promise<SignDocumentResult>;
   acknowledgeManual(stepId: string): Promise<AcknowledgeManualResult>;
-  completeProfile(stepId: string, input: CompleteProfileInput): Promise<OnboardingStep>;
+  completeProfile(stepId: string, input: CompleteProfileInput): Promise<CompleteProfileResult>;
 }

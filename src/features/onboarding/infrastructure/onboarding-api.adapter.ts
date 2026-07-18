@@ -2,6 +2,7 @@ import { apiClient } from '@/lib/http/api-client';
 import type {
   AcknowledgeManualResult,
   CompleteProfileInput,
+  CompleteProfileResult,
   OnboardingStep,
   QuizResult,
   ReportVideoProgressInput,
@@ -12,14 +13,15 @@ import type {
 import type { OnboardingRepository } from '../domain/ports';
 import type {
   AcknowledgeManualDTO,
+  CompleteProfileResultDTO,
   OnboardingMeDTO,
-  OnboardingStepDTO,
   QuizResultDTO,
   SignDocumentDTO,
   VideoProgressDTO,
 } from './dtos';
 import {
   acknowledgeManualFromDTO,
+  completeProfileResultFromDTO,
   quizResultFromDTO,
   signDocumentFromDTO,
   stepFromDTO,
@@ -65,17 +67,22 @@ export const onboardingApiAdapter: OnboardingRepository = {
     return acknowledgeManualFromDTO(dto);
   },
 
-  async completeProfile(stepId: string, input: CompleteProfileInput): Promise<OnboardingStep> {
-    const dto = await apiClient<OnboardingStepDTO>(`/onboarding/steps/${stepId}/complete-profile`, {
-      method: 'POST',
-      body: JSON.stringify({
-        phone: input.phone,
-        address: input.address,
-        emergency_contact_name: input.emergencyContactName,
-        emergency_contact_phone: input.emergencyContactPhone,
-        emergency_contact_relationship: input.emergencyContactRelationship ?? null,
-      }),
-    });
-    return stepFromDTO(dto);
+  async completeProfile(stepId: string, input: CompleteProfileInput): Promise<CompleteProfileResult> {
+    const dto = await apiClient<CompleteProfileResultDTO>(
+      `/onboarding/steps/${stepId}/complete-profile`,
+      {
+        method: 'POST',
+        body: JSON.stringify({
+          full_name: input.fullName,
+          birth_date: input.birthDate,
+          dni_nie: input.dniNie,
+          personal_phone: input.personalPhone,
+          company_phone: input.companyPhone || null,
+          address: input.address,
+          department_id: input.departmentId,
+        }),
+      }
+    );
+    return completeProfileResultFromDTO(dto);
   },
 };

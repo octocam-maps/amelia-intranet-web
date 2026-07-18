@@ -87,15 +87,33 @@ export interface AcknowledgeManualResult {
 }
 
 /**
- * Contrato del cuerpo de `complete-profile` no fija nombres de campo más
- * allá de "phone, address, emergency contact" — se modela el contacto de
- * emergencia como nombre + teléfono + relación (opcional), es la forma
- * mínima habitual para este dato en RRHH.
+ * Los 7 campos del paso 5 ("Completar perfil", RF §3.5) — ver
+ * `CompleteProfileRequestDTO` en
+ * `amelia-intranet-back/src/features/onboarding/infrastructure/schemas.py`.
+ * Los 6 primeros son obligatorios; `companyPhone` es el único opcional
+ * ("móvil de empresa, si aplica").
  */
 export interface CompleteProfileInput {
-  phone: string;
+  fullName: string;
+  /** `YYYY-MM-DD` (valor nativo de `<input type="date">`). */
+  birthDate: string;
+  dniNie: string;
+  personalPhone: string;
+  companyPhone?: string;
   address: string;
-  emergencyContactName: string;
-  emergencyContactPhone: string;
-  emergencyContactRelationship?: string;
+  departmentId: string;
+}
+
+/**
+ * `POST /steps/{id}/complete-profile` responde `OnboardingProgressDTO`
+ * (progreso del PROPIO paso 5, no el step completo con `config`/`title`) —
+ * misma forma que `VideoProgressResult`.
+ */
+export interface CompleteProfileResult {
+  id: string;
+  stepId: string;
+  status: OnboardingStepStatus;
+  progressPct: number;
+  startedAt: string | null;
+  completedAt: string | null;
 }
