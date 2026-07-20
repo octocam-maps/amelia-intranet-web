@@ -48,7 +48,8 @@
   z-index: var(--z-max);
   max-height: 20rem;
   min-width: 10rem;
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: auto;
   border-radius: calc(var(--radius) - 2px);
   border: 1px solid hsl(var(--border));
   background-color: hsl(var(--popover));
@@ -60,6 +61,9 @@
 
 .contentPopper {
   transform: translateY(var(--space-1));
+  /* Nunca más alto que el espacio libre hacia abajo (Radix lo expone): así no
+   * necesita voltearse hacia arriba y queda consistente en toda la app. */
+  max-height: min(20rem, var(--radix-select-content-available-height));
 }
 
 .viewport {

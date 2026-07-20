@@ -47,3 +47,14 @@ export interface AcknowledgeManualDTO {
   document_id: string;
   acknowledged_at: string;
 }
+
+/** Respuesta de `POST /steps/{id}/complete-profile` — `OnboardingProgressDTO`
+ * en el backend (progreso del propio paso, no el step con `config`/`title`). */
+export interface CompleteProfileResultDTO {
+  id: string;
+  step_id: string;
+  status: string;
+  progress_pct: number;
+  started_at: string | null;
+  completed_at: string | null;
+}

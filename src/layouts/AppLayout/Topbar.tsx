@@ -1,4 +1,5 @@
-import { ExitIcon, PlusIcon } from '@radix-ui/react-icons';
+import type { RefObject } from 'react';
+import { ExitIcon, HamburgerMenuIcon, PlusIcon } from '@radix-ui/react-icons';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/Avatar';
 import { Button } from '@/components/ui/Button';
 import {
@@ -68,7 +69,15 @@ function LiveClockPill() {
   );
 }
 
-export function Topbar() {
+interface TopbarProps {
+  /** Ref del botón hamburguesa — `AppLayout` le devuelve el foco al cerrar
+   * el drawer (Escape / overlay). */
+  menuButtonRef?: RefObject<HTMLButtonElement>;
+  isMobileNavOpen: boolean;
+  onToggleMobileNav: () => void;
+}
+
+export function Topbar({ menuButtonRef, isMobileNavOpen, onToggleMobileNav }: TopbarProps) {
   const user = useStore((s) => s.user);
   // `socio` [migración 024] = igual que empleado -> ficha su propio
   // horario, así que también ve el pill de fichaje (RBAC real en el
@@ -79,6 +88,19 @@ export function Topbar() {
 
   return (
     <header className={styles.topbar}>
+      {/* Solo visible <=768px (Topbar.module.css) — en escritorio el
+          sidebar ya está siempre visible, no hace falta abrirlo. */}
+      <button
+        ref={menuButtonRef}
+        type="button"
+        className={styles.menuButton}
+        aria-label={isMobileNavOpen ? 'Cerrar menú de navegación' : 'Abrir menú de navegación'}
+        aria-expanded={isMobileNavOpen}
+        onClick={onToggleMobileNav}
+      >
+        <HamburgerMenuIcon />
+      </button>
+
       <div className={styles.actions}>
         {canUseTimeClock && <LiveClockPill />}
 

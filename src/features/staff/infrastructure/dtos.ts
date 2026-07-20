@@ -20,7 +20,16 @@ export interface StaffMemberDTO {
   role_code: string;
   status: string;
   hire_date: string | null;
+  /** Entitlement EFECTIVO y vigente (override si lo hay, si no el
+   * calculado) — fuente única: `absence_balances.entitled_days`. */
   vacation_days_per_year: number | null;
+  /** Override manual del admin. `null` = automático (calculado desde
+   * `hire_date`). Distinto de `vacation_days_per_year` (ver arriba). */
+  vacation_days_override: number | null;
+  /** Lo que daría el cálculo automático AHORA MISMO, exista o no un
+   * override — para mostrarlo en el formulario sin reimplementar la
+   * fórmula de negocio en el frontend. */
+  vacation_days_calculated: number;
 }
 
 export interface StaffListDTO {
@@ -38,16 +47,25 @@ export interface CreateStaffMemberDTO {
   entity: string;
   role: string;
   hire_date?: string | null;
-  vacation_days_per_year?: number | null;
+  /** Vacío/`null` = automático (calculado desde `hire_date`); un número =
+   * override manual. */
+  vacation_days_override?: number | null;
 }
 
 /** Body de `PATCH /staff/{id}` — sin `full_name`/`email`/`hire_date` (el
- * backend no permite editarlos aquí); aquí sí existe `is_active`. */
+ * backend no permite editarlos aquí); aquí sí existe `is_active`.
+ *
+ * `vacation_days_override` AUSENTE del payload -> no toca el override;
+ * `vacation_days_override: null` explícito -> lo vacía (vuelve a
+ * automático); un número -> lo fija. El backend distingue "ausente" de
+ * "null" con `model_fields_set` — por eso el mapper (`updateStaffMemberInputToDTO`)
+ * solo incluye esta clave cuando el input trae un valor distinto de
+ * `undefined` (puede ser `null`). */
 export interface UpdateStaffMemberDTO {
   job_title?: string | null;
   department?: string | null;
   entity?: string;
   role?: string;
-  vacation_days_per_year?: number | null;
+  vacation_days_override?: number | null;
   is_active?: boolean;
 }

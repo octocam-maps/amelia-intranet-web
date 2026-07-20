@@ -20,17 +20,6 @@
   color: hsl(var(--muted-foreground));
 }
 
-.sectionTitle {
-  margin-top: var(--space-2);
-  font-size: 0.8125rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.02em;
-  color: hsl(var(--muted-foreground));
-  border-top: 1px solid hsl(var(--border));
-  padding-top: var(--space-4);
-}
-
 .row {
   display: flex;
   flex-wrap: wrap;

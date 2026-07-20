@@ -1,8 +1,9 @@
-import { useForm } from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Label } from '@/components/ui/Label';
 import { useCreateTimeClockEntry } from '../application/useCreateTimeClockEntry';
+import { TimeSelect } from './TimeSelect';
 import styles from './TimeClockEntryForm.module.css';
 
 interface FormValues {
@@ -28,6 +29,7 @@ function todayIso(): string {
 export function TimeClockEntryForm() {
   const {
     register,
+    control,
     handleSubmit,
     reset,
     formState: { errors, isSubmitting },
@@ -52,12 +54,25 @@ export function TimeClockEntryForm() {
         <Input id="workDate" type="date" {...register('workDate', { required: true })} />
       </div>
       <div className={styles.field}>
-        <Label htmlFor="clockInTime">Entrada</Label>
-        <Input id="clockInTime" type="time" {...register('clockInTime', { required: true })} />
+        <Label>Entrada</Label>
+        <Controller
+          name="clockInTime"
+          control={control}
+          rules={{ required: true }}
+          render={({ field }) => (
+            <TimeSelect value={field.value} onChange={field.onChange} ariaLabel="Hora de entrada" />
+          )}
+        />
       </div>
       <div className={styles.field}>
-        <Label htmlFor="clockOutTime">Salida (opcional)</Label>
-        <Input id="clockOutTime" type="time" {...register('clockOutTime')} />
+        <Label>Salida (opcional)</Label>
+        <Controller
+          name="clockOutTime"
+          control={control}
+          render={({ field }) => (
+            <TimeSelect value={field.value} onChange={field.onChange} ariaLabel="Hora de salida" />
+          )}
+        />
       </div>
       <Button type="submit" disabled={isSubmitting} className={styles.submit}>
         Registrar tramo

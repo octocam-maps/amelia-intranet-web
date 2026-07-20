@@ -26,3 +26,31 @@
   opacity: 0.5;
   cursor: not-allowed;
 }
+
+/* Inputs de hora (`type="time"`): el widget nativo se ve "básico" — se centra
+   el valor verticalmente (la caja es flex), se quitan los spinners nativos y
+   se deja el icono de reloj discreto y clicable, acorde a la estética limpia. */
+.input[type='time'] {
+  align-items: center;
+}
+
+.input[type='time']::-webkit-datetime-edit {
+  color: hsl(var(--foreground));
+}
+
+.input[type='time']::-webkit-inner-spin-button,
+.input[type='time']::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  appearance: none;
+  margin: 0;
+}
+
+.input[type='time']::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+  opacity: 0.55;
+  transition: opacity 0.15s ease;
+}
+
+.input[type='time']::-webkit-calendar-picker-indicator:hover {
+  opacity: 1;
+}

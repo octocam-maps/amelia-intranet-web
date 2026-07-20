@@ -16,7 +16,12 @@ export const dashboardApiAdapter = {
   async getAdminMetrics(filters: AdminMetricsFilters = {}): Promise<AdminDashboardMetrics> {
     const search = new URLSearchParams();
     if (filters.entityId) search.set('entity_id', filters.entityId);
-    if (filters.departmentId) search.set('department_id', filters.departmentId);
+    // Repetible: el backend acepta `department_id` varias veces
+    // (`Query(None)` con `list[str]`) — un valor por cada id que comparte
+    // nombre de departamento (ver `AdminMetricsFilters`).
+    for (const departmentId of filters.departmentIds ?? []) {
+      search.append('department_id', departmentId);
+    }
     if (filters.periodDays) search.set('period_days', String(filters.periodDays));
     const query = search.toString();
     const dto = await apiClient<AdminMetricsDTO>(`/dashboard/admin/metrics${query ? `?${query}` : ''}`);

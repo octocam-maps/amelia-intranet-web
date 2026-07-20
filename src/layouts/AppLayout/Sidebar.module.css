@@ -9,6 +9,28 @@
   color: hsl(var(--header-foreground));
 }
 
+/* Drawer móvil (RF §8) — mismo breakpoint que el split de
+   `LoginPage.module.css` (768px), el único corte "de dispositivo" que ya
+   existía en el proyecto (el resto, 640/900px, son ajustes de contenido
+   dentro de una página). Por encima de 768px esta regla no aplica y el
+   sidebar queda IDÉNTICO al de escritorio (ancho fijo 16rem, en el flujo). */
+@media (max-width: 768px) {
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: var(--z-menu);
+    height: 100dvh;
+    transform: translateX(-100%);
+    transition: transform 0.25s ease;
+    box-shadow: 4px 0 24px rgba(0, 0, 0, 0.15);
+  }
+
+  .sidebar[data-open='true'] {
+    transform: translateX(0);
+  }
+}
+
 /* Contenedor scrollable (nav + Administración) bajo el logo fijo. */
 .scrollArea {
   flex: 1;

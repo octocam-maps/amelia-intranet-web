@@ -1,0 +1,8 @@
+.content {
+  max-width: 34rem;
+}
+
+.description {
+  font-size: 0.8125rem;
+  color: hsl(var(--muted-foreground));
+}

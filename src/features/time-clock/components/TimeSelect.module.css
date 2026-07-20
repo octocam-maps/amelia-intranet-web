@@ -1,0 +1,14 @@
+.group {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1_5);
+}
+
+.field {
+  width: 4.75rem;
+}
+
+.separator {
+  font-weight: 700;
+  color: hsl(var(--muted-foreground));
+}

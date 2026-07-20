@@ -47,6 +47,8 @@ export function staffMemberFromDTO(dto: StaffMemberDTO): StaffMember {
     status,
     hireDate: dto.hire_date,
     vacationDaysPerYear: dto.vacation_days_per_year,
+    vacationDaysOverride: dto.vacation_days_override,
+    vacationDaysCalculated: dto.vacation_days_calculated,
     isActive: status === 'active',
   };
 }
@@ -61,18 +63,21 @@ export function createStaffMemberInputToDTO(input: CreateStaffMemberInput): Crea
     entity: input.entityCode,
     role: input.role,
     hire_date: input.hireDate ?? null,
-    vacation_days_per_year: input.vacationDaysPerYear ?? null,
+    vacation_days_override: input.vacationDaysOverride ?? null,
   };
 }
 
-/** Body de `PATCH /staff/{id}` — todo opcional; solo incluye lo que cambió. */
+/** Body de `PATCH /staff/{id}` — todo opcional; solo incluye lo que cambió.
+ * `vacationDaysOverride` se incluye tanto si es un número como si es
+ * `null` explícito (vaciar) — SOLO se omite cuando es `undefined` (no
+ * tocar). El backend distingue "ausente" de "null" con `model_fields_set`. */
 export function updateStaffMemberInputToDTO(input: UpdateStaffMemberInput): UpdateStaffMemberDTO {
   const dto: UpdateStaffMemberDTO = {};
   if (input.jobTitle !== undefined) dto.job_title = input.jobTitle;
   if (input.department !== undefined) dto.department = input.department;
   if (input.entityCode !== undefined) dto.entity = input.entityCode;
   if (input.role !== undefined) dto.role = input.role;
-  if (input.vacationDaysPerYear !== undefined) dto.vacation_days_per_year = input.vacationDaysPerYear;
+  if (input.vacationDaysOverride !== undefined) dto.vacation_days_override = input.vacationDaysOverride;
   if (input.isActive !== undefined) dto.is_active = input.isActive;
   return dto;
 }

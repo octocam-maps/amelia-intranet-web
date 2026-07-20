@@ -19,6 +19,8 @@ function baseDTO(overrides: Partial<StaffMemberDTO> = {}): StaffMemberDTO {
     status: 'active',
     hire_date: null,
     vacation_days_per_year: null,
+    vacation_days_override: null,
+    vacation_days_calculated: 0,
     ...overrides,
   };
 }

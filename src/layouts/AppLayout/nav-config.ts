@@ -1,4 +1,12 @@
-import { AvatarIcon, BellIcon, CalendarIcon, ClockIcon, FileTextIcon, HomeIcon } from '@radix-ui/react-icons';
+import {
+  ArchiveIcon,
+  AvatarIcon,
+  BellIcon,
+  CalendarIcon,
+  ClockIcon,
+  FileTextIcon,
+  HomeIcon,
+} from '@radix-ui/react-icons';
 import {
   CalendarClockIcon,
   CalendarRangeIcon,
@@ -30,8 +38,9 @@ const inicio: NavItem = { label: 'Inicio', to: '/', icon: HomeIcon };
 // Fase 3: ausencias y control horario ya tienen página real — dejan de ser "comingSoon".
 const ausencias: NavItem = { label: 'Ausencias', to: '/ausencias', icon: CalendarClockIcon };
 const controlHorario: NavItem = { label: 'Control horario', to: '/control-horario', icon: ClockIcon };
-const nominas: NavItem = { label: 'Nóminas', to: '/nominas', icon: WalletIcon, comingSoon: true };
-const documentos: NavItem = { label: 'Documentos', to: '/documentos', icon: FileTextIcon, comingSoon: true };
+// Fase 4: Nóminas y Documentos ya tienen página real — dejan de ser "comingSoon".
+const nominas: NavItem = { label: 'Nóminas', to: '/nominas', icon: WalletIcon };
+const documentos: NavItem = { label: 'Documentos', to: '/documentos', icon: FileTextIcon };
 // Fase 5: Equipo (directorio, calendario de vacaciones, organigrama) ya tiene
 // página real. Fase 6: el buzón anónimo del empleado también. Ambos activos.
 const equipo: NavItem = { label: 'Equipo', to: '/equipo', icon: UsersIcon };
@@ -65,10 +74,15 @@ const calendarioGeneral: NavItem = {
 // Fase 6 R1: "Plantilla" y "Buzón (recepción)" ya tienen página real.
 // Fase 6 R2: "Anuncios", "Festivos" y "Tipos de ausencia" se suman.
 // Fase 6 R3: "Onboarding" (gestión de pasos + progreso de la plantilla) se suma.
+// Fase 4: "Documentos" (subida manual + "Sincronizar ahora" con Drive) se
+// suma — icono distinto (ArchiveIcon) del "Documentos" del navbar general
+// (FileTextIcon, `documentos` más arriba) para diferenciar la vista de
+// gestión de toda la plantilla de la carpeta personal de cada persona.
 export const ADMIN_SECTION_ITEMS: NavItem[] = [
   { label: 'Plantilla', to: '/administracion/plantilla', icon: UsersIcon },
   { label: 'Aprobar ausencias', to: '/ausencias', icon: InboxIcon },
   calendarioGeneral,
+  { label: 'Documentos', to: '/administracion/documentos', icon: ArchiveIcon },
   { label: 'Anuncios', to: '/administracion/anuncios', icon: BellIcon },
   { label: 'Buzón (recepción)', to: '/administracion/buzon', icon: MailboxIcon },
   { label: 'Onboarding', to: '/administracion/onboarding', icon: GraduationCapIcon },

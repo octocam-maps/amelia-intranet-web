@@ -6,6 +6,9 @@ import { AbsencesPage } from '@/features/absences/pages/AbsencesPage';
 import { AbsenceTypesAdminPage } from '@/features/absences/pages/AbsenceTypesAdminPage';
 import { AnunciosPage } from '@/features/announcements/pages/AnunciosPage';
 import { DashboardPage } from '@/features/dashboard/pages/DashboardPage';
+import { AdminDocumentsPage } from '@/features/documents/pages/AdminDocumentsPage';
+import { DocumentsPage } from '@/features/documents/pages/DocumentsPage';
+import { PayslipsPage } from '@/features/documents/pages/PayslipsPage';
 import { FestivosPage } from '@/features/holidays/pages/FestivosPage';
 import { AdminMailboxPage } from '@/features/mailbox/pages/AdminMailboxPage';
 import { AnonymousMailboxPage } from '@/features/mailbox/pages/AnonymousMailboxPage';
@@ -37,6 +40,8 @@ export function AppRoutes() {
             decide el acceso, solo compone la navegación. */}
         <Route path="/ausencias" element={<AbsencesPage />} />
         <Route path="/control-horario" element={<TimeClockPage />} />
+        <Route path="/nominas" element={<PayslipsPage />} />
+        <Route path="/documentos" element={<DocumentsPage />} />
         <Route path="/buzon-anonimo" element={<AnonymousMailboxPage />} />
         {/* GET /mailbox/track/{reference_code} es público (sin auth) por
             diseño en el backend, pero esta ruta se mantiene dentro del
@@ -49,6 +54,7 @@ export function AppRoutes() {
         <Route path="/perfil" element={<ProfilePage />} />
         <Route path="/onboarding" element={<OnboardingPage />} />
         <Route path="/administracion/plantilla" element={<StaffPage />} />
+        <Route path="/administracion/documentos" element={<AdminDocumentsPage />} />
         <Route path="/administracion/buzon" element={<AdminMailboxPage />} />
         <Route path="/administracion/anuncios" element={<AnunciosPage />} />
         <Route path="/administracion/festivos" element={<FestivosPage />} />

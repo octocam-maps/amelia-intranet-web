@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { apiClient } from './api-client';
+import { apiClient, ApiError } from './api-client';
 
 // Mocks izados: el api-client lee el store y (dinámicamente) el single-flight
 // de refresh. Los interceptamos para observar el comportamiento del 401.
@@ -76,5 +76,65 @@ describe('apiClient — refresh transparente ante 401', () => {
     });
     expect(refreshSessionSingleFlight).not.toHaveBeenCalled();
     expect(clearSession).not.toHaveBeenCalled();
+  });
+});
+
+describe('apiClient — parseo de errores 422', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    getAccessToken.mockReturnValue('access-token');
+  });
+
+  it('un 422 de dominio ({"detail": {"code","message"}}) da un mensaje único sin fieldErrors', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue(
+        jsonResponse(422, {
+          detail: { code: 'InvalidDepartmentError', message: 'El departamento indicado no existe.' },
+        })
+      )
+    );
+
+    const error = await apiClient('/onboarding/steps/x/complete-profile', {
+      method: 'POST',
+    }).catch((e) => e as ApiError);
+
+    expect(error).toBeInstanceOf(ApiError);
+    expect((error as ApiError).message).toBe('El departamento indicado no existe.');
+    expect((error as ApiError).code).toBe('InvalidDepartmentError');
+    expect((error as ApiError).fieldErrors).toBeUndefined();
+  });
+
+  it('un 422 nativo de Pydantic ({"detail": [...]}) mapea fieldErrors por campo', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue(
+        jsonResponse(422, {
+          detail: [
+            {
+              loc: ['body', 'dni_nie'],
+              msg: 'String should have at least 1 character',
+              type: 'string_too_short',
+            },
+            {
+              loc: ['body', 'department_id'],
+              msg: 'String should have at least 1 character',
+              type: 'string_too_short',
+            },
+          ],
+        })
+      )
+    );
+
+    const error = await apiClient('/onboarding/steps/x/complete-profile', {
+      method: 'POST',
+    }).catch((e) => e as ApiError);
+
+    expect(error).toBeInstanceOf(ApiError);
+    expect((error as ApiError).status).toBe(422);
+    expect((error as ApiError).fieldErrors).toEqual({
+      dni_nie: 'String should have at least 1 character',
+      department_id: 'String should have at least 1 character',
+    });
   });
 });

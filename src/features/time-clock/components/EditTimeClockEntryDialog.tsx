@@ -1,11 +1,11 @@
 import { useEffect } from 'react';
-import { useForm } from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
 import { Button } from '@/components/ui/Button';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/Dialog';
-import { Input } from '@/components/ui/Input';
 import { Label } from '@/components/ui/Label';
 import { useUpdateTimeClockEntry } from '../application/useUpdateTimeClockEntry';
 import type { TimeClockEntry } from '../domain/models';
+import { TimeSelect } from './TimeSelect';
 import styles from './EditTimeClockEntryDialog.module.css';
 
 interface FormValues {
@@ -32,7 +32,7 @@ interface EditTimeClockEntryDialogProps {
  */
 export function EditTimeClockEntryDialog({ entry, onOpenChange }: EditTimeClockEntryDialogProps) {
   const {
-    register,
+    control,
     handleSubmit,
     reset,
     formState: { errors, isSubmitting },
@@ -76,16 +76,25 @@ export function EditTimeClockEntryDialog({ entry, onOpenChange }: EditTimeClockE
         <form className={styles.form} onSubmit={handleSubmit(onSubmit)}>
           <div className={styles.row}>
             <div className={styles.field}>
-              <Label htmlFor="editClockInTime">Entrada</Label>
-              <Input
-                id="editClockInTime"
-                type="time"
-                {...register('clockInTime', { required: true })}
+              <Label>Entrada</Label>
+              <Controller
+                name="clockInTime"
+                control={control}
+                rules={{ required: true }}
+                render={({ field }) => (
+                  <TimeSelect value={field.value} onChange={field.onChange} ariaLabel="Hora de entrada" />
+                )}
               />
             </div>
             <div className={styles.field}>
-              <Label htmlFor="editClockOutTime">Salida</Label>
-              <Input id="editClockOutTime" type="time" {...register('clockOutTime')} />
+              <Label>Salida</Label>
+              <Controller
+                name="clockOutTime"
+                control={control}
+                render={({ field }) => (
+                  <TimeSelect value={field.value} onChange={field.onChange} ariaLabel="Hora de salida" />
+                )}
+              />
             </div>
           </div>
 

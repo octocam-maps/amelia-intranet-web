@@ -5,19 +5,62 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000
 export class ApiError extends Error {
   status: number;
   code?: string;
+  /** Solo se rellena cuando el 422 viene del validador NATIVO de Pydantic
+   * (`RequestValidationError.errors()`, forma `{"detail": [{loc, msg,
+   * type}, ...]}`) — los errores de dominio (`BaseError` -> `error_handler`)
+   * ya llegan como un único `message` y no necesitan este mapa. Clave:
+   * último segmento de `loc` (nombre del campo del DTO); valor: `msg` del
+   * backend. Permite que un formulario haga `setError(field, {message})`
+   * por campo en vez de un único error genérico. */
+  fieldErrors?: Record<string, string>;
 
-  constructor(message: string, status: number, code?: string) {
+  constructor(message: string, status: number, code?: string, fieldErrors?: Record<string, string>) {
     super(message);
     this.name = 'ApiError';
     this.status = status;
     this.code = code;
+    this.fieldErrors = fieldErrors;
   }
 }
 
 const isRecord = (v: unknown): v is Record<string, unknown> => typeof v === 'object' && v !== null;
 
-function parseErrorPayload(payload: unknown, status: number): { message: string; code?: string } {
-  // El backend devuelve {"detail": {"code": ..., "message": ...}} o {"detail": "..."}.
+interface ParsedError {
+  message: string;
+  code?: string;
+  fieldErrors?: Record<string, string>;
+}
+
+/** `loc` típico: `["body", "department_id"]` o `["body", "birth_date"]` —
+ * se descarta `"body"`/`"query"`/índices numéricos y se queda con el último
+ * segmento con nombre, que coincide con el campo del DTO/formulario. */
+function fieldNameFromLoc(loc: unknown[]): string | undefined {
+  const named = loc.filter((segment): segment is string => typeof segment === 'string' && segment !== 'body');
+  return named[named.length - 1];
+}
+
+function parseValidationErrorList(errors: unknown[], status: number): ParsedError {
+  const fieldErrors: Record<string, string> = {};
+  const messages: string[] = [];
+
+  for (const item of errors) {
+    if (!isRecord(item) || typeof item.msg !== 'string') continue;
+    messages.push(item.msg);
+    const field = Array.isArray(item.loc) ? fieldNameFromLoc(item.loc) : undefined;
+    if (field) fieldErrors[field] = item.msg;
+  }
+
+  if (messages.length === 0) return { message: `Error ${status}` };
+  return { message: messages.join(' '), fieldErrors };
+}
+
+function parseErrorPayload(payload: unknown, status: number): ParsedError {
+  // El backend devuelve {"detail": {"code": ..., "message": ...}} (errores
+  // de dominio), {"detail": "..."} o {"detail": [...]} (422 nativo de
+  // Pydantic — un array de `{loc, msg, type}`, uno por campo inválido).
+  if (isRecord(payload) && Array.isArray(payload.detail)) {
+    return parseValidationErrorList(payload.detail, status);
+  }
   if (isRecord(payload) && isRecord(payload.detail)) {
     const detail = payload.detail;
     return {
@@ -82,7 +125,7 @@ export async function apiClient<T>(endpoint: string, options: RequestOptions = {
       }
     }
 
-    throw new ApiError(parsed.message, response.status, parsed.code);
+    throw new ApiError(parsed.message, response.status, parsed.code, parsed.fieldErrors);
   }
 
   if (response.status === 204) {

@@ -40,7 +40,7 @@ export function DashboardPage() {
   const [filters, setFilters] = useState<AdminHomeFiltersValue>({});
   const { data: metrics, isLoading: isMetricsLoading } = useAdminMetrics({
     entityId: filters.entityId,
-    departmentId: filters.departmentId,
+    departmentIds: filters.departmentIds,
   });
 
   return (

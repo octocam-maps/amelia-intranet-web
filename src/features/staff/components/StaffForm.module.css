@@ -74,6 +74,11 @@
   color: hsl(var(--muted-foreground));
 }
 
+.fieldHint {
+  font-size: 0.75rem;
+  color: hsl(var(--muted-foreground));
+}
+
 .error {
   font-size: 0.8125rem;
   color: hsl(var(--destructive));
