@@ -1,0 +1,14 @@
+# Evita copiar artefactos locales y secretos al contexto de build.
+# Crítico: sin esto, `COPY . .` hornearía el .env (con VITE_*/secretos)
+# en la capa intermedia del stage build, recuperable desde la imagen.
+node_modules
+dist
+dist-ssr
+*.tsbuildinfo
+.env
+.env.local
+*.local
+.git
+.gitignore
+.DS_Store
+README.md
