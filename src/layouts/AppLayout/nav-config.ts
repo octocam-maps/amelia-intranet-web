@@ -101,7 +101,9 @@ export const ADMIN_SECTION_ITEMS: NavItem[] = [
 export const NAV_BY_ROLE: Record<UserRole, NavItem[]> = {
   empleado: [inicio, onboarding, ausencias, controlHorario, nominas, documentos, equipo, buzonAnonimo, perfil],
   administrador: [inicio, onboarding, ausencias, controlHorario, nominas, documentos, equipo, perfil],
-  externo_invitado: [onboarding, equipo, perfil],
+  // El "Inicio" del externo es un mini-dashboard recortado (solo Anuncios +
+  // Cumpleaños del equipo, ver `DashboardPage`) — no el Home de empleado.
+  externo_invitado: [inicio, onboarding, equipo, perfil],
   socio: [
     inicio,
     onboarding,
