@@ -212,3 +212,11 @@ un navegador.
   resuelven nativas, sin el problema de los modificadores de opacidad de
   Tailwind sobre tokens sin `<alpha-value>` que tuvimos antes) — sin
   screenshot/QA visual en navegador real todavía.
+
+## Despliegue (CD)
+
+Cada push a `main` despliega automáticamente en producción
+([people.amelia.am](https://people.amelia.am)) vía GitHub Actions
+(`.github/workflows/deploy.yml`): el workflow conecta por SSH al
+utils-server y ejecuta `deploy.sh web` (pull + build Docker + health
+check). Mismo esquema en `amelia-intranet-back` para el API.
