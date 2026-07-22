@@ -1,4 +1,4 @@
-import { apiClient, ApiError } from '@/lib/http/api-client';
+import { API_BASE_URL, apiClient, ApiError } from '@/lib/http/api-client';
 import { useStore } from '@/store';
 import type {
   AddTimeClockEntryNoteInput,
@@ -19,8 +19,6 @@ import type {
   TimeClockEntryNoteListDTO,
 } from './dtos';
 import { currentStatusFromDTO, entryFromDTO, noteFromDTO } from './mappers';
-
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
 
 function buildQuery(params: ListTimeClockEntriesParams): string {
   const search = new URLSearchParams();
