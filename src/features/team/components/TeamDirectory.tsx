@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import { EnvelopeClosedIcon, MagnifyingGlassIcon } from '@radix-ui/react-icons';
 import { PhoneIcon } from '@/components/icons';
-import { Avatar, AvatarFallback } from '@/components/ui/Avatar';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/Avatar';
 import { Badge } from '@/components/ui/Badge';
 import { Card, CardContent } from '@/components/ui/Card';
 import { Input } from '@/components/ui/Input';
@@ -114,6 +114,9 @@ export function TeamDirectory({ members, isLoading }: TeamDirectoryProps) {
               <CardContent className={styles.cardContent}>
                 <div className={styles.topRow}>
                   <Avatar>
+                    {member.avatarUrl && (
+                      <AvatarImage src={member.avatarUrl} alt={member.fullName} />
+                    )}
                     <AvatarFallback>{initialsOf(member.fullName)}</AvatarFallback>
                   </Avatar>
                   {member.entityCode && (

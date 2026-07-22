@@ -1,5 +1,5 @@
 import { DotsHorizontalIcon, Pencil2Icon } from '@radix-ui/react-icons';
-import { Avatar, AvatarFallback } from '@/components/ui/Avatar';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/Avatar';
 import { Badge } from '@/components/ui/Badge';
 import {
   DropdownMenu,
@@ -105,6 +105,9 @@ export function StaffTable({
               <td>
                 <div className={styles.person}>
                   <Avatar>
+                    {member.avatarUrl && (
+                      <AvatarImage src={member.avatarUrl} alt={member.fullName} />
+                    )}
                     <AvatarFallback>{initialsOf(member.fullName)}</AvatarFallback>
                   </Avatar>
                   <div>
