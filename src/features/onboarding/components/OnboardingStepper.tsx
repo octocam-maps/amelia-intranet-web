@@ -9,7 +9,7 @@ import styles from './OnboardingStepper.module.css';
 const STEP_LABEL: Record<OnboardingStepType, string> = {
   video: 'Vídeo',
   quiz: 'Curso',
-  signature: 'Firma',
+  signature: 'Documento',
   manual: 'Manual',
   profile: 'Perfil',
 };

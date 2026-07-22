@@ -1,0 +1,104 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.title {
+  font-size: 1.375rem;
+  font-weight: 700;
+  color: hsl(var(--foreground));
+}
+
+.subtitle {
+  font-size: 0.875rem;
+  color: hsl(var(--muted-foreground));
+}
+
+.locked {
+  font-size: 0.875rem;
+  color: hsl(var(--muted-foreground));
+}
+
+.fileField {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2_5);
+  border-radius: var(--radius);
+  border: 1px dashed hsl(var(--border));
+  background-color: hsl(var(--muted) / 0.5);
+  padding: var(--space-4);
+  cursor: pointer;
+}
+
+.fileFieldIcon {
+  height: var(--space-5);
+  width: var(--space-5);
+  color: hsl(var(--muted-foreground));
+  flex-shrink: 0;
+}
+
+.fileFieldText {
+  font-size: 0.875rem;
+  color: hsl(var(--foreground));
+}
+
+.fileInput {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.hint {
+  font-size: 0.8125rem;
+  color: hsl(var(--muted-foreground));
+}
+
+.error {
+  font-size: 0.8125rem;
+  color: hsl(var(--destructive));
+}
+
+.footer {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.signedCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-8) var(--space-4);
+  text-align: center;
+}
+
+.signedIcon {
+  height: 3.5rem;
+  width: 3.5rem;
+  color: hsl(var(--primary));
+}
+
+.signedTitle {
+  font-size: 1.375rem;
+  font-weight: 700;
+  color: hsl(var(--foreground));
+}
+
+.signedSubtitle {
+  max-width: 28rem;
+  font-size: 0.875rem;
+  color: hsl(var(--muted-foreground));
+}
+
+.signedLink {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: hsl(var(--primary));
+}
+
+.signedLink:hover {
+  text-decoration: underline;
+}

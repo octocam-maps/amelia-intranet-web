@@ -1,11 +1,9 @@
-import { apiClient, ApiError } from '@/lib/http/api-client';
+import { API_BASE_URL, apiClient, ApiError } from '@/lib/http/api-client';
 import { useStore } from '@/store';
 import type { Document, DriveSyncRun, ListDocumentsParams, UploadDocumentInput } from '../domain/models';
 import type { DocumentsRepository } from '../domain/ports';
 import type { DocumentDTO, DocumentListDTO, DriveSyncRunDTO } from './dtos';
 import { documentFromDTO, driveSyncRunFromDTO } from './mappers';
-
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
 
 function listQuery(params: ListDocumentsParams): string {
   const search = new URLSearchParams();

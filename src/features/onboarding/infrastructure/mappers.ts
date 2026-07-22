@@ -5,7 +5,7 @@ import type {
   OnboardingStepStatus,
   OnboardingStepType,
   QuizResult,
-  SignDocumentResult,
+  UploadSignedDocumentResult,
   VideoProgressResult,
 } from '../domain/models';
 import type {
@@ -13,7 +13,7 @@ import type {
   CompleteProfileResultDTO,
   OnboardingStepDTO,
   QuizResultDTO,
-  SignDocumentDTO,
+  UploadSignedDocumentDTO,
   VideoProgressDTO,
 } from './dtos';
 
@@ -52,13 +52,12 @@ export function quizResultFromDTO(dto: QuizResultDTO): QuizResult {
   };
 }
 
-export function signDocumentFromDTO(dto: SignDocumentDTO): SignDocumentResult {
+export function uploadSignedDocumentFromDTO(dto: UploadSignedDocumentDTO): UploadSignedDocumentResult {
   return {
     id: dto.id,
     stepId: dto.step_id,
-    documentId: dto.document_id,
-    documentVersion: dto.document_version,
-    signedAt: dto.signed_at,
+    employeeDocumentId: dto.employee_document_id,
+    uploadedAt: dto.uploaded_at,
   };
 }
 

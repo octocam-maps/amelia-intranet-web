@@ -71,12 +71,15 @@ export interface QuizResult {
   submittedAt: string;
 }
 
-export interface SignDocumentResult {
+/** Respuesta de `POST /steps/{id}/documents` — ya no incluye hash/IP (esa
+ * prueba de firma quedó fuera de la plataforma); `employeeDocumentId`
+ * apunta al documento ya indexado en `employee_documents` (categoría
+ * `signed`), visible luego en Documentos. */
+export interface UploadSignedDocumentResult {
   id: string;
   stepId: string;
-  documentId: string;
-  documentVersion: number;
-  signedAt: string;
+  employeeDocumentId: string;
+  uploadedAt: string;
 }
 
 export interface AcknowledgeManualResult {

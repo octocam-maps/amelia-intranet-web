@@ -33,12 +33,11 @@ export interface QuizResultDTO {
   submitted_at: string;
 }
 
-export interface SignDocumentDTO {
+export interface UploadSignedDocumentDTO {
   id: string;
   step_id: string;
-  document_id: string;
-  document_version: number;
-  signed_at: string;
+  employee_document_id: string;
+  uploaded_at: string;
 }
 
 export interface AcknowledgeManualDTO {

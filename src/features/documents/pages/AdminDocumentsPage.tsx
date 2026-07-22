@@ -26,6 +26,7 @@ const CATEGORY_LABEL: Record<DocumentCategory, string> = {
   payslip: 'Nómina',
   contract: 'Contrato',
   general: 'General',
+  signed: 'Firmados',
   other: 'Otros',
 };
 const CATEGORIES = Object.keys(CATEGORY_LABEL) as DocumentCategory[];

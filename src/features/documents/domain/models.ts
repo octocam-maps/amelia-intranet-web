@@ -1,7 +1,7 @@
 /** Espejo de `employee_documents` (back, `database/migrations/004_documents.sql`) —
  * NO hay campo `size_bytes` en el esquema real; el binario vive en Drive, Postgres
  * solo indexa metadatos. */
-export type DocumentCategory = 'payslip' | 'contract' | 'general' | 'other';
+export type DocumentCategory = 'payslip' | 'contract' | 'general' | 'signed' | 'other';
 
 export interface Document {
   id: string;
