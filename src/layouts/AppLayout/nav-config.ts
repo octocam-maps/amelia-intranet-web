@@ -117,3 +117,23 @@ export const NAV_BY_ROLE: Record<UserRole, NavItem[]> = {
     calendarioGeneral,
   ],
 };
+
+/**
+ * Título de página para el header, derivado del MISMO mapa de navegación que
+ * el sidebar (NAV_BY_ROLE del rol actual + sección Administración) — así el
+ * header no mantiene su propia tabla de rutas→título. Devuelve el label del
+ * ítem cuyo `to` es el prefijo más específico del pathname ('' si no hay
+ * match, p. ej. subrutas sueltas que no cuelgan de ningún ítem del navbar).
+ */
+export function pageTitleForPath(pathname: string, role: UserRole | undefined): string {
+  const candidates: NavItem[] = [...(role ? NAV_BY_ROLE[role] : []), ...ADMIN_SECTION_ITEMS];
+  let best: NavItem | undefined;
+  for (const item of candidates) {
+    const matches =
+      pathname === item.to || (item.to !== '/' && pathname.startsWith(`${item.to}/`));
+    if (matches && (!best || item.to.length > best.to.length)) {
+      best = item;
+    }
+  }
+  return best?.label ?? '';
+}

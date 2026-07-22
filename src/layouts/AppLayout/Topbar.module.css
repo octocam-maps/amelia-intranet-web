@@ -8,6 +8,40 @@
   background-color: hsl(var(--card));
 }
 
+/* Bloque izquierdo del header: hamburguesa (solo móvil) + encabezado de
+   página. `margin-right: auto` lo ancla a la izquierda pese a que `.topbar`
+   es `justify-content: flex-end` (pensado para `.actions`). */
+.left {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-width: 0;
+  margin-right: auto;
+}
+
+.pageHeading {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  min-width: 0;
+}
+
+.pageTitle {
+  font-size: 1.0625rem;
+  font-weight: 600;
+  line-height: 1.2;
+  color: hsl(var(--foreground));
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pageDate {
+  font-size: 0.75rem;
+  line-height: 1.2;
+  color: hsl(var(--muted-foreground));
+}
+
 .actions {
   display: flex;
   align-items: center;
@@ -15,9 +49,8 @@
 }
 
 /* Botón hamburguesa — oculto en escritorio, el drawer móvil vive en
-   Sidebar.module.css bajo el mismo breakpoint (768px). `margin-right: auto`
-   lo ancla a la izquierda pese a que `.topbar` es `justify-content:
-   flex-end` (pensado para `.actions`, a la derecha). */
+   Sidebar.module.css bajo el mismo breakpoint (768px). El anclado a la
+   izquierda lo da su contenedor `.left`. */
 .menuButton {
   display: none;
   align-items: center;
@@ -50,7 +83,12 @@
 @media (max-width: 768px) {
   .menuButton {
     display: inline-flex;
-    margin-right: auto;
+  }
+
+  /* En móvil manda el hamburguesa; el encabezado de página se oculta para no
+     competir por el poco ancho disponible. */
+  .pageHeading {
+    display: none;
   }
 }
 
