@@ -1,3 +1,4 @@
+import { isAdmin } from '@/features/auth/domain/models';
 import { useStore } from '@/store';
 import { AdminAbsencesView } from '../components/AdminAbsencesView';
 import { EmployeeAbsencesView } from '../components/EmployeeAbsencesView';
@@ -8,6 +9,6 @@ import { EmployeeAbsencesView } from '../components/EmployeeAbsencesView';
  * una sola pantalla con secciones condicionales como en la v1 de esta página.
  */
 export function AbsencesPage() {
-  const isAdmin = useStore((s) => s.user?.role === 'administrador');
-  return isAdmin ? <AdminAbsencesView /> : <EmployeeAbsencesView />;
+  const admin = useStore((s) => isAdmin(s.user?.role));
+  return admin ? <AdminAbsencesView /> : <EmployeeAbsencesView />;
 }

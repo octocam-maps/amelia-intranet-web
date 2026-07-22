@@ -1,6 +1,7 @@
 import type { RefObject } from 'react';
 import { NavLink } from 'react-router-dom';
 import logoBlanco from '@/assets/brand/logo-amelia-blanco.png';
+import { isAdmin } from '@/features/auth/domain/models';
 import { useDashboardSummary } from '@/features/dashboard/application/useDashboardSummary';
 import { useMailboxMessages } from '@/features/mailbox/application/useMailboxMessages';
 import { cn } from '@/lib/utils';
@@ -27,15 +28,15 @@ interface SidebarProps {
  */
 export function Sidebar({ isOpen, navRef }: SidebarProps) {
   const role = useStore((s) => s.user?.role);
-  const isAdmin = role === 'administrador';
+  const admin = isAdmin(role);
   const items = role ? NAV_BY_ROLE[role] : [];
   // Misma queryKey que `useDashboardSummary` de Inicio — TanStack Query
   // reutiliza la caché, no duplica la llamada a `/dashboard/summary`.
   const { data: summary } = useDashboardSummary();
   const pendingCount = summary?.pendingAbsenceRequests?.length;
   // Solo se consulta si el rol es admin — evita un 403 de más al resto de roles.
-  const { data: unreadMessages } = useMailboxMessages('unread', isAdmin);
-  const unreadCount = isAdmin ? unreadMessages?.length : undefined;
+  const { data: unreadMessages } = useMailboxMessages('unread', admin);
+  const unreadCount = admin ? unreadMessages?.length : undefined;
 
   const BADGE_COUNT_BY_LABEL: Record<string, number | undefined> = {
     'Aprobar ausencias': pendingCount,
@@ -58,7 +59,7 @@ export function Sidebar({ isOpen, navRef }: SidebarProps) {
           ))}
         </nav>
 
-        {isAdmin && (
+        {admin && (
           <div className={styles.adminSection}>
             <p className={styles.adminLabel}>Administración</p>
             {ADMIN_SECTION_ITEMS.map((item) => (

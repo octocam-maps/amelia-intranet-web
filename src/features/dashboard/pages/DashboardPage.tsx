@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { isAdmin, isExternalGuest } from '@/features/auth/domain/models';
 import { useStore } from '@/store';
 import { LiveClockCard } from '@/features/time-clock/components/LiveClockCard';
 import { AdminFiltersBar } from '../components/AdminFiltersBar';
@@ -48,23 +49,23 @@ const TODAY_LABEL = new Date().toLocaleDateString('es-ES', {
 export function DashboardPage() {
   const user = useStore((s) => s.user);
   const firstName = user?.fullName?.split(' ')[0] ?? '';
-  const isAdmin = user?.role === 'administrador';
-  const isExternalGuest = user?.role === 'externo_invitado';
+  const admin = isAdmin(user?.role);
+  const externalGuest = isExternalGuest(user?.role);
 
   // Los 3 hooks se llaman siempre, en el mismo orden, para respetar las
   // reglas de hooks — `enabled` es lo que evita la petición de red que el
   // backend rechazaría (ver comentario de clase). `useState` de filtros solo
   // lo usa la rama admin, pero debe declararse aquí por el mismo motivo.
   const { data: summary, isLoading: isSummaryLoading } = useDashboardSummary({
-    enabled: !isExternalGuest,
+    enabled: !externalGuest,
   });
   const [filters, setFilters] = useState<AdminHomeFiltersValue>({});
   const { data: metrics, isLoading: isMetricsLoading } = useAdminMetrics(
     { entityId: filters.entityId, departmentIds: filters.departmentIds },
-    { enabled: isAdmin },
+    { enabled: admin },
   );
 
-  if (isExternalGuest) {
+  if (externalGuest) {
     return (
       <div className={styles.root}>
         <div>
@@ -93,7 +94,7 @@ export function DashboardPage() {
 
       {isSummaryLoading || !summary ? (
         <p className={styles.loading}>Cargando…</p>
-      ) : isAdmin ? (
+      ) : admin ? (
         <>
           <AdminFiltersBar value={filters} onChange={setFilters} />
 
