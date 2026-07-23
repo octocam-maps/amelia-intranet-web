@@ -30,7 +30,7 @@ function baseSyncRunDTO(overrides: Partial<DriveSyncRunDTO> = {}): DriveSyncRunD
 }
 
 describe('documentFromDTO', () => {
-  it.each(['payslip', 'contract', 'general', 'other'] as const)(
+  it.each(['payslip', 'contract', 'general', 'signed', 'other'] as const)(
     'mapea la categoría "%s" sin degradarla',
     (category) => {
       const document = documentFromDTO(baseDocumentDTO({ category }));
@@ -38,6 +38,12 @@ describe('documentFromDTO', () => {
       expect(document.category).toBe(category);
     }
   );
+
+  it('mapea "signed" (documento firmado subido en onboarding) sin degradarlo a "other"', () => {
+    const document = documentFromDTO(baseDocumentDTO({ category: 'signed' }));
+
+    expect(document.category).toBe('signed');
+  });
 
   it('cae a "other" si el backend manda una categoría fuera de contrato', () => {
     const document = documentFromDTO(baseDocumentDTO({ category: 'categoria_que_no_existe' }));

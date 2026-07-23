@@ -1,4 +1,4 @@
-import { apiClient, ApiError } from '@/lib/http/api-client';
+import { API_BASE_URL, apiClient, ApiError } from '@/lib/http/api-client';
 import { useStore } from '@/store';
 import type {
   AbsenceBalance,
@@ -28,8 +28,6 @@ import {
   requestFromDTO,
   typeFromDTO,
 } from './mappers';
-
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
 
 function calendarQuery(params: AbsenceCalendarRangeParams): string {
   const search = new URLSearchParams({ date_from: params.dateFrom, date_to: params.dateTo });

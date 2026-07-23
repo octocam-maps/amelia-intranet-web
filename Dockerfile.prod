@@ -24,6 +24,155 @@ FROM nginx:alpine
 
 COPY --from=build /app/dist /usr/share/nginx/html
 
+# Cabeceras de seguridad HTTP (SEC-4, pentest ético — severidad LOW,
+# defensa en profundidad). Viven en un snippet aparte, incluido tanto en
+# el bloque `server` como en `location /assets/`: nginx NO hereda
+# `add_header` de un nivel superior en un `location` que ya define los
+# suyos propios (aquí, `Cache-Control`), así que hay que repetir el
+# `include`, no los headers — ver comentarios dentro del propio snippet
+# para el porqué de cada directiva.
+COPY <<'EOF' /etc/nginx/conf.d/security-headers.conf
+# =====================================================================
+# SEC-4 (pentest ético, severidad LOW) — cabeceras de seguridad HTTP.
+# Defensa en profundidad: no sustituyen la validación de permisos en el
+# backend (ver CLAUDE.md — "ocultar ≠ proteger"), pero cierran vectores
+# de navegador que hoy la intranet no mitigaba: clickjacking,
+# MIME-sniffing, fuga de Referer e (falta de) red de contención ante un
+# XSS futuro.
+#
+# `always` es imprescindible en las tres primeras: sin él, nginx omite
+# la cabecera en respuestas de error (4xx/5xx) — justo cuando más hace
+# falta (p. ej. una 403 embebida en un iframe de phishing).
+# =====================================================================
+
+# Anti-clickjacking: nadie puede embebernos en un <iframe>/<frame> de
+# un sitio de terceros. OJO: esto NO afecta a que NOSOTROS embebamos el
+# iframe de Google Identity Services — eso lo controla `frame-src` en
+# la CSP de abajo, no esta cabecera (que solo mira embeds ENTRANTES).
+add_header X-Frame-Options "DENY" always;
+
+# El navegador no debe reinterpretar el Content-Type de una respuesta a
+# partir de su contenido (evita que un recurso subido por un usuario se
+# ejecute como script si el atacante logra que se sirva con un MIME
+# ambiguo).
+add_header X-Content-Type-Options "nosniff" always;
+
+# Referer completo (con path) solo en navegación same-origin; a un
+# origen distinto solo se manda el origen, nunca el path — evita filtrar
+# rutas con datos sensibles (ej. /empleados/<id>/nomina) a un enlace
+# externo abierto desde esa pantalla.
+add_header Referrer-Policy "strict-origin-when-cross-origin" always;
+
+# ---------------------------------------------------------------------
+# Content-Security-Policy — EN MODO REPORT-ONLY.
+#
+# Decisión de riesgo: de las 4 cabeceras de SEC-4, esta es la ÚNICA que
+# puede ROMPER el login de Google o los estilos si le falta un origen,
+# así que se arranca en modo "solo reporta" (no bloquea nada; los
+# navegadores solo loguean violaciones en la consola de DevTools) hasta
+# validarla en producción real. Los otros 3 headers de arriba SÍ van en
+# modo enforcing ya, porque no dependen de orígenes externos y no tienen
+# forma de romper nada.
+#
+# Dos cosas NO se pudieron confirmar leyendo el repo (marcadas abajo):
+#   1. [RESUELTO] El dominio real de la API en prod ya está fijado a
+#      https://api.ameliahub.com (confirmado por el team-lead). Si en el
+#      futuro cambia el ARG VITE_API_BASE_URL de build, actualizar también
+#      el `connect-src` de abajo para que coincida.
+#   2. Si Google Identity Services (FedCM/One Tap) abre en runtime algún
+#      origen de Google adicional a accounts.google.com que no se pueda
+#      ver por lectura estática del código (p. ej. un redirect interno
+#      de FedCM). El modo report-only es precisamente la red para
+#      detectar esto en producción sin romper el login de nadie mientras
+#      se valida.
+#
+# Antes de renombrar esta cabecera a `Content-Security-Policy` (quitar
+# el sufijo `-Report-Only` = pasar a enforcing real): desplegar así,
+# navegar el login + todas las pantallas en staging/prod, revisar
+# DevTools → Console/Network en busca de mensajes
+# "[Report Only] Refused to..." y corregir el origen que falte.
+#
+# Desglose directiva por directiva:
+#   default-src 'self'
+#     Fallback para cualquier tipo de recurso no listado abajo
+#     (media-src, worker-src, manifest-src...) — solo nuestro origen.
+#     Cubre el <video> de onboarding (VideoStep.tsx), que es un asset
+#     empaquetado por Vite y servido desde /assets/, NO un host externo
+#     — CONFIRMADO leyendo src/features/onboarding/components/VideoStep.tsx.
+#
+#   script-src 'self' https://accounts.google.com
+#     'self' sirve el bundle de Vite (/assets/index-*.js, cargado como
+#     <script type="module">, sin contenido inline). accounts.google.com
+#     sirve https://accounts.google.com/gsi/client, cargado en index.html
+#     para Google Identity Services (One Tap + botón oficial de
+#     fallback) — CONFIRMADO en index.html:20 y
+#     src/features/auth/application/useGoogleOneTap.ts. NO se incluye
+#     https://apis.google.com: no hay ninguna referencia en el código
+#     (grep sin resultados) — añadir solo si en el futuro se integra un
+#     Drive Picker u otra API de Google que lo requiera.
+#
+#   frame-src https://accounts.google.com
+#     Necesario para el <iframe> que Google Identity Services monta
+#     tanto para el prompt de One Tap como para el botón oficial de
+#     fallback (`window.google.accounts.id.renderButton`, ver
+#     useGoogleOneTap.ts) — el fallback visible sigue usando iframe aun
+#     con `use_fedcm_for_prompt: true`.
+#
+#   connect-src 'self' https://accounts.google.com https://api.ameliahub.com
+#     'self' + el origen real de la API en prod (fetch/XHR de TanStack
+#     Query y de src/lib/http/api-client.ts contra VITE_API_BASE_URL —
+#     origen confirmado por el team-lead: https://api.ameliahub.com).
+#     accounts.google.com por las llamadas en segundo plano que la
+#     librería de Google hace durante el flujo de credenciales/FedCM.
+#
+#   style-src 'self' https://fonts.googleapis.com
+#     'self' cubre el CSS de Vite: en build de producción se extrae a
+#     /assets/index-*.css y se enlaza vía <link rel="stylesheet">, SIN
+#     <style> inline ni CSS-in-JS — CONFIRMADO en dist/index.html y en
+#     package.json (no hay styled-components/emotion entre las
+#     dependencias). fonts.googleapis.com sirve la hoja de estilo de
+#     Manrope (index.html:11). NO se incluye 'unsafe-inline': los
+#     estilos inline de React (`style={{...}}`, presentes en 16
+#     componentes, ej. VideoStep.tsx:239) se aplican vía la propiedad
+#     CSSOM `element.style`, no vía el atributo HTML `style=""` — los
+#     navegadores actuales (Chrome/Firefox) NO tratan esa vía como
+#     "inline style" a efectos de CSP. A CONFIRMAR visualmente en
+#     staging antes de pasar a enforcing, por si algún componente se
+#     sale de este patrón.
+#
+#   font-src 'self' https://fonts.gstatic.com
+#     Los .woff2 que sirve la hoja de Google Fonts se cargan desde
+#     fonts.gstatic.com — CONFIRMADO en index.html:10 (preconnect).
+#
+#   img-src 'self' data: https:
+#     'self' + `data:` (iconos/placeholders inline) + `https:` amplio:
+#     no se encontró en el código un uso de `googleusercontent` (avatar
+#     de perfil de Google) hoy, pero es el vector más probable si se usa
+#     la `picture` del perfil de Google — SIN CONFIRMAR. Si se quiere
+#     cerrar más adelante, sustituir `https:` por el/los host(s)
+#     concreto(s) una vez confirmado qué se usa realmente.
+#
+#   frame-ancestors 'none'
+#     Versión moderna del anti-clickjacking (tiene precedencia sobre
+#     X-Frame-Options en navegadores que soportan ambas) — refuerza,
+#     no sustituye, la cabecera X-Frame-Options de arriba.
+#
+#   base-uri 'self'
+#     Evita que una inyección pueda cambiar <base href> y secuestrar
+#     rutas relativas de la SPA.
+#
+#   object-src 'none'
+#     La app no usa <object>/<embed>; cerrar explícitamente aunque los
+#     navegadores modernos ya mitiguen la mayoría de estos vectores.
+#
+#   form-action 'self'
+#     Ningún <form> de la app debe enviar datos a un origen distinto del
+#     propio — todas las mutaciones van vía fetch/XHR a la API
+#     (TanStack Query), no vía submit nativo de formulario.
+# ---------------------------------------------------------------------
+add_header Content-Security-Policy-Report-Only "default-src 'self'; script-src 'self' https://accounts.google.com; frame-src https://accounts.google.com; connect-src 'self' https://accounts.google.com https://api.ameliahub.com; style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; frame-ancestors 'none'; base-uri 'self'; object-src 'none'; form-action 'self';" always;
+EOF
+
 # SPA: cualquier ruta sin fichero cae en index.html (react-router).
 COPY <<'EOF' /etc/nginx/conf.d/default.conf
 server {
@@ -33,7 +182,15 @@ server {
     root /usr/share/nginx/html;
     index index.html;
 
+    include /etc/nginx/conf.d/security-headers.conf;
+
     location /assets/ {
+        # `location` NO hereda `add_header` del bloque `server` porque
+        # este location ya define el suyo (Cache-Control) — hay que
+        # volver a incluir el snippet aquí explícitamente o esta ruta
+        # (la más servida, por ser donde vive el JS/CSS de la SPA)
+        # quedaría SIN las cabeceras de seguridad.
+        include /etc/nginx/conf.d/security-headers.conf;
         add_header Cache-Control "public, max-age=31536000, immutable";
         try_files $uri =404;
     }

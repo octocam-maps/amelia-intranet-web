@@ -9,13 +9,15 @@ import {
 import { UsersIcon } from '@/components/icons';
 import { Link } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/Card';
+import { isExternalGuest } from '@/features/auth/domain/models';
 import { useStore } from '@/store';
+import { NAV_BY_ROLE } from '@/layouts/AppLayout/nav-config';
 import { useMyOnboarding } from '../application/useMyOnboarding';
 import { ManualStep } from '../components/ManualStep';
 import { OnboardingStepper } from '../components/OnboardingStepper';
 import { ProfileStep } from '../components/ProfileStep';
 import { QuizStep } from '../components/QuizStep';
-import { SignatureStep } from '../components/SignatureStep';
+import { SignedDocumentUploadStep } from '../components/SignedDocumentUploadStep';
 import { VideoStep } from '../components/VideoStep';
 import type { OnboardingStep } from '../domain/models';
 import styles from './OnboardingPage.module.css';
@@ -27,7 +29,7 @@ function StepPanel({ step }: { step: OnboardingStep }) {
     case 'quiz':
       return <QuizStep step={step} />;
     case 'signature':
-      return <SignatureStep step={step} />;
+      return <SignedDocumentUploadStep step={step} />;
     case 'manual':
       return <ManualStep step={step} />;
     case 'profile':
@@ -85,6 +87,13 @@ export function OnboardingPage() {
   }
 
   if (allCompleted) {
+    const role = currentUser?.role;
+    const externalGuest = isExternalGuest(role);
+    // Las tarjetas de "esto puedes hacer ahora" se filtran con el MISMO mapa de
+    // navegación por rol (NAV_BY_ROLE) que usa el navbar — así el externo no ve
+    // accesos a módulos que su rol no tiene (p. ej. Control horario, que el
+    // backend además le rechaza con 403) y no duplicamos la matriz de permisos.
+    const allowedPaths = new Set(role ? NAV_BY_ROLE[role].map((item) => item.to) : []);
     return (
       <div className={styles.completedHero}>
         <div className={styles.completedIconWrap}>
@@ -94,27 +103,37 @@ export function OnboardingPage() {
           ¡Onboarding completado{currentUser?.fullName ? `, ${currentUser.fullName.split(' ')[0]}` : ''}!
         </h1>
         <p className={styles.completedSubtitle}>
-          Ya formas parte del equipo. Esto es lo que puedes hacer ahora:
+          {externalGuest
+            ? 'Ya tienes acceso a tu espacio. Esto es lo que puedes hacer ahora:'
+            : 'Ya formas parte del equipo. Esto es lo que puedes hacer ahora:'}
         </p>
         <div className={styles.completedCards}>
-          <Link to="/" className={styles.completedCard}>
-            <DashboardIcon className={styles.completedCardIcon} />
-            <span className={styles.completedCardTitle}>Tu dashboard</span>
-            <span className={styles.completedCardSubtitle}>Festivos, anuncios y accesos</span>
-          </Link>
-          <Link to="/control-horario" className={styles.completedCard}>
-            <ClockIcon className={styles.completedCardIcon} />
-            <span className={styles.completedCardTitle}>Ficha tu jornada</span>
-            <span className={styles.completedCardSubtitle}>Control horario y pausas</span>
-          </Link>
-          <div className={styles.completedCardDisabled}>
-            <UsersIcon className={styles.completedCardIcon} />
-            <span className={styles.completedCardTitle}>Conoce al equipo</span>
-            <span className={styles.completedCardSubtitle}>Directorio y organigrama · próximamente</span>
-          </div>
+          {allowedPaths.has('/') && (
+            <Link to="/" className={styles.completedCard}>
+              <DashboardIcon className={styles.completedCardIcon} />
+              <span className={styles.completedCardTitle}>{externalGuest ? 'Tu inicio' : 'Tu dashboard'}</span>
+              <span className={styles.completedCardSubtitle}>
+                {externalGuest ? 'Anuncios y cumpleaños del equipo' : 'Festivos, anuncios y accesos'}
+              </span>
+            </Link>
+          )}
+          {allowedPaths.has('/control-horario') && (
+            <Link to="/control-horario" className={styles.completedCard}>
+              <ClockIcon className={styles.completedCardIcon} />
+              <span className={styles.completedCardTitle}>Ficha tu jornada</span>
+              <span className={styles.completedCardSubtitle}>Control horario y pausas</span>
+            </Link>
+          )}
+          {allowedPaths.has('/equipo') && (
+            <div className={styles.completedCardDisabled}>
+              <UsersIcon className={styles.completedCardIcon} />
+              <span className={styles.completedCardTitle}>Conoce al equipo</span>
+              <span className={styles.completedCardSubtitle}>Directorio y organigrama · próximamente</span>
+            </div>
+          )}
         </div>
         <Link to="/" className={styles.completedCta}>
-          Entrar en mi dashboard
+          Entrar en mi {externalGuest ? 'inicio' : 'dashboard'}
           <ArrowRightIcon className={styles.completedCtaIcon} />
         </Link>
       </div>

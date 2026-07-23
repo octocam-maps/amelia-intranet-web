@@ -1,4 +1,4 @@
-import type { RefObject } from 'react';
+import { useMemo, type RefObject } from 'react';
 import { ExitIcon, HamburgerMenuIcon, PlusIcon } from '@radix-ui/react-icons';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/Avatar';
 import { Button } from '@/components/ui/Button';
@@ -17,7 +17,9 @@ import { useClockIn } from '@/features/time-clock/application/useTimeClockLiveAc
 import { useTimeClockCurrent } from '@/features/time-clock/application/useTimeClockCurrent';
 import { NotificationBell } from '@/features/notifications/components/NotificationBell';
 import { USER_ROLE_LABEL } from '@/features/auth/domain/models';
+import { useLocation } from 'react-router-dom';
 import { useStore } from '@/store';
+import { NAV_BY_ROLE, pageTitleForPath } from './nav-config';
 import styles from './Topbar.module.css';
 
 function initialsOf(fullName: string | undefined): string {
@@ -79,27 +81,52 @@ interface TopbarProps {
 
 export function Topbar({ menuButtonRef, isMobileNavOpen, onToggleMobileNav }: TopbarProps) {
   const user = useStore((s) => s.user);
-  // `socio` [migración 024] = igual que empleado -> ficha su propio
-  // horario, así que también ve el pill de fichaje (RBAC real en el
-  // backend vía `require_role`; esto es solo la composición visual).
   const role = user?.role;
-  const canUseTimeClock = role === 'administrador' || role === 'empleado' || role === 'socio';
+  // El pill de fichaje se muestra si el rol tiene "Control horario" en su
+  // navbar (NAV_BY_ROLE) — misma fuente de verdad que el sidebar, para no
+  // reenumerar a mano qué roles fichan. El RBAC real vive en el backend
+  // (`require_role`); esto es solo la composición visual. El externo, que no
+  // tiene el módulo, queda fuera automáticamente (igual que `socio` lo incluye).
+  const canUseTimeClock = !!role && NAV_BY_ROLE[role].some((item) => item.to === '/control-horario');
   const { mutate: logout } = useLogout();
+
+  // Encabezado contextual (izquierda del header): en qué sección estás + fecha.
+  // El título sale de `pageTitleForPath` (mismo mapa de navegación que el
+  // sidebar), no de una tabla propia. La fecha se calcula una vez por montaje.
+  const { pathname } = useLocation();
+  const pageTitle = pageTitleForPath(pathname, role);
+  const todayLabel = useMemo(() => {
+    const formatted = new Intl.DateTimeFormat('es-ES', {
+      weekday: 'long',
+      day: 'numeric',
+      month: 'long',
+    }).format(new Date());
+    return formatted.charAt(0).toUpperCase() + formatted.slice(1);
+  }, []);
 
   return (
     <header className={styles.topbar}>
-      {/* Solo visible <=768px (Topbar.module.css) — en escritorio el
-          sidebar ya está siempre visible, no hace falta abrirlo. */}
-      <button
-        ref={menuButtonRef}
-        type="button"
-        className={styles.menuButton}
-        aria-label={isMobileNavOpen ? 'Cerrar menú de navegación' : 'Abrir menú de navegación'}
-        aria-expanded={isMobileNavOpen}
-        onClick={onToggleMobileNav}
-      >
-        <HamburgerMenuIcon />
-      </button>
+      <div className={styles.left}>
+        {/* Solo visible <=768px (Topbar.module.css) — en escritorio el
+            sidebar ya está siempre visible, no hace falta abrirlo. */}
+        <button
+          ref={menuButtonRef}
+          type="button"
+          className={styles.menuButton}
+          aria-label={isMobileNavOpen ? 'Cerrar menú de navegación' : 'Abrir menú de navegación'}
+          aria-expanded={isMobileNavOpen}
+          onClick={onToggleMobileNav}
+        >
+          <HamburgerMenuIcon />
+        </button>
+
+        {pageTitle && (
+          <div className={styles.pageHeading}>
+            <span className={styles.pageTitle}>{pageTitle}</span>
+            <span className={styles.pageDate}>{todayLabel}</span>
+          </div>
+        )}
+      </div>
 
       <div className={styles.actions}>
         {canUseTimeClock && <LiveClockPill />}

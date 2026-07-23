@@ -32,6 +32,15 @@
   gap: var(--space-4);
 }
 
+/* Inicio del externo-invitado: solo 2 tarjetas de peso visual equivalente
+ * (Anuncios + Cumpleaños), a diferencia de `.columns2` (2fr/1fr, pensada
+ * para el bloque ancho + columna lateral del empleado). */
+.externalGuestGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--space-4);
+}
+
 @media (max-width: 900px) {
   .columns2 {
     grid-template-columns: 1fr;

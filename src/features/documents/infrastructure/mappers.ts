@@ -4,7 +4,7 @@ import type { DocumentDTO, DriveSyncRunDTO } from './dtos';
 
 // Se usan en `parseEnum` — un valor fuera de contrato no debe colapsar el
 // listado, solo degradar esa fila a un fallback razonable.
-const DOCUMENT_CATEGORIES: DocumentCategory[] = ['payslip', 'contract', 'general', 'other'];
+const DOCUMENT_CATEGORIES: DocumentCategory[] = ['payslip', 'contract', 'general', 'signed', 'other'];
 const DRIVE_SYNC_RUN_STATUSES: DriveSyncRunStatus[] = ['running', 'success', 'partial', 'failed'];
 
 export function documentFromDTO(dto: DocumentDTO): Document {

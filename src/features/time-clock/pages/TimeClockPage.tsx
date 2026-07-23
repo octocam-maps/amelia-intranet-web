@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import { ChevronLeftIcon, ChevronRightIcon, DownloadIcon } from '@radix-ui/react-icons';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
+import { isAdmin } from '@/features/auth/domain/models';
 import { useStaffList } from '@/features/staff/application/useStaffList';
 import { useStore } from '@/store';
 import { useDeleteTimeClockEntry } from '../application/useDeleteTimeClockEntry';
@@ -38,7 +39,7 @@ function defaultRange() {
 
 export function TimeClockPage() {
   const currentUser = useStore((s) => s.user);
-  const isAdmin = currentUser?.role === 'administrador';
+  const admin = isAdmin(currentUser?.role);
   const [showAll, setShowAll] = useState(false);
   // X2 (Lote 1) + multi-selector (Lote 2): solo tiene sentido dentro de
   // "Ver toda la plantilla" — se limpia cada vez que se sale de esa vista.
@@ -58,8 +59,8 @@ export function TimeClockPage() {
   // (`showAll`), el admin puede además acotar a una o varias personas
   // (multi-selector, Lote 2) — `scopedUserId` sigue vivo para "ver solo lo
   // mío" (single, sin selector de por medio).
-  const scopedUserId = isAdmin && !showAll ? currentUser?.id : undefined;
-  const scopedUserIds = isAdmin && showAll && selectedPersonIds.length > 0 ? selectedPersonIds : undefined;
+  const scopedUserId = admin && !showAll ? currentUser?.id : undefined;
+  const scopedUserIds = admin && showAll && selectedPersonIds.length > 0 ? selectedPersonIds : undefined;
 
   const { data, isLoading } = useTimeClockEntries({
     dateFrom,
@@ -81,7 +82,7 @@ export function TimeClockPage() {
   const {
     data: staffData,
     error: staffError,
-  } = useStaffList({ pageSize: STAFF_SELECTOR_PAGE_SIZE }, { enabled: isAdmin && showAll });
+  } = useStaffList({ pageSize: STAFF_SELECTOR_PAGE_SIZE }, { enabled: admin && showAll });
   const staffMembers = useMemo(
     () => [...(staffData?.members ?? [])].sort((a, b) => a.fullName.localeCompare(b.fullName, 'es')),
     [staffData]
@@ -107,7 +108,7 @@ export function TimeClockPage() {
       <div className={styles.header}>
         <h1 className={styles.title}>Control horario</h1>
         <div className={styles.actions}>
-          {isAdmin && (
+          {admin && (
             <Button variant="outline" onClick={handleToggleShowAll}>
               {showAll ? 'Ver solo lo mío' : 'Ver toda la plantilla'}
             </Button>
@@ -147,7 +148,7 @@ export function TimeClockPage() {
       <Card>
         <CardHeader className={styles.historyHeader}>
           <CardTitle>Historial (últimos {WINDOW_DAYS} días)</CardTitle>
-          {isAdmin && showAll && (
+          {admin && showAll && (
             <div className={styles.personFilter}>
               <PersonMultiSelect
                 people={staffMembers}
@@ -170,14 +171,14 @@ export function TimeClockPage() {
             <>
               <TimeClockEntryTable
                 entries={entries}
-                showUserColumn={isAdmin && showAll}
+                showUserColumn={admin && showAll}
                 onDelete={deleteEntry}
                 // B-2c: editar el fichaje AJENO solo tiene sentido en la
                 // vista aumentada de "toda la plantilla" — en la vista
                 // personal ya existe el formulario de arriba para corregir
                 // el propio tramo.
-                onEdit={isAdmin && showAll ? setEditingEntry : undefined}
-                onOpenNotes={isAdmin ? setNotesEntry : undefined}
+                onEdit={admin && showAll ? setEditingEntry : undefined}
+                onOpenNotes={admin ? setNotesEntry : undefined}
               />
 
               {total > 0 && (

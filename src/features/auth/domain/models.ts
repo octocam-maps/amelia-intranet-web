@@ -43,6 +43,12 @@ export const USER_ROLE_LABEL: Record<UserRole, string> = {
   socio: 'Socio',
 };
 
+/** Helpers de rol — evitan repetir el literal `'administrador'`/
+ * `'externo_invitado'` en cada feature que necesita ramificar por rol
+ * (Sidebar, Dashboard, Ausencias, Control horario, Onboarding). */
+export const isAdmin = (role?: UserRole | null): boolean => role === 'administrador';
+export const isExternalGuest = (role?: UserRole | null): boolean => role === 'externo_invitado';
+
 export interface AmeliaUser {
   id: string;
   email: string;

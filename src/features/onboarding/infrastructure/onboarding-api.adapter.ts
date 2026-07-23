@@ -1,4 +1,5 @@
-import { apiClient } from '@/lib/http/api-client';
+import { API_BASE_URL, apiClient, ApiError } from '@/lib/http/api-client';
+import { useStore } from '@/store';
 import type {
   AcknowledgeManualResult,
   CompleteProfileInput,
@@ -6,8 +7,8 @@ import type {
   OnboardingStep,
   QuizResult,
   ReportVideoProgressInput,
-  SignDocumentResult,
   SubmitQuizInput,
+  UploadSignedDocumentResult,
   VideoProgressResult,
 } from '../domain/models';
 import type { OnboardingRepository } from '../domain/ports';
@@ -16,17 +17,39 @@ import type {
   CompleteProfileResultDTO,
   OnboardingMeDTO,
   QuizResultDTO,
-  SignDocumentDTO,
+  UploadSignedDocumentDTO,
   VideoProgressDTO,
 } from './dtos';
 import {
   acknowledgeManualFromDTO,
   completeProfileResultFromDTO,
   quizResultFromDTO,
-  signDocumentFromDTO,
   stepFromDTO,
+  uploadSignedDocumentFromDTO,
   videoProgressFromDTO,
 } from './mappers';
+
+function authHeaders(): Record<string, string> {
+  const accessToken = useStore.getState().getAccessToken();
+  return accessToken ? { Authorization: `Bearer ${accessToken}` } : {};
+}
+
+/** Extrae el mensaje de error del backend (`{"detail": {"message": ...}}` o
+ * `{"detail": "..."}`) — mismo formato que `apiClient`, duplicado aquí
+ * porque `uploadSignedDocument` no pasa por `apiClient` (body no-JSON). Ver
+ * `documentsApiAdapter.upload`, mismo patrón exacto. */
+async function parseErrorMessage(response: Response, fallback: string): Promise<string> {
+  const payload: unknown = await response.json().catch(() => null);
+  if (payload && typeof payload === 'object' && 'detail' in payload) {
+    const detail = (payload as { detail: unknown }).detail;
+    if (typeof detail === 'string') return detail;
+    if (detail && typeof detail === 'object' && 'message' in detail) {
+      const message = (detail as { message: unknown }).message;
+      if (typeof message === 'string') return message;
+    }
+  }
+  return fallback;
+}
 
 export const onboardingApiAdapter: OnboardingRepository = {
   async getMyOnboarding(): Promise<OnboardingStep[]> {
@@ -53,11 +76,25 @@ export const onboardingApiAdapter: OnboardingRepository = {
     return quizResultFromDTO(dto);
   },
 
-  async signDocument(stepId: string): Promise<SignDocumentResult> {
-    const dto = await apiClient<SignDocumentDTO>(`/onboarding/steps/${stepId}/sign`, {
+  async uploadSignedDocument(stepId: string, file: File): Promise<UploadSignedDocumentResult> {
+    // No usa `apiClient`: el body es `FormData` (multipart), no JSON — mismo
+    // motivo que `documentsApiAdapter.upload`. Único campo `file`: el
+    // `user_id` lo deriva el backend del JWT, nunca viaja en el payload.
+    const formData = new FormData();
+    formData.append('file', file);
+
+    const response = await fetch(`${API_BASE_URL}/onboarding/steps/${stepId}/documents`, {
       method: 'POST',
+      credentials: 'include',
+      headers: authHeaders(),
+      body: formData,
     });
-    return signDocumentFromDTO(dto);
+    if (!response.ok) {
+      const message = await parseErrorMessage(response, 'No se pudo subir el documento.');
+      throw new ApiError(message, response.status);
+    }
+    const dto = (await response.json()) as UploadSignedDocumentDTO;
+    return uploadSignedDocumentFromDTO(dto);
   },
 
   async acknowledgeManual(stepId: string): Promise<AcknowledgeManualResult> {

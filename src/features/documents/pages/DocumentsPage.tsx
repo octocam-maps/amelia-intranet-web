@@ -16,6 +16,7 @@ type CategoryFilter = DocumentCategory | 'all';
 const CATEGORY_LABEL: Record<Exclude<DocumentCategory, 'payslip'>, string> = {
   contract: 'Contrato',
   general: 'General',
+  signed: 'Firmados',
   other: 'Otros',
 };
 

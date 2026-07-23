@@ -1,5 +1,5 @@
 import { useForm } from 'react-hook-form';
-import { Avatar, AvatarFallback } from '@/components/ui/Avatar';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/Avatar';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Label } from '@/components/ui/Label';
@@ -125,6 +125,7 @@ export function StaffForm({ member, onSaved, onCancel }: StaffFormProps) {
     <form className={styles.form} onSubmit={handleSubmit(onSubmit)}>
       <div className={styles.identity}>
         <Avatar className={styles.avatar}>
+          {member?.avatarUrl && <AvatarImage src={member.avatarUrl} alt={fullName} />}
           <AvatarFallback>{initialsOf(fullName) || '—'}</AvatarFallback>
         </Avatar>
       </div>
