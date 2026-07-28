@@ -1,6 +1,13 @@
 import { useMemo } from 'react';
 import { useForm } from 'react-hook-form';
-import { CheckCircledIcon, DotsHorizontalIcon, FileTextIcon, HomeIcon, PersonIcon } from '@radix-ui/react-icons';
+import {
+  CheckCircledIcon,
+  DotsHorizontalIcon,
+  ExclamationTriangleIcon,
+  FileTextIcon,
+  HomeIcon,
+  PersonIcon,
+} from '@radix-ui/react-icons';
 import { HeartPulseIcon, type IconComponent, PalmtreeIcon } from '@/components/icons';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
@@ -83,9 +90,22 @@ export function AbsenceRequestForm({ onSubmitted, onCancel }: AbsenceRequestForm
   const [absenceTypeId, startDate, endDate] = watch(['absenceTypeId', 'startDate', 'endDate']);
 
   const balanceByType = useMemo(() => new Map(balances.map((b) => [b.absenceTypeId, b])), [balances]);
-  const selectedBalance = absenceTypeId ? balanceByType.get(absenceTypeId) : undefined;
+  const selectedType = absenceTypeId ? types.find((t) => t.id === absenceTypeId) : undefined;
   const requestedDays = countWeekdaysInclusive(toDateOnly(startDate), toDateOnly(endDate));
-  const remainingDays = selectedBalance ? selectedBalance.availableDays - requestedDays : null;
+
+  // El saldo solo se previsualiza para tipos que REALMENTE lo consumen
+  // (`affectsBalance`). Enfermedades, Remoto, Permiso Matrimonio y el resto
+  // nacen con `affects_balance = false`: no descuentan de ningún contador y el
+  // backend ni valida saldo para ellos (`create_absence_request.py`), así que
+  // hablar de "días disponibles" ahí no significa nada — y con un entitlement
+  // de 0 días producía el sinsentido "te quedarían -4 disponibles".
+  const selectedBalance =
+    selectedType?.affectsBalance && absenceTypeId ? balanceByType.get(absenceTypeId) : undefined;
+  const availableDays = selectedBalance?.availableDays ?? null;
+  const remainingDays = availableDays !== null ? availableDays - requestedDays : null;
+  // Excede el saldo: el backend lo rechazará con `InsufficientBalanceError`, así
+  // que se avisa en claro en vez de mostrar un negativo.
+  const exceedsBalance = remainingDays !== null && remainingDays < 0;
 
   const onSubmit = async (values: FormValues) => {
     await mutateAsync({
@@ -134,13 +154,27 @@ export function AbsenceRequestForm({ onSubmitted, onCancel }: AbsenceRequestForm
       </div>
 
       {requestedDays > 0 && (
-        <div className={cn(styles.banner, remainingDays !== null && remainingDays < 0 && styles.bannerWarning)}>
-          <CheckCircledIcon className={styles.bannerIcon} />
+        <div className={cn(styles.banner, exceedsBalance && styles.bannerWarning)}>
+          {exceedsBalance ? (
+            <ExclamationTriangleIcon className={styles.bannerIcon} />
+          ) : (
+            <CheckCircledIcon className={styles.bannerIcon} />
+          )}
           <span className={styles.bannerText}>
             Solicitas {requestedDays} {requestedDays === 1 ? 'día' : 'días'}
-            {remainingDays !== null && <> · te quedarían {remainingDays} disponibles</>}
+            {exceedsBalance ? (
+              <>
+                {' '}
+                · no te quedan suficientes días: solo tienes {availableDays}{' '}
+                {availableDays === 1 ? 'disponible' : 'disponibles'}
+              </>
+            ) : (
+              remainingDays !== null && <> · te quedarían {remainingDays} disponibles</>
+            )}
           </span>
-          {selectedBalance && <span className={styles.bannerAvailable}>{selectedBalance.availableDays} disponibles</span>}
+          {selectedBalance && !exceedsBalance && (
+            <span className={styles.bannerAvailable}>{selectedBalance.availableDays} disponibles</span>
+          )}
         </div>
       )}
 
