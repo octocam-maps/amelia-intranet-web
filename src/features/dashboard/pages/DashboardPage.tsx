@@ -69,7 +69,7 @@ export function DashboardPage() {
     return (
       <div className={styles.root}>
         <div>
-          <h1 className={styles.title}>Hola, {firstName}</h1>
+          <h2 className={styles.title}>Hola, {firstName}</h2>
           <p className={styles.subtitle}>
             {TODAY_LABEL.charAt(0).toUpperCase() + TODAY_LABEL.slice(1)} · Amelia Hub
           </p>
@@ -86,7 +86,7 @@ export function DashboardPage() {
   return (
     <div className={styles.root}>
       <div>
-        <h1 className={styles.title}>Hola, {firstName}</h1>
+        <h2 className={styles.title}>Hola, {firstName}</h2>
         <p className={styles.subtitle}>
           {TODAY_LABEL.charAt(0).toUpperCase() + TODAY_LABEL.slice(1)} · Amelia Hub
         </p>

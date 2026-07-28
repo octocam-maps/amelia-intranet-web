@@ -18,7 +18,7 @@ export function AbsenceTypesAdminPage() {
     <div className={styles.root}>
       <div className={styles.header}>
         <div>
-          <h1 className={styles.title}>Configuración · Tipos de ausencia</h1>
+          <h2 className={styles.title}>Configuración · Tipos de ausencia</h2>
           <p className={styles.subtitle}>Catálogo de ausencias disponible para toda la plantilla</p>
         </div>
         <Button onClick={() => setDialogType('new')}>

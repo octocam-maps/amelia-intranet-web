@@ -78,7 +78,7 @@ export function FestivosPage() {
     <div className={styles.root}>
       <div className={styles.header}>
         <div>
-          <h1 className={styles.title}>Configuración · Festivos</h1>
+          <h2 className={styles.title}>Configuración · Festivos</h2>
           <p className={styles.subtitle}>Calendario laboral {selectedYear} por ámbito</p>
         </div>
         <div className={styles.headerActions}>

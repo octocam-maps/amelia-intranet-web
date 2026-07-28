@@ -35,7 +35,7 @@ export function EmployeeAbsencesView() {
     <div className={styles.root}>
       <div className={styles.header}>
         <div>
-          <h1 className={styles.title}>Ausencias y vacaciones</h1>
+          <h2 className={styles.title}>Ausencias y vacaciones</h2>
           <p className={styles.subtitle}>Gestiona tus días libres</p>
         </div>
         <NewAbsenceRequestDialog

@@ -84,7 +84,7 @@ export function AbsenceGeneralCalendarPage() {
     <div className={styles.root}>
       <div className={styles.header}>
         <div>
-          <h1 className={styles.title}>Calendario general de la plantilla</h1>
+          <h2 className={styles.title}>Calendario general de la plantilla</h2>
           <p className={styles.subtitle}>
             Ausencias y vacaciones de toda la plantilla — vista exclusiva de RRHH.
           </p>

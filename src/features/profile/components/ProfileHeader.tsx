@@ -46,7 +46,7 @@ export function ProfileHeader({ profile }: ProfileHeaderProps) {
 
       <div className={styles.identity}>
         <div className={styles.nameRow}>
-          <h1 className={styles.name}>{profile.fullName}</h1>
+          <h2 className={styles.name}>{profile.fullName}</h2>
           <Badge variant="outline" style={ROLE_BADGE_STYLE}>
             {USER_ROLE_LABEL[profile.role]}
           </Badge>

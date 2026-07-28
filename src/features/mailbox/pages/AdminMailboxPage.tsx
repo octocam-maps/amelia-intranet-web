@@ -6,7 +6,7 @@ export function AdminMailboxPage() {
   return (
     <div className={styles.root}>
       <div className={styles.header}>
-        <h1 className={styles.title}>Buzón anónimo</h1>
+        <h2 className={styles.title}>Buzón anónimo</h2>
         <p className={styles.subtitle}>Mensajes recibidos sin identidad del remitente</p>
       </div>
 

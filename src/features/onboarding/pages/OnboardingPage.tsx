@@ -99,9 +99,9 @@ export function OnboardingPage() {
         <div className={styles.completedIconWrap}>
           <CheckCircledIcon className={styles.completedIcon} />
         </div>
-        <h1 className={styles.completedTitle}>
+        <h2 className={styles.completedTitle}>
           ¡Onboarding completado{currentUser?.fullName ? `, ${currentUser.fullName.split(' ')[0]}` : ''}!
-        </h1>
+        </h2>
         <p className={styles.completedSubtitle}>
           {externalGuest
             ? 'Ya tienes acceso a tu espacio. Esto es lo que puedes hacer ahora:'
@@ -144,9 +144,9 @@ export function OnboardingPage() {
     <div className={styles.root}>
       <div className={styles.header}>
         <p className={styles.eyebrow}>Tu onboarding</p>
-        <h1 className={styles.title}>
+        <h2 className={styles.title}>
           Te damos la bienvenida a Amelia{currentUser?.fullName ? `, ${currentUser.fullName.split(' ')[0]}` : ''}
-        </h1>
+        </h2>
       </div>
 
       <Card>
