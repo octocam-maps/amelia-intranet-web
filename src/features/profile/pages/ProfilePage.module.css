@@ -4,17 +4,6 @@
   gap: var(--space-6);
 }
 
-.header {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-1);
-}
-
-.subtitle {
-  font-size: 0.875rem;
-  color: hsl(var(--muted-foreground));
-}
-
 .empty {
   padding: var(--space-8) 0;
   text-align: center;
@@ -28,10 +17,14 @@
   gap: var(--space-4);
 }
 
+/* 60/40: los datos del empleado pesan más que los widgets de estado, pero
+   estos necesitan ancho suficiente para que el número grande de vacaciones y
+   las barras de progreso respiren (con 2fr/1fr quedaban estrechos). */
 .columns {
   display: grid;
-  grid-template-columns: 2fr 1fr;
+  grid-template-columns: 3fr 2fr;
   gap: var(--space-4);
+  align-items: start;
 }
 
 .mainColumn {
