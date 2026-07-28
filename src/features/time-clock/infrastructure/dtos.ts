@@ -18,6 +18,16 @@ export interface TimeClockEntryListDTO {
   offset: number;
 }
 
+export interface OmittedBatchDayDTO {
+  work_date: string;
+  reason: string;
+}
+
+export interface TimeClockEntriesBatchDTO {
+  created: TimeClockEntryDTO[];
+  omitted: OmittedBatchDayDTO[];
+}
+
 export interface OpenTimeClockEntryDTO {
   id: string;
   clock_in: string;

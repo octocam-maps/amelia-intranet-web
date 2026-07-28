@@ -1,8 +1,10 @@
 import type {
   AddTimeClockEntryNoteInput,
+  CreateTimeClockEntriesBatchInput,
   CreateTimeClockEntryInput,
   ListTimeClockEntriesParams,
   TimeClockCurrentStatus,
+  TimeClockEntriesBatchResult,
   TimeClockEntry,
   TimeClockEntryNote,
   TimeClockEntryPage,
@@ -11,6 +13,9 @@ import type {
 
 export interface TimeClockRepository {
   create(input: CreateTimeClockEntryInput): Promise<TimeClockEntry>;
+  /** Alta en lote sobre un rango de hasta 7 días (RF-A3) — siempre para el
+   * propio usuario autenticado, igual que `create`. */
+  createBatch(input: CreateTimeClockEntriesBatchInput): Promise<TimeClockEntriesBatchResult>;
   list(params: ListTimeClockEntriesParams): Promise<TimeClockEntryPage>;
   update(entryId: string, input: UpdateTimeClockEntryInput): Promise<TimeClockEntry>;
   remove(entryId: string): Promise<void>;

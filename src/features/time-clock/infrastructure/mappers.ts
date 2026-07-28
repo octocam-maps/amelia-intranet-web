@@ -1,7 +1,14 @@
 import { parseEnum } from '@/lib/parseEnum';
-import type { TimeClockCurrentStatus, TimeClockEntry, TimeClockEntryNote } from '../domain/models';
+import type {
+  TimeClockBatchOmissionReason,
+  TimeClockCurrentStatus,
+  TimeClockEntriesBatchResult,
+  TimeClockEntry,
+  TimeClockEntryNote,
+} from '../domain/models';
 import type {
   TimeClockCurrentStatusDTO,
+  TimeClockEntriesBatchDTO,
   TimeClockEntryDTO,
   TimeClockEntryNoteDTO,
 } from './dtos';
@@ -9,6 +16,17 @@ import type {
 // No se renderiza como badge hoy, pero se guarda con el mismo criterio que
 // el resto de mappers para no dejar pasar un valor fuera de contrato.
 const TIME_CLOCK_SOURCES: TimeClockEntry['source'][] = ['web', 'mobile'];
+
+// RF-A3: motivos de omisión del lote — igual criterio que `TIME_CLOCK_
+// SOURCES`, un valor fuera de contrato cae al fallback en vez de reventar
+// el renderizado del desglose.
+const TIME_CLOCK_BATCH_OMISSION_REASONS: TimeClockBatchOmissionReason[] = [
+  'fin_de_semana',
+  'festivo',
+  'ausencia',
+  'ya_registrado',
+  'fuera_de_ventana',
+];
 
 export function entryFromDTO(dto: TimeClockEntryDTO): TimeClockEntry {
   return {
@@ -20,6 +38,16 @@ export function entryFromDTO(dto: TimeClockEntryDTO): TimeClockEntry {
     clockOut: dto.clock_out,
     source: parseEnum(dto.source, TIME_CLOCK_SOURCES, 'web'),
     workedMinutes: dto.worked_minutes,
+  };
+}
+
+export function batchResultFromDTO(dto: TimeClockEntriesBatchDTO): TimeClockEntriesBatchResult {
+  return {
+    created: dto.created.map(entryFromDTO),
+    omitted: dto.omitted.map((omitted) => ({
+      workDate: omitted.work_date,
+      reason: parseEnum(omitted.reason, TIME_CLOCK_BATCH_OMISSION_REASONS, 'ya_registrado'),
+    })),
   };
 }
 
