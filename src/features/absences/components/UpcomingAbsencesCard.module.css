@@ -1,0 +1,54 @@
+.empty {
+  padding: var(--space-4) 0;
+  text-align: center;
+  font-size: 0.875rem;
+  color: hsl(var(--muted-foreground));
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.dot {
+  flex-shrink: 0;
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 9999px;
+}
+
+.info {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--space-0_5);
+  min-width: 0;
+}
+
+.name {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: hsl(var(--foreground));
+}
+
+.range {
+  font-size: 0.75rem;
+  color: hsl(var(--muted-foreground));
+}
+
+/* La cuenta atrás no se encoge: es el dato que da valor a este panel frente
+   al calendario de arriba, así que el nombre del tipo es lo que cede espacio
+   cuando la fila queda estrecha. */
+.countdown {
+  flex-shrink: 0;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: hsl(var(--primary));
+}

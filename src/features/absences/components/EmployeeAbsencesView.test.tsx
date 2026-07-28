@@ -23,6 +23,18 @@ vi.mock('./AbsenceCompactList', () => ({
 vi.mock('./AbsenceMonthCalendar', () => ({
   AbsenceMonthCalendar: () => <div>calendario</div>,
 }));
+vi.mock('./AbsenceRequestsTabs', () => ({
+  AbsenceRequestsTabs: () => <div>pestañas de solicitudes</div>,
+}));
+vi.mock('./UpcomingAbsencesCard', () => ({
+  UpcomingAbsencesCard: () => <div>próximas ausencias</div>,
+}));
+// Se mockea porque consume `useTeamCalendar` (TanStack Query) y este test no
+// monta un QueryClientProvider — su propio comportamiento se prueba en
+// `TeamAbsencesTodayCard.test.tsx`.
+vi.mock('./TeamAbsencesTodayCard', () => ({
+  TeamAbsencesTodayCard: () => <div>ausencias del equipo hoy</div>,
+}));
 vi.mock('./NewAbsenceRequestDialog', () => ({
   NewAbsenceRequestDialog: () => <button type="button">Solicitar ausencia</button>,
 }));
