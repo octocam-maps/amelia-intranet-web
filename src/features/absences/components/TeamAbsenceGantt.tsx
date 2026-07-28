@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import { ChevronLeftIcon, ChevronRightIcon } from '@radix-ui/react-icons';
 import { Avatar, AvatarFallback } from '@/components/ui/Avatar';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
+import { getAbsenceTypeAbbreviation } from '../domain/absenceTypeAbbreviation';
 import type { AbsenceRequest, AbsenceType } from '../domain/models';
 import styles from './TeamAbsenceGantt.module.css';
 
@@ -141,7 +142,14 @@ export function TeamAbsenceGantt({ requests, types }: TeamAbsenceGanttProps) {
                           opacity: request.status === 'pending' ? 0.55 : 1,
                         }}
                         title={`${type?.name ?? ''} · ${request.startDate} → ${request.endDate}`}
-                      />
+                      >
+                        {/* RF-A5.7 (WCAG 1.4.1): mismo segundo canal que
+                            GeneralAbsenceCalendar — el color solo no basta
+                            con 10 tipos posibles. */}
+                        <span className={styles.barLabel} aria-hidden="true">
+                          {getAbsenceTypeAbbreviation(type?.name)}
+                        </span>
+                      </span>
                     );
                   })}
                 </div>

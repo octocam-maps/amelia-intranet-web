@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import { ChevronLeftIcon, ChevronRightIcon } from '@radix-ui/react-icons';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { useHolidays } from '@/features/holidays/application/useHolidays';
+import { getAbsenceTypeAbbreviation } from '../domain/absenceTypeAbbreviation';
 import type { AbsenceRequest, AbsenceType } from '../domain/models';
 import styles from './AbsenceMonthCalendar.module.css';
 
@@ -166,6 +167,14 @@ export function AbsenceMonthCalendar({ requests, types }: AbsenceMonthCalendarPr
                   }
                 >
                   {date.getDate()}
+                  {matchingRequest && (
+                    // RF-A5.7 (WCAG 1.4.1): segundo canal además del color de
+                    // fondo — con 10 tipos de ausencia el color solo no basta
+                    // bajo dicromacia (ver verificación de paleta en engram).
+                    <span className={styles.typeBadge} aria-hidden="true">
+                      {getAbsenceTypeAbbreviation(type?.name)}
+                    </span>
+                  )}
                 </span>
               </span>
             );

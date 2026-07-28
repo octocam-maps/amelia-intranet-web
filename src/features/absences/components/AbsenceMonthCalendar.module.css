@@ -120,6 +120,7 @@
 
 .dayContent {
   box-sizing: border-box;
+  position: relative;
   display: flex;
   flex: 1;
   align-items: center;
@@ -128,6 +129,21 @@
   border-radius: calc(var(--radius) - 2px);
   font-size: 0.8125rem;
   color: hsl(var(--foreground));
+}
+
+/* RF-A5.7 (WCAG 1.4.1) — segundo canal del tipo de ausencia: abreviatura de
+   2 letras en la esquina de la celda, visible siempre (no solo al hacer
+   hover sobre el `title`). El color de fondo sigue siendo la ayuda visual
+   principal; esta abreviatura es la que garantiza que el tipo se entienda
+   sin depender de distinguir el color. */
+.typeBadge {
+  position: absolute;
+  bottom: 1px;
+  right: 3px;
+  font-size: 0.5rem;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0.02em;
 }
 
 .dayContent[data-today='true'] {
