@@ -1,5 +1,6 @@
 import { CheckCircledIcon, ClockIcon, CrossCircledIcon } from '@radix-ui/react-icons';
 import type { IconComponent } from '@/components/icons';
+import { formatAbsenceDateRange } from '../domain/formatAbsenceDateRange';
 import type { AbsenceRequest, AbsenceType } from '../domain/models';
 import styles from './AbsenceCompactList.module.css';
 
@@ -17,25 +18,27 @@ const STATUS_ICON_CLASS: Record<AbsenceRequest['status'], string | undefined> = 
   cancelled: styles.iconRejected,
 };
 
-function formatRange(startDate: string, endDate: string): string {
-  const format = (iso: string) =>
-    new Date(`${iso}T00:00:00`).toLocaleDateString('es-ES', { day: 'numeric', month: 'short' }).replace('.', '');
-  return startDate === endDate ? format(startDate) : `${format(startDate)} → ${format(endDate)}`;
-}
-
 interface AbsenceCompactListProps {
   requests: AbsenceRequest[];
   types: AbsenceType[];
+  /** "Mis solicitudes" (`AbsenceRequestsTabs`) reutiliza esta lista en 3
+   * pestañas, cada una con su propio mensaje vacío en vez del genérico de
+   * abajo. */
+  emptyMessage?: string;
 }
 
 /** "Mis ausencias" del deck 03-ausencias-empleado — fila con punto de color
  * del tipo + rango + días, e icono de estado (check/reloj/x) en vez del
  * badge de texto que usa la tabla completa de la página de admin. */
-export function AbsenceCompactList({ requests, types }: AbsenceCompactListProps) {
+export function AbsenceCompactList({
+  requests,
+  types,
+  emptyMessage = 'Todavía no has solicitado ninguna ausencia.',
+}: AbsenceCompactListProps) {
   const typeById = new Map(types.map((t) => [t.id, t]));
 
   if (requests.length === 0) {
-    return <p className={styles.empty}>Todavía no has solicitado ninguna ausencia.</p>;
+    return <p className={styles.empty}>{emptyMessage}</p>;
   }
 
   return (
@@ -49,7 +52,7 @@ export function AbsenceCompactList({ requests, types }: AbsenceCompactListProps)
             <div className={styles.info}>
               <p className={styles.type}>{type?.name ?? '—'}</p>
               <p className={styles.range}>
-                {formatRange(request.startDate, request.endDate)} · {request.daysCount}{' '}
+                {formatAbsenceDateRange(request.startDate, request.endDate)} · {request.daysCount}{' '}
                 {request.daysCount === 1 ? 'día' : 'días'}
               </p>
             </div>
