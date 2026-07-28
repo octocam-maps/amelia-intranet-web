@@ -58,25 +58,32 @@ export function NotificationPopup() {
   // Cierre optimista dentro de esta sesión de render — evita que el pop-up
   // parpadee de nuevo mientras la invalidación de `markRead` todavía no
   // volvió a traer la lista con `read: true`.
-  const [dismissedId, setDismissedId] = useState<string | null>(null);
+  //
+  // RACE-1: es un `Set`, no un único id — con dos notificaciones elegibles
+  // el mismo día (p. ej. un aniversario laboral coincidiendo con un
+  // recordatorio de fichaje), un `useState<string | null>` solo recordaba
+  // LA ÚLTIMA descartada: al descartar la segunda se "olvidaba" que la
+  // primera ya lo estaba, y como `read` en la caché todavía no había
+  // vuelto a `true` (invalidación en vuelo), la primera reaparecía.
+  const [dismissedIds, setDismissedIds] = useState<ReadonlySet<string>>(() => new Set());
 
   const target = useMemo<Notification | null>(() => {
     const items = page?.items ?? [];
     return (
       items.find(
         (item) =>
-          item.id !== dismissedId &&
+          !dismissedIds.has(item.id) &&
           !item.read &&
           POPUP_TYPES.has(item.type) &&
           isToday(item.createdAt),
       ) ?? null
     );
-  }, [page, dismissedId]);
+  }, [page, dismissedIds]);
 
   if (!target) return null;
 
   function dismiss(notification: Notification) {
-    setDismissedId(notification.id);
+    setDismissedIds((prev) => new Set(prev).add(notification.id));
     markRead(notification.id);
   }
 

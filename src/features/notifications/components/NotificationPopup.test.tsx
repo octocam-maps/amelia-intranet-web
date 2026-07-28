@@ -155,4 +155,37 @@ describe('NotificationPopup', () => {
     expect(markRead).toHaveBeenCalledWith('notif-1');
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
   });
+
+  // RACE-1: `dismissedId` era un `useState<string | null>` — solo recuerda
+  // UNA notificación descartada por sesión de render. Con dos elegibles el
+  // mismo día, al descartar la segunda se "olvida" que la primera ya se
+  // había descartado, y como `markRead` (mock que no resuelve, igual que
+  // cuando la invalidación de la caché todavía no volvió) no cambia
+  // `read` en la lista cacheada, la primera notificación vuelve a
+  // cumplir todas las condiciones y reaparece.
+  it('no hace reaparecer una notificación ya descartada al descartar una segunda (RACE-1)', async () => {
+    const markRead = mockMarkRead(vi.fn()); // nunca resuelve — simula la invalidación en vuelo
+    mockNotifications([
+      notification({ id: 'notif-a', title: 'Aviso A' }),
+      notification({
+        id: 'notif-b',
+        type: 'work_anniversary',
+        title: 'Aviso B',
+        body: null,
+        url: '/perfil',
+      }),
+    ]);
+    renderPopup();
+
+    expect(screen.getByText('Aviso A')).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: /cerrar/i }));
+
+    expect(await screen.findByText('Aviso B')).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: /cerrar/i }));
+
+    expect(screen.queryByText('Aviso A')).not.toBeInTheDocument();
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    expect(markRead).toHaveBeenCalledWith('notif-a');
+    expect(markRead).toHaveBeenCalledWith('notif-b');
+  });
 });
