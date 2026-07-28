@@ -14,7 +14,6 @@ import {
   type IconComponent,
   InboxIcon,
   MailboxIcon,
-  NetworkIcon,
   TagIcon,
   UsersIcon,
   WalletIcon,
@@ -78,6 +77,14 @@ const calendarioGeneral: NavItem = {
 // suma — icono distinto (ArchiveIcon) del "Documentos" del navbar general
 // (FileTextIcon, `documentos` más arriba) para diferenciar la vista de
 // gestión de toda la plantilla de la carpeta personal de cada persona.
+//
+// Ampliación v1.1 (RF-A2): "Organigrama" SE RETIRA de esta sección y NO debe
+// reponerse. El organigrama pasa a ser el diseño publicado de Canva que
+// mantiene el equipo, incrustado en `Equipo` (donde hoy está
+// `TeamOrgChartPlaceholder`) y visible para todos los roles — no una pantalla
+// administrable. Su ítem aquí apuntaba además a `/administracion/organigrama`,
+// una ruta que no existe. La línea de reporte sigue viviendo en el dato
+// (`users.manager_id`, editable vía `PATCH /staff/{id}`), no en una UI de árbol.
 export const ADMIN_SECTION_ITEMS: NavItem[] = [
   { label: 'Plantilla', to: '/administracion/plantilla', icon: UsersIcon },
   { label: 'Aprobar ausencias', to: '/ausencias', icon: InboxIcon },
@@ -88,7 +95,6 @@ export const ADMIN_SECTION_ITEMS: NavItem[] = [
   { label: 'Onboarding', to: '/administracion/onboarding', icon: GraduationCapIcon },
   { label: 'Festivos', to: '/administracion/festivos', icon: CalendarIcon },
   { label: 'Tipos de ausencia', to: '/administracion/tipos-ausencia', icon: TagIcon },
-  { label: 'Organigrama', to: '/administracion/organigrama', icon: NetworkIcon, comingSoon: true },
 ];
 
 // docs/permisos-roles.md § "Navbar por rol" — copiado literal, un ítem por rol.
