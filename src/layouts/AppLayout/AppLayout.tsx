@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
+import { NotificationPopup } from '@/features/notifications/components/NotificationPopup';
 import { Sidebar } from './Sidebar';
 import { Topbar } from './Topbar';
 import styles from './AppLayout.module.css';
@@ -51,6 +52,7 @@ export function AppLayout() {
 
   return (
     <div className={styles.shell}>
+      <NotificationPopup />
       <Sidebar navRef={sidebarRef} isOpen={isMobileNavOpen} />
 
       {/* Overlay del drawer — empieza debajo de la topbar (top: 4rem) a
