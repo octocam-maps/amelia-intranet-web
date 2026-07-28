@@ -87,10 +87,6 @@ export function EmployeeAbsencesView() {
               <AbsenceCompactList requests={requests} types={types} />
             </CardContent>
           </Card>
-        </div>
-
-        <div className={styles.rightColumn}>
-          <AbsenceMonthCalendar requests={requests} types={types} />
 
           <Card>
             <CardHeader>
@@ -113,6 +109,10 @@ export function EmployeeAbsencesView() {
               )}
             </CardContent>
           </Card>
+        </div>
+
+        <div className={styles.rightColumn}>
+          <AbsenceMonthCalendar requests={requests} types={types} />
         </div>
       </div>
     </div>

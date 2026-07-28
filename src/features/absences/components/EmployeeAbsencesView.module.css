@@ -44,8 +44,16 @@
   gap: var(--space-4);
 }
 
+/* `column` explícito, no el `row` por defecto de flex: cuando esta columna
+   tenía dos hijos (calendario + tarjeta de festivos) los colocaba UNO AL LADO
+   DEL OTRO y sin `gap`, así que festivos quedaba aplastada contra el borde
+   derecho de la ventana. Festivos se movió a la columna izquierda, pero la
+   dirección queda fijada para que añadir otra tarjeta aquí apile en vertical
+   en lugar de repetir el mismo desbordamiento. */
 .rightColumn {
   display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
   align-self: flex-start;
 }
 
