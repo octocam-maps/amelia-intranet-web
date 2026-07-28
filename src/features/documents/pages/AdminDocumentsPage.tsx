@@ -93,7 +93,6 @@ export function AdminDocumentsPage() {
     <div className={styles.root}>
       <div className={styles.header}>
         <div>
-          <h1 className={styles.title}>Documentos</h1>
           <p className={styles.subtitle}>Nóminas, contratos y documentos sincronizados con Google Drive</p>
         </div>
         <div className={styles.headerActions}>

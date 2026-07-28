@@ -23,7 +23,6 @@ export function ProfilePage() {
   return (
     <div className={styles.root}>
       <div className={styles.header}>
-        <h1 className={styles.title}>Mi perfil</h1>
         <p className={styles.subtitle}>Tus datos dentro de Amelia</p>
       </div>
 

@@ -61,7 +61,6 @@ export function PayslipsPage() {
     <div className={styles.root}>
       <div className={styles.header}>
         <div>
-          <h1 className={styles.title}>Nóminas</h1>
           <p className={styles.subtitle}>Tus nóminas, sincronizadas desde Drive</p>
         </div>
         {years.length > 0 && (
