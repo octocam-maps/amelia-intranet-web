@@ -40,4 +40,23 @@ describe('GeneralAbsenceCalendar — segundo canal de distinción (RF-A5.7)', ()
 
     expect(screen.getByText('PM')).toBeInTheDocument();
   });
+
+  // A11Y-2: `#F9A8D4` (rosa de "Permiso Matrimonio") solo tiene 1.81:1 de
+  // contraste con texto blanco fijo — muy por debajo del mínimo AA de
+  // 4.5:1. Con negro da 11.58:1.
+  it('usa texto negro sobre un color de fondo claro que no cumple contraste con blanco', () => {
+    const entry = buildEntry({ absenceTypeColor: '#F9A8D4' });
+
+    render(
+      <GeneralAbsenceCalendar
+        entries={[entry]}
+        isLoading={false}
+        cursor={new Date(2026, 6, 1)}
+        onPreviousMonth={noop}
+        onNextMonth={noop}
+      />
+    );
+
+    expect(screen.getByText('PM')).toHaveStyle({ color: '#000000' });
+  });
 });

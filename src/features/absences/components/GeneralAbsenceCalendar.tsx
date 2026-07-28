@@ -3,6 +3,7 @@ import { ChevronLeftIcon, ChevronRightIcon } from '@radix-ui/react-icons';
 import { Avatar, AvatarFallback } from '@/components/ui/Avatar';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { getAbsenceTypeAbbreviation } from '../domain/absenceTypeAbbreviation';
+import { contrastingTextColor } from '../domain/contrastingTextColor';
 import type { AbsenceCalendarEntry } from '../domain/models';
 import styles from './GeneralAbsenceCalendar.module.css';
 
@@ -161,7 +162,11 @@ export function GeneralAbsenceCalendar({
                         {/* RF-A5.7 (WCAG 1.4.1): segundo canal — la barra
                             solo pintaba color, el tipo solo se sabía al
                             pasar el ratón sobre el `title`. */}
-                        <span className={styles.barLabel} aria-hidden="true">
+                        <span
+                          className={styles.barLabel}
+                          style={{ color: contrastingTextColor(entry.absenceTypeColor) }}
+                          aria-hidden="true"
+                        >
                           {getAbsenceTypeAbbreviation(entry.absenceTypeName)}
                         </span>
                       </span>

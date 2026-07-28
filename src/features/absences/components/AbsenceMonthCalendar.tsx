@@ -3,6 +3,7 @@ import { ChevronLeftIcon, ChevronRightIcon } from '@radix-ui/react-icons';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { useHolidays } from '@/features/holidays/application/useHolidays';
 import { getAbsenceTypeAbbreviation } from '../domain/absenceTypeAbbreviation';
+import { contrastingTextColor } from '../domain/contrastingTextColor';
 import type { AbsenceRequest, AbsenceType } from '../domain/models';
 import styles from './AbsenceMonthCalendar.module.css';
 
@@ -152,7 +153,10 @@ export function AbsenceMonthCalendar({ requests, types }: AbsenceMonthCalendarPr
                       ? {
                           backgroundColor: type?.color ?? 'hsl(var(--secondary))',
                           opacity: matchingRequest.status === 'pending' ? 0.5 : 0.9,
-                          color: '#fff',
+                          // A11Y-2: la abreviatura (`.typeBadge`) hereda este
+                          // `color` — con blanco fijo, 5 de los 10 colores
+                          // del catálogo no llegan al contraste AA mínimo.
+                          color: contrastingTextColor(type?.color),
                         }
                       : isHoliday
                         ? { backgroundColor: 'hsl(var(--info))', opacity: 0.85, color: '#fff' }

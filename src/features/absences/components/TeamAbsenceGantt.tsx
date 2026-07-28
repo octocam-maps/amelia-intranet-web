@@ -3,6 +3,7 @@ import { ChevronLeftIcon, ChevronRightIcon } from '@radix-ui/react-icons';
 import { Avatar, AvatarFallback } from '@/components/ui/Avatar';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { getAbsenceTypeAbbreviation } from '../domain/absenceTypeAbbreviation';
+import { contrastingTextColor } from '../domain/contrastingTextColor';
 import type { AbsenceRequest, AbsenceType } from '../domain/models';
 import styles from './TeamAbsenceGantt.module.css';
 
@@ -146,7 +147,11 @@ export function TeamAbsenceGantt({ requests, types }: TeamAbsenceGanttProps) {
                         {/* RF-A5.7 (WCAG 1.4.1): mismo segundo canal que
                             GeneralAbsenceCalendar — el color solo no basta
                             con 10 tipos posibles. */}
-                        <span className={styles.barLabel} aria-hidden="true">
+                        <span
+                          className={styles.barLabel}
+                          style={{ color: contrastingTextColor(type?.color) }}
+                          aria-hidden="true"
+                        >
                           {getAbsenceTypeAbbreviation(type?.name)}
                         </span>
                       </span>

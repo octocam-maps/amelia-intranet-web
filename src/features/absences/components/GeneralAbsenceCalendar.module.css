@@ -146,12 +146,15 @@
 /* RF-A5.7 (WCAG 1.4.1) — segundo canal: abreviatura de 2 letras dentro de
    la barra. En barras de un solo día se recorta (overflow: hidden en
    .bar); ahí el `title` en hover sigue siendo el respaldo, igual que antes
-   de este cambio. */
+   de este cambio.
+   El `color` NO se fija aquí (hallazgo A11Y-2): con 10 fondos posibles,
+   blanco fijo falla el contraste AA en la mitad del catálogo — lo decide
+   en runtime `contrastingTextColor` según la luminancia del color de
+   fondo de cada barra (ver GeneralAbsenceCalendar.tsx). */
 .barLabel {
   font-size: 0.5rem;
   font-weight: 700;
   line-height: 1;
-  color: #fff;
   white-space: nowrap;
   padding-inline: 2px;
 }

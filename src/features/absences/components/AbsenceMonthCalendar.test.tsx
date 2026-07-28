@@ -94,4 +94,17 @@ describe('AbsenceMonthCalendar — segundo canal de distinción (RF-A5.7)', () =
     expect(screen.getByText('PA')).toBeInTheDocument();
     expect(screen.getByText('RE')).toBeInTheDocument();
   });
+
+  // A11Y-2: `#F9A8D4` (rosa de "Permiso Matrimonio") solo tiene 1.81:1 de
+  // contraste con texto blanco fijo — muy por debajo del mínimo AA de
+  // 4.5:1. Con negro da 11.58:1. La abreviatura hereda el `color` del
+  // contenedor de la celda (`.dayContent`), así que se comprueba ahí.
+  it('usa texto negro en la celda cuando el color de fondo no cumple contraste con blanco', () => {
+    const type = buildType();
+    const request = buildRequest();
+
+    renderCalendar([request], [type]);
+
+    expect(screen.getByText('PM').parentElement).toHaveStyle({ color: '#000000' });
+  });
 });

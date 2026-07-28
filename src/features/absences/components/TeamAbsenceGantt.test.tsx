@@ -56,4 +56,16 @@ describe('TeamAbsenceGantt — segundo canal de distinción (RF-A5.7)', () => {
 
     expect(screen.getByText('PA')).toBeInTheDocument();
   });
+
+  // A11Y-2: `#F59F0A` (ámbar de "Vacaciones") solo tiene 2.13:1 de
+  // contraste con texto blanco fijo — muy por debajo del mínimo AA de
+  // 4.5:1. Con negro da 9.85:1.
+  it('usa texto negro sobre un color de fondo claro que no cumple contraste con blanco', () => {
+    const type = buildType({ id: 'type-vac', code: 'vacaciones', name: 'Vacaciones', color: '#F59F0A' });
+    const request = buildRequest({ absenceTypeId: 'type-vac' });
+
+    render(<TeamAbsenceGantt requests={[request]} types={[type]} />);
+
+    expect(screen.getByText('VA')).toHaveStyle({ color: '#000000' });
+  });
 });
