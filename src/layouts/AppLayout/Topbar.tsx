@@ -122,7 +122,13 @@ export function Topbar({ menuButtonRef, isMobileNavOpen, onToggleMobileNav }: To
 
         {pageTitle && (
           <div className={styles.pageHeading}>
-            <span className={styles.pageTitle}>{pageTitle}</span>
+            {/* Es el <h1> REAL de la vista, no un rótulo decorativo: las páginas
+                repetían este mismo texto en su propio <h1> justo debajo
+                ("Documentos" arriba y "Documentos" otra vez en el contenido),
+                así que se retiró el de las páginas y el encabezado del documento
+                vive aquí — un único <h1> por vista, como espera un lector de
+                pantalla. */}
+            <h1 className={styles.pageTitle}>{pageTitle}</h1>
             <span className={styles.pageDate}>{todayLabel}</span>
           </div>
         )}

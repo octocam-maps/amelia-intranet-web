@@ -106,7 +106,6 @@ export function TimeClockPage() {
   return (
     <div className={styles.root}>
       <div className={styles.header}>
-        <h1 className={styles.title}>Control horario</h1>
         <div className={styles.actions}>
           {admin && (
             <Button variant="outline" onClick={handleToggleShowAll}>

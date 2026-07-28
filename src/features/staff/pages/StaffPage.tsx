@@ -103,7 +103,6 @@ export function StaffPage() {
     <div className={styles.root}>
       <div className={styles.header}>
         <div>
-          <h1 className={styles.title}>Plantilla</h1>
           <p className={styles.subtitle}>
             {members.length} personas · {entityCount} entidades
           </p>
