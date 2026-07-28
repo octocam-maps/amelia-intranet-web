@@ -1,0 +1,7 @@
+/* Aclara qué hace cada pestaña antes del formulario: sin este texto, elegir
+   entre "Un día" y "Varios días" es adivinar cuál excluye festivos. */
+.hint {
+  margin: var(--space-3) 0 var(--space-4);
+  font-size: 0.8125rem;
+  color: hsl(var(--muted-foreground));
+}
