@@ -2,9 +2,11 @@ import { API_BASE_URL, apiClient, ApiError } from '@/lib/http/api-client';
 import { useStore } from '@/store';
 import type {
   AddTimeClockEntryNoteInput,
+  CreateTimeClockEntriesBatchInput,
   CreateTimeClockEntryInput,
   ListTimeClockEntriesParams,
   TimeClockCurrentStatus,
+  TimeClockEntriesBatchResult,
   TimeClockEntry,
   TimeClockEntryNote,
   TimeClockEntryPage,
@@ -13,12 +15,13 @@ import type {
 import type { TimeClockRepository } from '../domain/ports';
 import type {
   TimeClockCurrentStatusDTO,
+  TimeClockEntriesBatchDTO,
   TimeClockEntryDTO,
   TimeClockEntryListDTO,
   TimeClockEntryNoteDTO,
   TimeClockEntryNoteListDTO,
 } from './dtos';
-import { currentStatusFromDTO, entryFromDTO, noteFromDTO } from './mappers';
+import { batchResultFromDTO, currentStatusFromDTO, entryFromDTO, noteFromDTO } from './mappers';
 
 function buildQuery(params: ListTimeClockEntriesParams): string {
   const search = new URLSearchParams();
@@ -51,6 +54,21 @@ export const timeClockApiAdapter: TimeClockRepository = {
       }),
     });
     return entryFromDTO(dto);
+  },
+
+  async createBatch(
+    input: CreateTimeClockEntriesBatchInput
+  ): Promise<TimeClockEntriesBatchResult> {
+    const dto = await apiClient<TimeClockEntriesBatchDTO>('/time-clock/entries/batch', {
+      method: 'POST',
+      body: JSON.stringify({
+        date_from: input.dateFrom,
+        date_to: input.dateTo,
+        clock_in_time: input.clockInTime,
+        clock_out_time: input.clockOutTime ?? null,
+      }),
+    });
+    return batchResultFromDTO(dto);
   },
 
   async list(params: ListTimeClockEntriesParams): Promise<TimeClockEntryPage> {

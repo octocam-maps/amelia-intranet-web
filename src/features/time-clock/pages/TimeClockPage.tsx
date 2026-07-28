@@ -9,6 +9,7 @@ import { useDeleteTimeClockEntry } from '../application/useDeleteTimeClockEntry'
 import { useExportTimeClockCsv } from '../application/useExportTimeClockCsv';
 import { useExportTimeClockXlsx } from '../application/useExportTimeClockXlsx';
 import { useTimeClockEntries } from '../application/useTimeClockEntries';
+import { BatchTimeClockEntryForm } from '../components/BatchTimeClockEntryForm';
 import { EditTimeClockEntryDialog } from '../components/EditTimeClockEntryDialog';
 import { LiveClockCard } from '../components/LiveClockCard';
 import { PersonMultiSelect } from '../components/PersonMultiSelect';
@@ -142,6 +143,19 @@ export function TimeClockPage() {
         </CardHeader>
         <CardContent>
           <TimeClockEntryForm />
+        </CardContent>
+      </Card>
+
+      {/* RF-A3: alta en lote — mismo horario aplicado a un rango de hasta 7
+          días, con exclusiones automáticas (fin de semana, festivo, ausencia
+          aprobada, ya registrado). Complementa el alta unitaria de arriba,
+          pensada para el olvido de un único día. */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Fichar un rango de días</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <BatchTimeClockEntryForm />
         </CardContent>
       </Card>
 
