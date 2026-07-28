@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { useMarkRead } from '../application/useMarkRead';
@@ -13,9 +13,11 @@ vi.mock('../application/useMarkRead', () => ({
   useMarkRead: vi.fn(),
 }));
 
-const clockInMutate = vi.fn();
+// LOGIC-1: `clockIn()` (disparar-y-olvidar) se sustituye por `mutateAsync`
+// para poder esperar el resultado real antes de descartar el aviso.
+const clockInMutateAsync = vi.fn();
 vi.mock('@/features/time-clock/application/useTimeClockLiveActions', () => ({
-  useClockIn: () => ({ mutate: clockInMutate, isPending: false }),
+  useClockIn: () => ({ mutateAsync: clockInMutateAsync, isPending: false }),
 }));
 
 function mockNotifications(items: Notification[]) {
@@ -90,15 +92,39 @@ describe('NotificationPopup', () => {
     expect(screen.getByRole('button', { name: /fichar ahora/i })).toBeInTheDocument();
   });
 
-  it('ficha y marca como leída al pulsar "Fichar ahora"', () => {
+  it('ficha y marca como leída al pulsar "Fichar ahora" cuando el fichaje tiene éxito', async () => {
+    clockInMutateAsync.mockResolvedValueOnce(undefined);
     const markRead = mockMarkRead();
     mockNotifications([notification()]);
     renderPopup();
 
     fireEvent.click(screen.getByRole('button', { name: /fichar ahora/i }));
 
-    expect(clockInMutate).toHaveBeenCalled();
-    expect(markRead).toHaveBeenCalledWith('notif-1');
+    await waitFor(() => expect(markRead).toHaveBeenCalledWith('notif-1'));
+    expect(clockInMutateAsync).toHaveBeenCalled();
+  });
+
+  // LOGIC-1: antes, `clockIn()` se disparaba sin esperar resultado y
+  // `dismiss(target)` cerraba el modal y marcaba la notificación como
+  // leída de forma incondicional — si el fichaje fallaba (ya fichado,
+  // regla de negocio, red caída), el usuario veía el modal cerrarse como
+  // si hubiera funcionado y la notificación quedaba consumida sin volver
+  // a avisar ese día.
+  it('mantiene el modal abierto y muestra un error si el fichaje falla, sin marcar la notificación como leída', async () => {
+    clockInMutateAsync.mockRejectedValueOnce(new Error('ya existe un fichaje abierto'));
+    const markRead = mockMarkRead();
+    mockNotifications([notification()]);
+    renderPopup();
+
+    fireEvent.click(screen.getByRole('button', { name: /fichar ahora/i }));
+
+    await waitFor(() => expect(clockInMutateAsync).toHaveBeenCalled());
+
+    expect(
+      await screen.findByText('No se ha podido registrar el fichaje. Inténtalo de nuevo.'),
+    ).toBeInTheDocument();
+    expect(screen.getByRole('dialog')).toBeInTheDocument();
+    expect(markRead).not.toHaveBeenCalled();
   });
 
   it('renderiza la felicitación de aniversario con su CTA al perfil', () => {

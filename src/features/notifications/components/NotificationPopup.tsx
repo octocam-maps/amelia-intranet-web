@@ -48,7 +48,13 @@ export function NotificationPopup() {
   const navigate = useNavigate();
   const { data: page } = useNotifications();
   const { mutate: markRead } = useMarkRead();
-  const { mutate: clockIn, isPending: isClockingIn } = useClockIn();
+  // LOGIC-1: `mutateAsync` (no `mutate`) — hay que ESPERAR el resultado real
+  // del fichaje antes de descartar el aviso; con "dispara y olvida" el modal
+  // se cerraba igual aunque el fichaje fallara (ya fichado, regla de
+  // negocio, red caída), y el usuario creía que había fichado sin haberlo
+  // hecho.
+  const { mutateAsync: clockIn, isPending: isClockingIn } = useClockIn();
+  const [clockInError, setClockInError] = useState<string | null>(null);
   // Cierre optimista dentro de esta sesión de render — evita que el pop-up
   // parpadee de nuevo mientras la invalidación de `markRead` todavía no
   // volvió a traer la lista con `read: true`.
@@ -76,6 +82,21 @@ export function NotificationPopup() {
 
   const isAnniversary = target.type === 'work_anniversary';
 
+  // LOGIC-1: solo se descarta la notificación si el fichaje tuvo éxito. Si
+  // falla, el modal se queda abierto con un aviso — la notificación sigue
+  // sin leer, así que el usuario puede reintentar sin perder el aviso de
+  // hoy.
+  async function handleClockIn() {
+    if (!target) return;
+    setClockInError(null);
+    try {
+      await clockIn();
+      dismiss(target);
+    } catch {
+      setClockInError('No se ha podido registrar el fichaje. Inténtalo de nuevo.');
+    }
+  }
+
   return (
     <Dialog open onOpenChange={(isOpen) => !isOpen && dismiss(target)}>
       <DialogContent>
@@ -83,6 +104,7 @@ export function NotificationPopup() {
           <DialogTitle>{target.title}</DialogTitle>
         </DialogHeader>
         {target.body && <p>{target.body}</p>}
+        {clockInError && <p>{clockInError}</p>}
         <DialogFooter>
           {isAnniversary ? (
             <Button
@@ -94,13 +116,7 @@ export function NotificationPopup() {
               Ir a mi perfil
             </Button>
           ) : (
-            <Button
-              disabled={isClockingIn}
-              onClick={() => {
-                clockIn();
-                dismiss(target);
-              }}
-            >
+            <Button disabled={isClockingIn} onClick={handleClockIn}>
               Fichar ahora
             </Button>
           )}
