@@ -24,3 +24,22 @@
   font-size: 0.8125rem;
   color: hsl(var(--muted-foreground));
 }
+
+/* Puerta a la gestión real. Peso de enlace, no de acción primaria: la acción
+   primaria del Inicio admin no es subir documentos (U12 — no añadir un tercer
+   CTA fuerte a la pantalla). */
+.action {
+  display: inline-flex;
+  flex-direction: row;
+  align-items: center;
+  gap: var(--space-2);
+  margin-top: var(--space-2);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: hsl(var(--primary));
+  text-decoration: none;
+}
+
+.action:hover {
+  text-decoration: underline;
+}

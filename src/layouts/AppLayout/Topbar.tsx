@@ -46,8 +46,12 @@ function LiveClockPill() {
   const elapsedSeconds = useElapsedSeconds(openEntry?.clockIn ?? null, openEntry?.onBreak ?? false);
 
   if (!openEntry) {
+    // `outline`, no `dark`: en Inicio y en Control horario, `LiveClockCard`
+    // pinta la MISMA acción con `dark`, y dos acciones primarias visibles a la
+    // vez dejan al usuario sin saber cuál es el camino esperado. La primaria es
+    // la de la página; esta es el atajo persistente desde cualquier vista.
     return (
-      <Button variant="dark" size="sm" disabled={isPending} onClick={() => clockIn()}>
+      <Button variant="outline" size="sm" disabled={isPending} onClick={() => clockIn()}>
         Fichar entrada
       </Button>
     );

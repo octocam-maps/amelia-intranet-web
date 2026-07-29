@@ -4,6 +4,19 @@
   gap: var(--space-6);
 }
 
+/* DECISIÓN CONSCIENTE, no un descuido: este `<h2>` (1.25rem) pesa más que el
+   `<h1>` real de la vista, que es el `.pageTitle` del Topbar (1.0625rem).
+   Una auditoría lo señaló como jerarquía invertida y NO se cambió, porque los
+   dos elementos hacen trabajos distintos: el del Topbar es un rótulo de
+   ubicación —parte del marco, presente en las 20 vistas y con el mismo peso en
+   todas—, y el saludo es el contenido de ESTA pantalla. El orden del DOM y los
+   niveles de encabezado son correctos, así que un lector de pantalla anuncia la
+   jerarquía bien; lo único que no coincide es el tamaño, y coincidir no es un
+   requisito de la WCAG.
+   Si algún día se quiere alinear tamaño y semántica, la respuesta NO es agrandar
+   el rótulo del Topbar: es que el hero de cada página sea su propio `<h1>` y el
+   Topbar deje de ser un encabezado. Es un cambio de arquitectura que toca las 20
+   vistas, no un ajuste de `font-size`. */
 .title {
   font-size: 1.25rem;
   font-weight: 600;

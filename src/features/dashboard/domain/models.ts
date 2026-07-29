@@ -1,3 +1,4 @@
+import type { HolidayScope } from '@/features/holidays/domain/models';
 export interface VacationBalance {
   entitledDays: number;
   usedDays: number;
@@ -13,6 +14,9 @@ export interface TodayClockStatus {
 export interface UpcomingHoliday {
   day: string;
   name: string;
+  /** Ámbito real (migración 018 del backend). `null` para los festivos dados de
+   *  alta a mano sin ámbito — la UI NO debe rellenarlo. */
+  scope: HolidayScope | null;
 }
 
 export interface PendingAbsenceRequestSummary {

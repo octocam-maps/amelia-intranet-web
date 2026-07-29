@@ -1,7 +1,29 @@
+/* Mismo lenguaje que `AdminTimeClockSummaryCard`, la pestaña hermana: un
+   contenedor plano en columna. Este componente ya NO monta una `Card` propia
+   —está dentro de la de `AdminHomeTabs`—, así que el espaciado que antes daban
+   `CardHeader`/`CardContent` se declara aquí. `flex-direction` explícito: el
+   `.headerRow` de antes lo declaraba sin `display: flex` porque lo heredaba de
+   `CardHeader`, y al salir de la Card se habría quedado en un `div` en bloque. */
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
 .headerRow {
+  display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
+  gap: var(--space-3);
+}
+
+/* Mismo tamaño que el `.title` de `Card`: el cambio de `CardTitle` (h3) a un
+   `h4` propio es SEMÁNTICO, no visual — no debe verse distinto. */
+.title {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: hsl(var(--foreground));
 }
 
 .link {

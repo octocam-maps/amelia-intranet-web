@@ -34,7 +34,11 @@ export function summaryFromDTO(dto: DashboardSummaryDTO): DashboardSummary {
       hasOpenEntry: dto.today_clock_status.has_open_entry,
       workedMinutesToday: dto.today_clock_status.worked_minutes_today,
     },
-    upcomingHolidays: dto.upcoming_holidays.map((h) => ({ day: h.day, name: h.name })),
+    upcomingHolidays: dto.upcoming_holidays.map((h) => ({
+      day: h.day,
+      name: h.name,
+      scope: h.scope ?? null,
+    })),
     pendingAbsenceRequests: dto.pending_absence_requests
       ? dto.pending_absence_requests.map((r) => ({
           id: r.id,
