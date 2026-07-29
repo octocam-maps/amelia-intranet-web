@@ -40,7 +40,7 @@ export function ProfileHeader({ profile }: ProfileHeaderProps) {
   return (
     <div className={styles.root}>
       <Avatar className={styles.avatar}>
-        {profile.avatarUrl && <AvatarImage src={profile.avatarUrl} alt={profile.fullName} />}
+        {profile.avatarUrl && <AvatarImage src={profile.avatarUrl} />}
         <AvatarFallback className={styles.fallback}>{initialsOf(profile.fullName)}</AvatarFallback>
       </Avatar>
 

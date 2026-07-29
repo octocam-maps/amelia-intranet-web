@@ -124,12 +124,17 @@ export function OnboardingPage() {
               <span className={styles.completedCardSubtitle}>Control horario y pausas</span>
             </Link>
           )}
+          {/* Era una tarjeta muerta (`completedCardDisabled`) con el subtítulo
+              "· próximamente". Equipo está activo desde hace tiempo y su
+              organigrama se publicó en esta misma ronda (`TeamOrgChart`), así
+              que el aviso quedó caducado: dejaba un acceso apagado a un módulo
+              que el rol SÍ tiene en su navbar. */}
           {allowedPaths.has('/equipo') && (
-            <div className={styles.completedCardDisabled}>
+            <Link to="/equipo" className={styles.completedCard}>
               <UsersIcon className={styles.completedCardIcon} />
               <span className={styles.completedCardTitle}>Conoce al equipo</span>
-              <span className={styles.completedCardSubtitle}>Directorio y organigrama · próximamente</span>
-            </div>
+              <span className={styles.completedCardSubtitle}>Directorio y organigrama</span>
+            </Link>
           )}
         </div>
         <Link to="/" className={styles.completedCta}>

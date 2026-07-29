@@ -105,7 +105,7 @@ export function OnboardingProgressTable({ employees, isLoading, quizStepId }: On
                   <div className={styles.person}>
                     <Avatar>
                       {employee.avatarUrl && (
-                        <AvatarImage src={employee.avatarUrl} alt={employee.fullName} />
+                        <AvatarImage src={employee.avatarUrl} />
                       )}
                       <AvatarFallback>{initialsOf(employee.fullName)}</AvatarFallback>
                     </Avatar>

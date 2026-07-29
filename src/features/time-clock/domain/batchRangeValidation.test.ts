@@ -1,5 +1,9 @@
 import { describe, expect, it } from 'vitest';
-import { BATCH_MAX_DAYS, validateBatchRange } from './batchRangeValidation';
+import {
+  BATCH_MAX_DAYS,
+  validateBatchRange,
+  validateWorkDateNotFuture,
+} from './batchRangeValidation';
 
 // "Hoy" fijo para todos los tests: viernes 2026-07-17 — mismo caso de uso
 // que el backend (fichar la semana en curso un viernes, lunes->domingo).
@@ -44,5 +48,44 @@ describe('validateBatchRange', () => {
     const result = validateBatchRange('', '2026-07-19', TODAY);
 
     expect(result.valid).toBe(false);
+  });
+});
+
+describe('validateWorkDateNotFuture — alta de UN día (LOGIC-2)', () => {
+  it('acepta hoy', () => {
+    expect(validateWorkDateNotFuture(TODAY, TODAY).valid).toBe(true);
+  });
+
+  it('acepta una fecha pasada', () => {
+    expect(validateWorkDateNotFuture('2026-07-10', TODAY).valid).toBe(true);
+  });
+
+  it('rechaza mañana', () => {
+    const result = validateWorkDateNotFuture('2026-07-18', TODAY);
+
+    expect(result.valid).toBe(false);
+    expect(result.error).toMatch(/fecha futura/i);
+  });
+
+  it('rechaza un SÁBADO futuro, al contrario que el lote', () => {
+    // Diferencia deliberada con `validateBatchRange`: el lote exime el fin de
+    // semana porque lo excluye automáticamente, pero el alta unitaria registra
+    // el sábado tal cual se pida — es su razón de ser frente al lote—, así que
+    // el backend la rechaza con 422. 2026-07-18 es sábado.
+    expect(new Date('2026-07-18T00:00:00').getDay()).toBe(6);
+    expect(validateBatchRange('2026-07-18', '2026-07-18', TODAY).valid).toBe(true);
+    expect(validateWorkDateNotFuture('2026-07-18', TODAY).valid).toBe(false);
+  });
+
+  it('rechaza una fecha vacía', () => {
+    const result = validateWorkDateNotFuture('', TODAY);
+
+    expect(result.valid).toBe(false);
+    expect(result.error).toMatch(/selecciona la fecha/i);
+  });
+
+  it('compara por cadena ISO, no por Date: fin de año no rompe el orden', () => {
+    expect(validateWorkDateNotFuture('2026-12-31', '2027-01-01').valid).toBe(true);
+    expect(validateWorkDateNotFuture('2027-01-01', '2026-12-31').valid).toBe(false);
   });
 });

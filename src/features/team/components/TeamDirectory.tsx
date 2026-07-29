@@ -115,7 +115,7 @@ export function TeamDirectory({ members, isLoading }: TeamDirectoryProps) {
                 <div className={styles.topRow}>
                   <Avatar>
                     {member.avatarUrl && (
-                      <AvatarImage src={member.avatarUrl} alt={member.fullName} />
+                      <AvatarImage src={member.avatarUrl} />
                     )}
                     <AvatarFallback>{initialsOf(member.fullName)}</AvatarFallback>
                   </Avatar>

@@ -106,7 +106,7 @@ export function StaffTable({
                 <div className={styles.person}>
                   <Avatar>
                     {member.avatarUrl && (
-                      <AvatarImage src={member.avatarUrl} alt={member.fullName} />
+                      <AvatarImage src={member.avatarUrl} />
                     )}
                     <AvatarFallback>{initialsOf(member.fullName)}</AvatarFallback>
                   </Avatar>

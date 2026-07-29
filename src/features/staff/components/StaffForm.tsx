@@ -125,7 +125,7 @@ export function StaffForm({ member, onSaved, onCancel }: StaffFormProps) {
     <form className={styles.form} onSubmit={handleSubmit(onSubmit)}>
       <div className={styles.identity}>
         <Avatar className={styles.avatar}>
-          {member?.avatarUrl && <AvatarImage src={member.avatarUrl} alt={fullName} />}
+          {member?.avatarUrl && <AvatarImage src={member.avatarUrl} />}
           <AvatarFallback>{initialsOf(fullName) || '—'}</AvatarFallback>
         </Avatar>
       </div>

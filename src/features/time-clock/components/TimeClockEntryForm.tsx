@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Label } from '@/components/ui/Label';
 import { useCreateTimeClockEntry } from '../application/useCreateTimeClockEntry';
+import { validateWorkDateNotFuture } from '../domain/batchRangeValidation';
 import { TimeSelect } from './TimeSelect';
 import styles from './TimeClockEntryForm.module.css';
 
@@ -51,7 +52,20 @@ export function TimeClockEntryForm() {
     <form className={styles.form} onSubmit={handleSubmit(onSubmit)}>
       <div className={styles.field}>
         <Label htmlFor="workDate">Fecha</Label>
-        <Input id="workDate" type="date" {...register('workDate', { required: true })} />
+        {/* `max` + `validate`: LOGIC-2 (art. 34.9 ET) prohíbe la fecha futura
+            "ni en alta unitaria ni en lote", pero solo la pestaña de "Varios
+            días" lo avisaba en cliente — esta mandaba la petición y esperaba el
+            422. El `max` frena el selector nativo; el `validate` cubre la
+            escritura a mano, que el `max` no impide en todos los navegadores. */}
+        <Input
+          id="workDate"
+          type="date"
+          max={todayIso()}
+          {...register('workDate', {
+            required: true,
+            validate: (value) => validateWorkDateNotFuture(value, todayIso()).error ?? true,
+          })}
+        />
       </div>
       <div className={styles.field}>
         <Label>Entrada</Label>
@@ -78,8 +92,15 @@ export function TimeClockEntryForm() {
         Registrar tramo
       </Button>
 
-      {(errors.workDate || errors.clockInTime) && (
-        <p className={styles.error}>Completa la fecha y la hora de entrada.</p>
+      {/* El mensaje de `validate` (fecha futura) se muestra tal cual; el
+          genérico queda para el caso de campo vacío. Antes cualquier error de
+          fecha caía en "Completa la fecha…", que no decía nada del futuro. */}
+      {errors.workDate?.message ? (
+        <p className={styles.error}>{errors.workDate.message}</p>
+      ) : (
+        (errors.workDate || errors.clockInTime) && (
+          <p className={styles.error}>Completa la fecha y la hora de entrada.</p>
+        )
       )}
       {error && (
         <p className={styles.error}>

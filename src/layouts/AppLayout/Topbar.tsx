@@ -146,12 +146,10 @@ export function Topbar({ menuButtonRef, isMobileNavOpen, onToggleMobileNav }: To
               <p className={styles.userRole}>{user ? USER_ROLE_LABEL[user.role] : ''}</p>
             </div>
             <Avatar>
-              {/* `alt=""` a propósito: el nombre ya está en `.userName`, justo
-                  al lado y dentro del mismo botón. Con el nombre en el `alt`,
-                  un lector de pantalla lo leía DOS veces seguidas ("Mauricio
-                  Donado, Administrador, Mauricio Donado") y el avatar aquí es
-                  decorativo — no aporta información que el texto no dé ya. */}
-              <AvatarImage src={user?.avatarUrl ?? undefined} alt="" />
+              {/* Sin `alt`: `AvatarImage` ya lo pone vacío por defecto, porque
+                  el avatar es decorativo siempre que el nombre esté al lado
+                  (aquí, en `.userName`). Ver el docstring del componente. */}
+              <AvatarImage src={user?.avatarUrl ?? undefined} />
               <AvatarFallback>{initialsOf(user?.fullName)}</AvatarFallback>
             </Avatar>
           </DropdownMenuTrigger>
