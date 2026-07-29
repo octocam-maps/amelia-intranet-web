@@ -11,15 +11,27 @@ import { useRoles } from '@/features/roles/application/useRoles';
 import { cn } from '@/lib/utils';
 import { useCreateStaffMember } from '../application/useCreateStaffMember';
 import { useUpdateStaffMember } from '../application/useUpdateStaffMember';
-import type { EntityCode, StaffMember } from '../domain/models';
+import { CONTRACT_TYPE_OPTIONS } from '../domain/contractType';
+import type { ContractType, EntityCode, StaffMember } from '../domain/models';
 import styles from './StaffForm.module.css';
 
 const ENTITIES: { code: EntityCode; label: string }[] = [...ENTITY_OPTIONS];
+
+/** Sentinela SOLO para el `value` del `SelectItem` — Radix no admite `''`
+ * como valor de item ("A <Select.Item /> must have a value prop that is not
+ * an empty string"). El estado real del formulario y el payload que se
+ * manda al backend siguen usando `null` para "sin especificar"; este
+ * sentinela nunca sale de este componente. Exportado solo para que el test
+ * no tenga que adivinarlo. */
+export const UNSPECIFIED_CONTRACT_TYPE = '__unspecified__';
 
 interface FormValues {
   fullName: string;
   email: string;
   jobTitle: string;
+  /** `UNSPECIFIED_CONTRACT_TYPE` = "sin especificar" (manda `null`); si no,
+   * un `ContractType`. Nunca `''` — Radix no admite item con valor vacío. */
+  contractType: ContractType | typeof UNSPECIFIED_CONTRACT_TYPE;
   department: string;
   entityCode: EntityCode;
   role: UserRole;
@@ -59,6 +71,7 @@ export function StaffForm({ member, onSaved, onCancel }: StaffFormProps) {
       fullName: member?.fullName ?? '',
       email: member?.email ?? '',
       jobTitle: member?.jobTitle ?? '',
+      contractType: member?.contractType ?? UNSPECIFIED_CONTRACT_TYPE,
       department: member?.departmentName ?? '',
       entityCode: member?.entityCode ?? 'hub',
       role: member?.role ?? 'empleado',
@@ -87,6 +100,9 @@ export function StaffForm({ member, onSaved, onCancel }: StaffFormProps) {
     const vacationDaysOverride = values.vacationDaysOverride
       ? Number(values.vacationDaysOverride)
       : null;
+    // Sentinela -> `null` ("sin especificar"); si no, el valor elegido.
+    const contractType =
+      values.contractType === UNSPECIFIED_CONTRACT_TYPE ? null : values.contractType;
 
     if (member) {
       // `PATCH /staff/{id}` no admite `full_name`/`email`/`hire_date` — el
@@ -95,6 +111,7 @@ export function StaffForm({ member, onSaved, onCancel }: StaffFormProps) {
         id: member.id,
         input: {
           jobTitle: values.jobTitle || null,
+          contractType,
           department: values.department || null,
           entityCode: values.entityCode,
           role: values.role,
@@ -108,6 +125,7 @@ export function StaffForm({ member, onSaved, onCancel }: StaffFormProps) {
         fullName: values.fullName,
         email: values.email,
         jobTitle: values.jobTitle || null,
+        contractType,
         department: values.department || null,
         entityCode: values.entityCode,
         role: values.role,
@@ -146,6 +164,32 @@ export function StaffForm({ member, onSaved, onCancel }: StaffFormProps) {
         <div className={styles.field}>
           <Label htmlFor="department">Departamento</Label>
           <Input id="department" {...register('department')} />
+        </div>
+      </div>
+
+      <div className={styles.row}>
+        <div className={styles.field}>
+          <Label htmlFor="contractType">Tipo de contrato</Label>
+          <Select
+            value={watch('contractType')}
+            onValueChange={(value) =>
+              setValue('contractType', value as FormValues['contractType'], {
+                shouldValidate: true,
+              })
+            }
+          >
+            <SelectTrigger id="contractType">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value={UNSPECIFIED_CONTRACT_TYPE}>Sin especificar</SelectItem>
+              {CONTRACT_TYPE_OPTIONS.map((option) => (
+                <SelectItem key={option.value} value={option.value}>
+                  {option.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
       </div>
 

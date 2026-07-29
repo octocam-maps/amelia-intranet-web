@@ -11,6 +11,7 @@ import {
 } from '@/components/ui/DropdownMenu';
 import type { Invitation } from '@/features/invitations/domain/models';
 import { cn } from '@/lib/utils';
+import { CONTRACT_TYPE_LABEL } from '../domain/contractType';
 import type { EntityCode, StaffMember, StaffStatus } from '../domain/models';
 import styles from './StaffTable.module.css';
 
@@ -91,6 +92,7 @@ export function StaffTable({
         <tr>
           <th>Persona</th>
           <th>Puesto</th>
+          <th>Contrato</th>
           <th>Entidad</th>
           <th>Estado</th>
           <th aria-label="Acciones" />
@@ -128,6 +130,9 @@ export function StaffTable({
                 </div>
               </td>
               <td>{member.jobTitle ?? '—'}</td>
+              {/* `null` = desconocido, NUNCA "Jornada completa" por
+               * defecto — mismo criterio que `contractType.ts`/`mappers.ts`. */}
+              <td>{member.contractType ? CONTRACT_TYPE_LABEL[member.contractType] : '—'}</td>
               <td>
                 {member.entityCode ? (
                   <Badge variant={ENTITY_BADGE_VARIANT[member.entityCode]}>

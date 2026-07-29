@@ -5,8 +5,9 @@ import type { UserRole } from '@/features/auth/domain/models';
 // acordarse de todas. Se importa Y se reexporta para que los consumidores
 // actuales sigan importándolo desde aquí sin cambios.
 import type { EntityCode } from '@/lib/entities';
+import type { ContractType } from './contractType';
 
-export type { EntityCode };
+export type { EntityCode, ContractType };
 
 /** Estado real de `users.status` (backend) — NO "activa/vacaciones/baja". */
 export type StaffStatus = 'active' | 'invited' | 'suspended';
@@ -17,6 +18,8 @@ export interface StaffMember {
   email: string;
   avatarUrl: string | null;
   jobTitle: string | null;
+  /** `null` = desconocido, NO jornada completa — ver `contractType.ts`. */
+  contractType: ContractType | null;
   departmentId: string | null;
   /** Nombre del departamento — el backend solo manda el nombre resuelto,
    * no un objeto de departamento completo. */
@@ -53,6 +56,10 @@ export interface CreateStaffMemberInput {
   fullName: string;
   email: string;
   jobTitle?: string | null;
+  /** Vacío/`undefined` = desconocido (colapsa a `null` en el DTO) — no hay
+   * ambigüedad posible en el alta, igual que el resto de campos opcionales
+   * de este input. */
+  contractType?: ContractType | null;
   department?: string | null;
   entityCode: EntityCode;
   role: UserRole;
@@ -67,9 +74,14 @@ export interface CreateStaffMemberInput {
  * expone en `PATCH /staff/{id}`).
  *
  * `vacationDaysOverride` AUSENTE (`undefined`) = no tocar el override;
- * `null` explícito = vaciarlo (vuelve a automático); un número = fijarlo. */
+ * `null` explícito = vaciarlo (vuelve a automático); un número = fijarlo.
+ *
+ * `contractType` sigue el mismo esquema de tres estados: AUSENTE
+ * (`undefined`) = no tocar; `null` explícito = vaciarlo (vuelve a "sin
+ * especificar"); un valor = fijarlo. */
 export interface UpdateStaffMemberInput {
   jobTitle?: string | null;
+  contractType?: ContractType | null;
   department?: string | null;
   entityCode?: EntityCode;
   role?: UserRole;
