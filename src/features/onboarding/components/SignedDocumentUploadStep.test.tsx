@@ -23,6 +23,9 @@ function buildStep(overrides: Partial<OnboardingStep> = {}): OnboardingStep {
     data: null,
     startedAt: null,
     completedAt: null,
+    // La plantilla a firmar todavía no está configurada
+    // (`onboarding_documents.storage_ref` a NULL) — ver RF-A8.4.
+    document: null,
     ...overrides,
   };
 }

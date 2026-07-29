@@ -1,5 +1,16 @@
 /** Formas snake_case tal cual las devuelve el backend (Pydantic). */
 
+/** Documento vigente del paso (manual a leer, plantilla a firmar). `url` es
+ * `onboarding_documents.storage_ref` — el backend NO expone `content_hash`,
+ * que es su registro de integridad interno. */
+export interface OnboardingStepDocumentDTO {
+  id: string;
+  kind: string;
+  title: string;
+  version: number;
+  url: string | null;
+}
+
 export interface OnboardingStepDTO {
   id: string;
   step_order: number;
@@ -11,6 +22,7 @@ export interface OnboardingStepDTO {
   data: Record<string, unknown> | null;
   started_at: string | null;
   completed_at: string | null;
+  document: OnboardingStepDocumentDTO | null;
 }
 
 export interface OnboardingMeDTO {
@@ -31,6 +43,10 @@ export interface QuizResultDTO {
   score: number;
   passed: boolean;
   submitted_at: string;
+  /** IDs de las preguntas falladas — nunca la respuesta correcta. */
+  incorrect_question_ids: string[];
+  attempts_used: number;
+  attempts_left: number;
 }
 
 export interface UploadSignedDocumentDTO {

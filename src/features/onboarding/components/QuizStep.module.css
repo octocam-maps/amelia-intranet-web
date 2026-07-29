@@ -147,3 +147,88 @@
   font-size: 0.875rem;
   color: hsl(var(--muted-foreground));
 }
+
+/* --- Preguntas falladas + reintento (2 intentos, 2026-07-29) --- */
+
+/* Panel de fallo que ENCABEZA el formulario cuando aún queda intento: la
+   nota, los intentos restantes y qué se falló, justo encima de las preguntas
+   para releerlas con esa información delante. */
+.retryPanel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  border: 1px solid hsl(var(--destructive) / 0.3);
+  border-radius: var(--radius);
+  background-color: hsl(var(--destructive) / 0.06);
+}
+
+.retryHeader {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+}
+
+.retryIcon {
+  flex-shrink: 0;
+  height: 1.25rem;
+  width: 1.25rem;
+  margin-top: 0.125rem;
+  color: hsl(var(--destructive));
+}
+
+.retryTitle {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: hsl(var(--foreground));
+}
+
+.retrySubtitle {
+  font-size: 0.875rem;
+  color: hsl(var(--muted-foreground));
+}
+
+.incorrectPanel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  width: 100%;
+  text-align: left;
+}
+
+.incorrectTitle {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: hsl(var(--muted-foreground));
+}
+
+.incorrectList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.incorrectItem {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  font-size: 0.875rem;
+  line-height: 1.4;
+  color: hsl(var(--foreground));
+}
+
+/* El icono NO es el único indicador de que la pregunta está fallada: el
+   encabezado del panel ya lo dice en texto ("Preguntas que has fallado"),
+   así que no se depende del color para transmitir el estado (WCAG 1.4.1). */
+.incorrectItemIcon {
+  flex-shrink: 0;
+  height: 1rem;
+  width: 1rem;
+  margin-top: 0.1875rem;
+  color: hsl(var(--destructive));
+}

@@ -29,6 +29,15 @@ export function stepFromDTO(dto: OnboardingStepDTO): OnboardingStep {
     data: dto.data,
     startedAt: dto.started_at,
     completedAt: dto.completed_at,
+    document: dto.document
+      ? {
+          id: dto.document.id,
+          kind: dto.document.kind,
+          title: dto.document.title,
+          version: dto.document.version,
+          url: dto.document.url,
+        }
+      : null,
   };
 }
 
@@ -49,6 +58,13 @@ export function quizResultFromDTO(dto: QuizResultDTO): QuizResult {
     score: dto.score,
     passed: dto.passed,
     submittedAt: dto.submitted_at,
+    // `?? []` / `?? 0`: los tres campos son nuevos y el backend los declara
+    // con default, así que una respuesta cacheada o de una versión anterior
+    // llegaría sin ellos. Sin el fallback, `incorrectQuestionIds.map` de la UI
+    // reventaría con un `undefined`.
+    incorrectQuestionIds: dto.incorrect_question_ids ?? [],
+    attemptsUsed: dto.attempts_used ?? 1,
+    attemptsLeft: dto.attempts_left ?? 0,
   };
 }
 

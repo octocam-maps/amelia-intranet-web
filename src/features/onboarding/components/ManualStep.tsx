@@ -1,4 +1,4 @@
-import { CheckCircledIcon, ReaderIcon } from '@radix-ui/react-icons';
+import { CheckCircledIcon, DownloadIcon, ExternalLinkIcon, ReaderIcon } from '@radix-ui/react-icons';
 import { Button } from '@/components/ui/Button';
 import { useAcknowledgeManual } from '../application/useAcknowledgeManual';
 import type { OnboardingStep } from '../domain/models';
@@ -8,20 +8,33 @@ interface ManualStepProps {
   step: OnboardingStep;
 }
 
-/** `POST .../acknowledge` no lleva cuerpo — una sola confirmación de
- * lectura, sin checklist de sub-secciones (eso es contenido real del
- * manual, que llega en Fase 4 vía Drive). El contenido de abajo es un
- * placeholder de texto. */
+/**
+ * Lectura de los manuales de referencia. Desde la reordenación de v1.1 es el
+ * paso 3 y actúa de PUERTA: hasta confirmar la lectura, el trabajador no llega
+ * al perfil ni a la documentación que tiene que firmar y subir.
+ *
+ * El manual real llega en `step.document` (`GET /onboarding/me`), cuya `url`
+ * es `onboarding_documents.storage_ref` — la ruta NO se hardcodea aquí: si
+ * RRHH publica otra versión, cambia una fila y esta pantalla la sigue. Antes
+ * este componente mostraba un texto de relleno sobre ClickUp que no tenía nada
+ * que ver con el manual del paso.
+ *
+ * `POST .../acknowledge` no lleva cuerpo: una sola confirmación de lectura, sin
+ * checklist de secciones. Cuando entre un segundo manual (RF-A6.1, hoy solo hay
+ * uno real porque la versión en inglés quedó fuera de alcance) habrá que
+ * confirmar por manual y no completar el paso hasta tenerlos todos.
+ */
 export function ManualStep({ step }: ManualStepProps) {
   const { mutate, isPending, error } = useAcknowledgeManual();
 
   const isLocked = step.status === 'locked';
   const isCompleted = step.status === 'completed';
+  const document = step.document;
 
   if (isLocked) {
     return (
       <div className={styles.root}>
-        <p className={styles.locked}>Completa el paso anterior para desbloquear el manual.</p>
+        <p className={styles.locked}>Completa el paso anterior para desbloquear los manuales.</p>
       </div>
     );
   }
@@ -29,23 +42,41 @@ export function ManualStep({ step }: ManualStepProps) {
   return (
     <div className={styles.root}>
       <h2 className={styles.title}>{step.title}</h2>
+      <p className={styles.subtitle}>
+        Lee el manual y confirma la lectura para continuar. Podrás volver a consultarlo cuando
+        quieras.
+      </p>
 
       <div className={styles.manualCard}>
         <div className={styles.manualHeader}>
           <ReaderIcon className={styles.manualIcon} />
-          <span>Manual de ClickUp</span>
+          <span>{document?.title ?? 'Manual del empleado'}</span>
         </div>
-        <div className={styles.manualBody}>
-          <p>
-            ClickUp es la herramienta con la que organizamos el trabajo en Amelia. Cada equipo tiene
-            su <b>Espacio</b>, dentro del cual se agrupan las tareas en <b>Listas</b>. Tu responsable te
-            asignará las tareas que dependan de ti.
+
+        {document?.url ? (
+          <div className={styles.manualActions}>
+            <a
+              className={styles.manualAction}
+              href={document.url}
+              target="_blank"
+              rel="noreferrer"
+            >
+              <ExternalLinkIcon className={styles.manualActionIcon} />
+              Leer el manual
+            </a>
+            <a className={styles.manualAction} href={document.url} download>
+              <DownloadIcon className={styles.manualActionIcon} />
+              Descargar PDF
+            </a>
+          </div>
+        ) : (
+          // Sin `storage_ref` no hay nada que leer. Se dice, en vez de mostrar
+          // un botón muerto o pedir que confirme la lectura de un documento
+          // inexistente.
+          <p className={styles.manualPending}>
+            RRHH todavía no ha publicado este manual. Avísales antes de confirmar la lectura.
           </p>
-          <p>
-            Revisa tu bandeja cada mañana y mantén al día el estado de tus tareas: es la forma en que
-            el resto del equipo sabe cómo vas.
-          </p>
-        </div>
+        )}
       </div>
 
       {isCompleted ? (
@@ -61,7 +92,11 @@ export function ManualStep({ step }: ManualStepProps) {
             </p>
           )}
           <div className={styles.footer}>
-            <Button variant="dark" disabled={isPending} onClick={() => mutate(step.id)}>
+            <Button
+              variant="dark"
+              disabled={isPending || !document?.url}
+              onClick={() => mutate(step.id)}
+            >
               {isPending ? 'Confirmando…' : 'He leído y confirmo'}
             </Button>
           </div>
