@@ -6,6 +6,7 @@ import { cn } from '@/lib/utils';
 import { useUpdateOnboardingStep } from '../application/useUpdateOnboardingStep';
 import type { AdminOnboardingStep } from '../domain/models';
 import type { OnboardingStepType } from '../../domain/models';
+import { MAX_QUIZ_ATTEMPTS } from '../../domain/quizPolicy';
 import styles from './OnboardingStepsList.module.css';
 
 const STEP_ICON: Record<OnboardingStepType, IconComponent> = {
@@ -20,9 +21,13 @@ const STEP_ICON: Record<OnboardingStepType, IconComponent> = {
 // literal del mockup ("Obligatorio · …"). No viene del backend: los 5 pasos
 // son fijos y conocidos, así que se mantiene como diccionario estático en
 // vez de intentar derivarlo de `config`.
+//
+// El techo de intentos del cuestionario SÍ sale de una constante
+// (`MAX_QUIZ_ATTEMPTS`): escrito a mano se quedó en "1 intento" cuando RF-A9
+// lo subió a 2, y esto es lo que RRHH lee para explicar la regla.
 const STEP_DESCRIPTION: Record<OnboardingStepType, string> = {
   video: 'Obligatorio · sin saltar · desbloquea el paso siguiente',
-  quiz: 'Obligatorio · cuestionario de 1 intento',
+  quiz: `Obligatorio · cuestionario de ${MAX_QUIZ_ATTEMPTS} intentos`,
   signature: 'Obligatorio · firma digital trazable',
   manual: 'Obligatorio · confirmación de lectura',
   profile: 'Obligatorio · formulario sin campos vacíos',

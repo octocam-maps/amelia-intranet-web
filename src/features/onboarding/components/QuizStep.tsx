@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/Button';
 import { cn } from '@/lib/utils';
 import { useSubmitQuiz } from '../application/useSubmitQuiz';
 import type { OnboardingStep, QuizResult, QuizStepConfig } from '../domain/models';
+import { MAX_QUIZ_ATTEMPTS } from '../domain/quizPolicy';
 import styles from './QuizStep.module.css';
 
 interface QuizStepProps {
@@ -33,9 +34,10 @@ function resultFromStepData(step: OnboardingStep): QuizResult | null {
 }
 
 /**
- * Cuestionario del curso, de opción múltiple y con **máximo 2 intentos**
- * (`MAX_QUIZ_ATTEMPTS` en el backend; antes era uno solo, cambio de producto
- * del 2026-07-29).
+ * Cuestionario del curso, de opción múltiple y con el techo de intentos de
+ * `MAX_QUIZ_ATTEMPTS` (espejo de `domain/policy.py` en el backend; antes era
+ * uno solo, cambio de producto del 2026-07-29). El número NO se escribe a mano
+ * en el copy: así se quedó atrás el del panel del admin.
  *
  * Al fallar se muestran las preguntas erradas, pero NO la respuesta correcta:
  * el backend manda solo los ids (`incorrectQuestionIds`) y aquí se cruzan con
@@ -103,7 +105,10 @@ export function QuizStep({ step }: QuizStepProps) {
             Puntuación: <b>{shownResult.score}%</b>.{' '}
             {shownResult.passed
               ? 'Tu resultado queda registrado en tu expediente de onboarding.'
-              : 'Has agotado tus dos intentos. Habla con RRHH para que reabra el cuestionario.'}
+              : /* Sin el número: el mensaje solo se muestra cuando ya no
+                   quedan intentos, así que decir cuántos eran no aporta y sí
+                   caduca al cambiar el techo. */
+                'Has agotado tus intentos. Habla con RRHH para que reabra el cuestionario.'}
           </p>
           <IncorrectQuestions config={config} incorrectIds={shownResult.incorrectQuestionIds} />
         </div>
@@ -135,7 +140,7 @@ export function QuizStep({ step }: QuizStepProps) {
       ) : (
         <div className={styles.warningBanner}>
           <ExclamationTriangleIcon className={styles.warningIcon} />
-          Tienes 2 intentos. Revisa cada respuesta antes de enviar.
+          Tienes {MAX_QUIZ_ATTEMPTS} intentos. Revisa cada respuesta antes de enviar.
         </div>
       )}
 

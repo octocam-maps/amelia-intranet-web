@@ -136,7 +136,7 @@ describe('QuizStep', () => {
     fireEvent.click(screen.getByRole('button', { name: /enviar cuestionario/i }));
 
     expect(screen.queryByRole('button', { name: /enviar cuestionario/i })).not.toBeInTheDocument();
-    expect(screen.getByText(/agotado tus dos intentos/i)).toBeInTheDocument();
+    expect(screen.getByText(/agotado tus intentos/i)).toBeInTheDocument();
     expect(screen.getByText(/habla con rrhh/i)).toBeInTheDocument();
     // Aun agotados los intentos, sigue viendo qué falló.
     expect(screen.getByText(/preguntas que has fallado/i)).toBeInTheDocument();
