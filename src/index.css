@@ -15,8 +15,15 @@
   --popover: 0 0% 100%;
   --popover-foreground: 222 47% 11%;
 
-  --primary: 152 100% 41%; /* #00D170 */
-  --primary-foreground: 0 0% 100%;
+  --primary: 152 100% 41%; /* #00D170 — verde de marca, INTOCABLE */
+  /* NAVY, no blanco. El verde de marca es un color claro: blanco encima da
+     2,03:1 y AA pide 4,5:1 (ni siquiera llega al 3:1 del texto grande). Navy
+     sobre ese mismo verde da 8,81:1 y pasa AAA. El botón primario es el control
+     más usado del producto, así que era el peor sitio donde tener el peor
+     contraste de la paleta. Para mantener texto blanco habría que oscurecer el
+     verde hasta #00784F, que ya no es el verde de Amelia.
+     Medido en `lib/a11y/palette.test.ts` — no lo cambies sin volver a medirlo. */
+  --primary-foreground: 222 47% 11%; /* #0F1729 */
 
   --secondary: 220 14% 96%;
   --secondary-foreground: 222 47% 11%;
@@ -28,13 +35,19 @@
   --accent-foreground: 222 47% 11%;
 
   --destructive: 0 84% 60%; /* #EF4343 */
-  --destructive-foreground: 0 0% 100%;
+  --destructive-foreground: 0 0% 100%; /* 3,78:1 sobre el rojo sólido — ver nota al final del bloque */
+  /* Texto sobre el TINTE al 12% del propio color (patrón de `Badge`). El color
+     puro sobre su propio tinte daba 3,10:1: el patrón empeoraba el contraste en
+     vez de ayudarlo. Mismo tono, 17% menos de luminosidad -> 4,78:1. */
+  --destructive-on-tint: 0 84% 43%; /* #CA1111 */
 
   --warning: 38 92% 50%; /* #F59F0A */
-  --warning-foreground: 0 0% 100%;
+  --warning-foreground: 0 0% 100%; /* 2,13:1 sobre el ámbar sólido — ver nota al final del bloque */
+  --warning-on-tint: 38 92% 29%; /* #8E5C06 — 1,84:1 -> 4,92:1 */
 
-  --success: 152 100% 41%;
-  --success-foreground: 0 0% 100%;
+  --success: 152 100% 41%; /* mismo valor que --primary */
+  --success-foreground: 222 47% 11%; /* navy, por el mismo motivo que --primary-foreground */
+  --success-on-tint: 152 100% 24%; /* #007A42 — 1,76:1 -> 4,73:1 */
 
   /* Era `217 91% 60%` (#3C83F6) y FALLABA contraste AA en sus dos usos con
      texto encima, medido con la misma fórmula WCAG de
