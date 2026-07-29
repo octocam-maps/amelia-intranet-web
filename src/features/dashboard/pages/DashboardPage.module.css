@@ -10,10 +10,8 @@
   color: hsl(var(--foreground));
 }
 
-.subtitle {
-  font-size: 0.875rem;
-  color: hsl(var(--muted-foreground));
-}
+/* `.subtitle` eliminado junto con el subtítulo del hero, que duplicaba la
+   fecha del Topbar y escribía a mano el nombre de la sociedad. */
 
 .loading {
   color: hsl(var(--muted-foreground));

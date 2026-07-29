@@ -66,3 +66,35 @@ describe('DashboardPage — un solo <h1> por vista (A11Y-1)', () => {
     expect(screen.getByRole('heading', { level: 2, name: 'Hola, Marta' })).toBeInTheDocument();
   });
 });
+
+describe('DashboardPage — el hero no repite lo que ya dice el Topbar', () => {
+  // El Topbar muestra sección + fecha en TODAS las vistas
+  // (`Topbar.pageDate`), así que en Inicio la fecha salía dos veces seguidas:
+  // "Miércoles, 29 de julio" y justo debajo "Miércoles, 29 de julio · Amelia
+  // Hub". Mismo criterio con el que se resolvió el <h1> duplicado.
+  const MONTHS =
+    /enero|febrero|marzo|abril|mayo|junio|julio|agosto|septiembre|octubre|noviembre|diciembre/i;
+
+  it.each(['empleado', 'administrador', 'externo_invitado'] as const)(
+    'no imprime la fecha de hoy en el hero (%s)',
+    (role) => {
+      mockUser.role = role;
+      const { container } = render(<DashboardPage />);
+
+      expect(container.textContent).not.toMatch(MONTHS);
+    }
+  );
+
+  it.each(['empleado', 'externo_invitado'] as const)(
+    'no escribe a mano el nombre de una sociedad (%s)',
+    (role) => {
+      // "Amelia Hub" estaba hardcodeado y es falso para quien no sea de Hub:
+      // solo 5 de 36 personas lo son. `AmeliaUser` trae `entityId`, no el
+      // nombre, así que el dato real exige resolverlo contra `entities`.
+      mockUser.role = role;
+      const { container } = render(<DashboardPage />);
+
+      expect(container.textContent).not.toContain('Amelia Hub');
+    }
+  );
+});
