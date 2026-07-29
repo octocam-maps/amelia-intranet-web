@@ -1,8 +1,8 @@
+import { ENTITY_CODES, ENTITY_NAME } from '@/lib/entities';
 import { USER_ROLES } from '@/features/auth/domain/models';
 import { parseEnum, parseEnumNullable } from '@/lib/parseEnum';
 import type {
   CreateStaffMemberInput,
-  EntityCode,
   StaffMember,
   StaffStatus,
   UpdateStaffMemberInput,
@@ -16,17 +16,13 @@ import type { CreateStaffMemberDTO, StaffMemberDTO, UpdateStaffMemberDTO } from 
 // `STAFF_ROLES`; si no incluyera `socio`, un `role_code: 'socio'` real caería
 // al fallback `'empleado'` y un PATCH posterior sobre esa persona (aunque
 // solo cambie el puesto) le quitaría el rol socio en silencio.
-const ENTITY_CODES: EntityCode[] = ['hub', 'lab', 'ops'];
+
 const STAFF_STATUSES: StaffStatus[] = ['active', 'invited', 'suspended'];
 
 /** El backend NO manda `entity_name` (solo `entity_code`) — se deriva aquí
  * con un mapa fijo. Si se necesita el nombre real de la entidad (p. ej. si
  * cambia el naming comercial), este es el único lugar a tocar. */
-const ENTITY_NAME: Record<EntityCode, string> = {
-  hub: 'Amelia Hub',
-  lab: 'Amelia Lab',
-  ops: 'Amelia Ops',
-};
+
 
 export function staffMemberFromDTO(dto: StaffMemberDTO): StaffMember {
   const entityCode = parseEnumNullable(dto.entity_code, ENTITY_CODES);

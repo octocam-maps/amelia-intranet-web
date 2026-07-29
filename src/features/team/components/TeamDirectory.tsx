@@ -12,10 +12,16 @@ import styles from './TeamDirectory.module.css';
 // deck-fase5/06-equipo-directorio.png — cada entidad tiene su propio color de
 // insignia; reutilizamos las variantes ya definidas en Badge en vez de
 // inventar tonos nuevos fuera de los tokens de marca.
-const ENTITY_BADGE_VARIANT: Record<EntityCode, 'success' | 'info' | 'warning'> = {
+const ENTITY_BADGE_VARIANT: Record<EntityCode, 'success' | 'info' | 'warning' | 'dark'> = {
   hub: 'success',
   lab: 'info',
   ops: 'warning',
+  // `hincator` (2026-07-29) es posterior al deck. Aquí las otras tres ya ocupan
+  // verde, azul y ámbar, así que va `dark` (navy de marca): es la sociedad con
+  // más plantilla —19 de 36— y `outline` la dejaría más débil que las demás.
+  // Ojo: esta paleta NO coincide con la de `StaffTable`, y es a propósito —
+  // cada una sigue el deck de su fase, ver el comentario de allí.
+  hincator: 'dark',
 };
 
 function entityShortLabel(code: EntityCode): string {

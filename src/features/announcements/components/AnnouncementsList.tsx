@@ -1,3 +1,4 @@
+import { ENTITY_NAME } from '@/lib/entities';
 import { CalendarIcon, DotsHorizontalIcon, EyeOpenIcon } from '@radix-ui/react-icons';
 import { UsersIcon } from '@/components/icons';
 import { Badge } from '@/components/ui/Badge';
@@ -10,19 +11,15 @@ import {
 import { cn } from '@/lib/utils';
 import { useDeleteAnnouncement } from '../application/useDeleteAnnouncement';
 import { useUpdateAnnouncement } from '../application/useUpdateAnnouncement';
-import type { Announcement, AnnouncementEntity } from '../domain/models';
+import type { Announcement,  } from '../domain/models';
 import { AnnouncementBody } from './AnnouncementBody';
 import styles from './AnnouncementsList.module.css';
 
-const ENTITY_LABEL: Record<AnnouncementEntity, string> = {
-  hub: 'Amelia Hub',
-  lab: 'Amelia Lab',
-  ops: 'Amelia Ops',
-};
+// Etiquetas desde `lib/entities`: eran un cuarto mapa con los mismos datos.
 
 function audienceLabel(announcement: Announcement): string {
   if (announcement.audience === 'entity' && announcement.entityCode) {
-    return ENTITY_LABEL[announcement.entityCode];
+    return ENTITY_NAME[announcement.entityCode];
   }
   return 'Toda la plantilla';
 }

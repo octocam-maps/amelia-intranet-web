@@ -1,6 +1,12 @@
 import type { UserRole } from '@/features/auth/domain/models';
 
-export type EntityCode = 'hub' | 'lab' | 'ops';
+// `EntityCode` es del módulo canónico `lib/entities`, no de esta feature: la
+// lista estaba duplicada en cinco y añadir la cuarta sociedad obligaba a
+// acordarse de todas. Se importa Y se reexporta para que los consumidores
+// actuales sigan importándolo desde aquí sin cambios.
+import type { EntityCode } from '@/lib/entities';
+
+export type { EntityCode };
 
 /** Estado real de `users.status` (backend) — NO "activa/vacaciones/baja". */
 export type StaffStatus = 'active' | 'invited' | 'suspended';

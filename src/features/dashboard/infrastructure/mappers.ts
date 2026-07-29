@@ -1,24 +1,20 @@
+import { ENTITY_CODES, ENTITY_NAME } from '@/lib/entities';
 import { parseEnum } from '@/lib/parseEnum';
 import type {
   AdminDashboardMetrics,
   DashboardSummary,
   OrgDepartmentOption,
-  OrgEntityCode,
   OrgEntityOption,
   OrgFilterOptions,
 } from '../domain/models';
 import type { AdminMetricsDTO, DashboardSummaryDTO, StaffLookupMemberDTO } from './dtos';
 
-const ENTITY_CODES: OrgEntityCode[] = ['hub', 'lab', 'ops'];
+
 
 // Nombre para mostrar por código de entidad — el backend solo manda el
 // código corto en `/staff` (`entity_code`), no un nombre; mismo criterio que
 // `ENTITY_LABEL` en `announcements`/`team`.
-const ENTITY_NAME: Record<OrgEntityCode, string> = {
-  hub: 'Amelia Hub',
-  lab: 'Amelia Lab',
-  ops: 'Amelia Ops',
-};
+
 
 export function summaryFromDTO(dto: DashboardSummaryDTO): DashboardSummary {
   return {

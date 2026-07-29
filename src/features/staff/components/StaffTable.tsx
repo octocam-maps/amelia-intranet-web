@@ -1,3 +1,4 @@
+import { ENTITY_SHORT_NAME } from '@/lib/entities';
 import { DotsHorizontalIcon, Pencil2Icon } from '@radix-ui/react-icons';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/Avatar';
 import { Badge } from '@/components/ui/Badge';
@@ -29,14 +30,19 @@ const STATUS_CLASS: Record<StaffStatus, string | undefined> = {
 // entidad distinta a la del directorio de Equipo (Fase 5, `TeamDirectory`):
 // aquí Hub va en gris neutro y Lab en verde. Se respeta el deck de esta
 // fase en vez de forzar la paleta de Fase 5.
-const ENTITY_BADGE_VARIANT: Record<EntityCode, 'outline' | 'success' | 'warning'> = {
+const ENTITY_BADGE_VARIANT: Record<EntityCode, 'outline' | 'success' | 'warning' | 'info'> = {
   hub: 'outline',
   lab: 'success',
   ops: 'warning',
+  // `hincator` (2026-07-29) no está en el deck: es la cuarta sociedad, posterior.
+  // Se le da `info` porque es la única variante libre que no cambia de
+  // significado — `destructive` se leería como error y `dark` compite con el
+  // navy del propio encabezado de la tabla.
+  hincator: 'info',
 };
 
 function entityShortLabel(code: EntityCode): string {
-  return code.charAt(0).toUpperCase() + code.slice(1);
+  return ENTITY_SHORT_NAME[code];
 }
 
 function initialsOf(fullName: string): string {

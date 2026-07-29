@@ -1,3 +1,4 @@
+import { ENTITY_CODES } from '@/lib/entities';
 import { parseEnum, parseEnumNullable } from '@/lib/parseEnum';
 import type { Announcement, AnnouncementAudience, AnnouncementEntity, AnnouncementInput } from '../domain/models';
 import type { AnnouncementDTO, AnnouncementInputDTO } from './dtos';
@@ -5,7 +6,7 @@ import type { AnnouncementDTO, AnnouncementInputDTO } from './dtos';
 // `audience` decide si se muestra el selector de entidad; `entityCode` se
 // renderiza como badge (`ENTITY_LABEL[entityCode]` en AnnouncementsList).
 const ANNOUNCEMENT_AUDIENCES: AnnouncementAudience[] = ['all', 'entity'];
-const ANNOUNCEMENT_ENTITIES: AnnouncementEntity[] = ['hub', 'lab', 'ops'];
+const ANNOUNCEMENT_ENTITIES: readonly AnnouncementEntity[] = ENTITY_CODES;
 
 export function announcementFromDTO(dto: AnnouncementDTO): Announcement {
   return {

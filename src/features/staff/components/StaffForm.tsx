@@ -1,3 +1,4 @@
+import { ENTITY_OPTIONS } from '@/lib/entities';
 import { useForm } from 'react-hook-form';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/Avatar';
 import { Button } from '@/components/ui/Button';
@@ -13,11 +14,7 @@ import { useUpdateStaffMember } from '../application/useUpdateStaffMember';
 import type { EntityCode, StaffMember } from '../domain/models';
 import styles from './StaffForm.module.css';
 
-const ENTITIES: { code: EntityCode; label: string }[] = [
-  { code: 'hub', label: 'Hub' },
-  { code: 'lab', label: 'Lab' },
-  { code: 'ops', label: 'Ops' },
-];
+const ENTITIES: { code: EntityCode; label: string }[] = [...ENTITY_OPTIONS];
 
 interface FormValues {
   fullName: string;

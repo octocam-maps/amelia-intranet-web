@@ -1,9 +1,12 @@
 import type { UserRole } from '@/features/auth/domain/models';
 
-/** Mismo contrato que `staff/domain/models.ts` (`EntityCode`) — duplicado
- * a propósito para no acoplar features (mismo criterio que `normalize()`
- * en `StaffPage`/`TeamDirectory`). */
-export type EntityCode = 'hub' | 'lab' | 'ops';
+// `EntityCode` es del módulo canónico `lib/entities`, no de esta feature: la
+// lista estaba duplicada en cinco y añadir la cuarta sociedad obligaba a
+// acordarse de todas. Se importa Y se reexporta para que los consumidores
+// actuales sigan importándolo desde aquí sin cambios.
+import type { EntityCode } from '@/lib/entities';
+
+export type { EntityCode };
 
 /** `invitations.status` (CHECK de la tabla) — en la práctica hoy solo se
  * observan `'pending'`/`'revoked'`: `'accepted'` nunca se llega a escribir

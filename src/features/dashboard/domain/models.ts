@@ -1,3 +1,4 @@
+import type { EntityCode } from '@/lib/entities';
 import type { HolidayScope } from '@/features/holidays/domain/models';
 export interface VacationBalance {
   entitledDays: number;
@@ -73,7 +74,8 @@ export interface AdminDashboardMetrics {
  * hardcodear el código: se resuelven a partir de `GET /staff` (ver
  * `infrastructure/dashboard-api.adapter.ts` para el porqué de no haber un
  * catálogo dedicado todavía). */
-export type OrgEntityCode = 'hub' | 'lab' | 'ops';
+// Alias del tipo canónico (`lib/entities`).
+export type OrgEntityCode = EntityCode;
 
 export interface OrgEntityOption {
   id: string;
