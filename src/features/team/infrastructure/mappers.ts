@@ -1,9 +1,10 @@
+import { ENTITY_CODES } from '@/lib/entities';
 import { parseEnum, parseEnumNullable } from '@/lib/parseEnum';
-import type { AbsenceKind, EntityCode, TeamAbsenceEntry, TeamBirthday, TeamMember } from '../domain/models';
+import type { AbsenceKind, TeamAbsenceEntry, TeamBirthday, TeamMember } from '../domain/models';
 import type { TeamAbsenceEntryDTO, TeamBirthdayDTO, TeamMemberDTO } from './dtos';
 
 // Se pinta como badge en TeamDirectory (`ENTITY_BADGE_VARIANT[entityCode]`).
-const ENTITY_CODES: EntityCode[] = ['hub', 'lab', 'ops'];
+
 
 // Los únicos 3 valores privacy-safe que puede mandar el backend (ver
 // domain/models.ts::AbsenceKind). Un valor inesperado colapsa a "ausente"

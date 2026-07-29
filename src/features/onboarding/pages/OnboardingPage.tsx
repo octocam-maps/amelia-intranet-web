@@ -99,9 +99,9 @@ export function OnboardingPage() {
         <div className={styles.completedIconWrap}>
           <CheckCircledIcon className={styles.completedIcon} />
         </div>
-        <h1 className={styles.completedTitle}>
+        <h2 className={styles.completedTitle}>
           ¡Onboarding completado{currentUser?.fullName ? `, ${currentUser.fullName.split(' ')[0]}` : ''}!
-        </h1>
+        </h2>
         <p className={styles.completedSubtitle}>
           {externalGuest
             ? 'Ya tienes acceso a tu espacio. Esto es lo que puedes hacer ahora:'
@@ -124,12 +124,17 @@ export function OnboardingPage() {
               <span className={styles.completedCardSubtitle}>Control horario y pausas</span>
             </Link>
           )}
+          {/* Era una tarjeta muerta (`completedCardDisabled`) con el subtítulo
+              "· próximamente". Equipo está activo desde hace tiempo y su
+              organigrama se publicó en esta misma ronda (`TeamOrgChart`), así
+              que el aviso quedó caducado: dejaba un acceso apagado a un módulo
+              que el rol SÍ tiene en su navbar. */}
           {allowedPaths.has('/equipo') && (
-            <div className={styles.completedCardDisabled}>
+            <Link to="/equipo" className={styles.completedCard}>
               <UsersIcon className={styles.completedCardIcon} />
               <span className={styles.completedCardTitle}>Conoce al equipo</span>
-              <span className={styles.completedCardSubtitle}>Directorio y organigrama · próximamente</span>
-            </div>
+              <span className={styles.completedCardSubtitle}>Directorio y organigrama</span>
+            </Link>
           )}
         </div>
         <Link to="/" className={styles.completedCta}>
@@ -144,9 +149,9 @@ export function OnboardingPage() {
     <div className={styles.root}>
       <div className={styles.header}>
         <p className={styles.eyebrow}>Tu onboarding</p>
-        <h1 className={styles.title}>
+        <h2 className={styles.title}>
           Te damos la bienvenida a Amelia{currentUser?.fullName ? `, ${currentUser.fullName.split(' ')[0]}` : ''}
-        </h1>
+        </h2>
       </div>
 
       <Card>

@@ -85,10 +85,22 @@
     display: inline-flex;
   }
 
-  /* En móvil manda el hamburguesa; el encabezado de página se oculta para no
-     competir por el poco ancho disponible. */
+  /* En móvil manda el hamburguesa y el encabezado deja de ocupar ancho, pero
+     NO se borra: este `<h1>` es el único de toda la app desde que se retiraron
+     los nueve encabezados duplicados de las páginas, así que un `display: none`
+     dejaba cada vista sin encabezado de nivel 1 a 375 px —el ancho de prueba
+     del proyecto—. Los dos cambios eran correctos por separado; la combinación,
+     no. Recorte a 1px: fuera de la vista, dentro del árbol de accesibilidad. */
   .pageHeading {
-    display: none;
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+    border: 0;
   }
 }
 

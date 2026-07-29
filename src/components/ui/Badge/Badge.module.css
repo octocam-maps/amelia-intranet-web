@@ -15,19 +15,24 @@
   color: hsl(var(--secondary-foreground));
 }
 
+/* Las variantes tintadas usan `*-on-tint` como color de TEXTO, no el color
+   base: el color puro sobre un tinte del mismo color daba entre 1,8:1 y 3,2:1
+   —el patrón empeoraba el contraste en vez de ayudarlo—. El FONDO no cambia,
+   así que la etiqueta se sigue viendo igual de suave. Medido en
+   `lib/a11y/palette.test.ts`; si tocas un alfa de aquí, actualízalo allí. */
 .variantSuccess {
   background-color: hsl(var(--success) / 0.12);
-  color: hsl(var(--success));
+  color: hsl(var(--success-on-tint));
 }
 
 .variantWarning {
   background-color: hsl(var(--warning) / 0.14);
-  color: hsl(var(--warning));
+  color: hsl(var(--warning-on-tint));
 }
 
 .variantDestructive {
   background-color: hsl(var(--destructive) / 0.12);
-  color: hsl(var(--destructive));
+  color: hsl(var(--destructive-on-tint));
 }
 
 .variantInfo {

@@ -140,7 +140,13 @@ export function AdminDocumentUploadForm({ onSaved, onCancel }: AdminDocumentUplo
 
     // Secuencial a propósito: evita ráfagas contra la API de Drive y permite
     // reportar exactamente cuáles fallaron sin abortar los demás.
-    const failures: string[] = [];
+    //
+    // Se guarda el MOTIVO junto al nombre. Antes esto era un `string[]` con solo
+    // el nombre y un `catch {}` que ni ligaba el error a una variable: el
+    // mensaje real del backend se tiraba y se sustituía por una conjetura sobre
+    // formato y tamaño. Un 409 "el período ya tiene una nómina subida" se
+    // anunciaba como problema de PDF, y quien lo leía reintentaba lo mismo.
+    const failures: Array<{ name: string; reason: string }> = [];
     for (const [i, item] of items.entries()) {
       const period = item.periodYear && item.periodMonth ? `${item.periodYear}-${item.periodMonth}` : undefined;
       try {
@@ -151,8 +157,15 @@ export function AdminDocumentUploadForm({ onSaved, onCancel }: AdminDocumentUplo
           title: item.title.trim() || titleFromFilename(item.file.name),
           period,
         });
-      } catch {
-        failures.push(item.file.name);
+      } catch (uploadError) {
+        failures.push({
+          name: item.file.name,
+          // `ApiError.message` ya llega parseado del adaptador
+          // (`documents-api.adapter.ts`), así que es el texto del backend tal
+          // cual. El genérico queda solo para lo que no sea un `Error`.
+          reason:
+            uploadError instanceof Error ? uploadError.message : 'Error desconocido del servidor.',
+        });
       }
       setProgress({ done: i + 1, total: items.length });
     }
@@ -160,10 +173,11 @@ export function AdminDocumentUploadForm({ onSaved, onCancel }: AdminDocumentUplo
     setBusy(false);
 
     if (failures.length > 0) {
+      const detalle = failures.map(({ name, reason }) => `${name}: ${reason}`).join(' · ');
       setFormError(
         failures.length === items.length
-          ? 'No se pudo subir ningún archivo. Revisa que sean PDF y no superen el límite.'
-          : `Subidos ${items.length - failures.length} de ${items.length}. Fallaron: ${failures.join(', ')}.`
+          ? `No se pudo subir ningún archivo. ${detalle}`
+          : `Subidos ${items.length - failures.length} de ${items.length}. ${detalle}`
       );
       return;
     }

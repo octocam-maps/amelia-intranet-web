@@ -18,12 +18,6 @@ import { useAdminMetrics } from '../application/useAdminMetrics';
 import { useDashboardSummary } from '../application/useDashboardSummary';
 import styles from './DashboardPage.module.css';
 
-const TODAY_LABEL = new Date().toLocaleDateString('es-ES', {
-  weekday: 'long',
-  day: 'numeric',
-  month: 'long',
-});
-
 /**
  * Dashboard condicionado por rol (docs/permisos-roles.md § Inicio):
  * empleado ve sus propios widgets (deck 01-home-empleado); admin ve el Home
@@ -68,12 +62,8 @@ export function DashboardPage() {
   if (externalGuest) {
     return (
       <div className={styles.root}>
-        <div>
-          <h1 className={styles.title}>Hola, {firstName}</h1>
-          <p className={styles.subtitle}>
-            {TODAY_LABEL.charAt(0).toUpperCase() + TODAY_LABEL.slice(1)} · Amelia Hub
-          </p>
-        </div>
+        {/* Sin subtítulo: ver el comentario del hero de la rama principal. */}
+        <h2 className={styles.title}>Hola, {firstName}</h2>
 
         <div className={styles.externalGuestGrid}>
           <AnnouncementsCard />
@@ -85,12 +75,21 @@ export function DashboardPage() {
 
   return (
     <div className={styles.root}>
-      <div>
-        <h1 className={styles.title}>Hola, {firstName}</h1>
-        <p className={styles.subtitle}>
-          {TODAY_LABEL.charAt(0).toUpperCase() + TODAY_LABEL.slice(1)} · Amelia Hub
-        </p>
-      </div>
+      {/* Solo el saludo. El subtítulo que había aquí ("{fecha} · Amelia Hub")
+          se retiró por dos motivos:
+
+          1. DUPLICABA la fecha. El Topbar ya la muestra en TODAS las vistas
+             (`Topbar.pageDate`), así que en Inicio salía dos veces seguidas.
+             Mismo criterio con el que se resolvió el `<h1>` duplicado: el
+             encabezado contextual (sección + fecha) vive en el Topbar y las
+             páginas no lo repiten.
+          2. "Amelia Hub" estaba ESCRITO A MANO, y es falso para quien no sea
+             de Hub: la plantilla son 4 sociedades (Hub, Lab, Hincator, Ops) y
+             solo 5 de 36 personas están en Hub. `AmeliaUser` trae `entityId`,
+             no el nombre de la entidad, así que mostrar la real exigiría
+             resolverlo contra `entities` — si algún día se quiere ese dato en
+             el hero, hay que traerlo, no volver a escribirlo a mano. */}
+      <h2 className={styles.title}>Hola, {firstName}</h2>
 
       {isSummaryLoading || !summary ? (
         <p className={styles.loading}>Cargando…</p>

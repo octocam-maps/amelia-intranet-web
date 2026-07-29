@@ -29,8 +29,17 @@ const FORM_FIELD_BY_BACKEND_KEY: Record<string, keyof CompleteProfileInput> = {
 };
 
 /**
- * Paso 5 del onboarding ("Completar perfil", RF §3.5) —
- * deck-fase2/27-completar-perfil.png. Los 7 campos y su obligatoriedad los
+ * Paso **4** del onboarding ("Completar perfil", RF §3.5) —
+ * deck-fase2/27-completar-perfil.png.
+ *
+ * Era el paso 5 y el ÚLTIMO; la reordenación de v1.1 (migración
+ * `033_onboarding_steps_reorder_v11.sql`) lo movió al 4 y puso la subida de
+ * documentación firmada en el 5. Este componente se quedó diciendo "Último
+ * paso" y "Finalizar onboarding", que se contradecía de inmediato con el
+ * "Continuar al paso 5" que `OnboardingPage` pinta justo debajo al enviarlo.
+ * Si vuelves a tocar este copy, comprueba antes cuál es el último paso real.
+ *
+ * Los 7 campos y su obligatoriedad los
  * fija el backend (`CompleteProfileRequestDTO` +
  * `ensure_profile_data_complete`): `companyPhone` es el único opcional. El
  * `required` de React Hook Form es solo UX — la fuente de verdad del
@@ -106,7 +115,7 @@ export function ProfileStep({ step }: ProfileStepProps) {
           <CheckCircledIcon className={styles.completedIcon} />
           <h2 className={styles.completedTitle}>Perfil completado</h2>
           <p className={styles.completedSubtitle}>
-            Ya formas parte del equipo. Hemos guardado tus datos de perfil.
+            Hemos guardado tus datos. Te queda un paso: subir tu documentación firmada.
           </p>
         </div>
       </div>
@@ -116,8 +125,13 @@ export function ProfileStep({ step }: ProfileStepProps) {
   return (
     <form className={styles.root} onSubmit={handleSubmit(onSubmit)} noValidate>
       <h2 className={styles.title}>{step.title || 'Completa tu perfil'}</h2>
+      {/* NO decir "último paso": el perfil dejó de serlo con la reordenación
+          de v1.1 (migración 033) — ahora es el 4 y le sigue la documentación
+          firmada, que es la que cierra el onboarding. Decirlo aquí se
+          contradecía de inmediato con el "Continuar al paso 5" que
+          `OnboardingPage` pinta justo debajo al enviar este formulario. */}
       <p className={styles.subtitle}>
-        Último paso. Todos los campos son obligatorios salvo los marcados como opcional.
+        Penúltimo paso. Todos los campos son obligatorios salvo los marcados como opcional.
       </p>
 
       <div className={styles.field}>
@@ -212,7 +226,7 @@ export function ProfileStep({ step }: ProfileStepProps) {
 
       <div className={styles.footer}>
         <Button type="submit" variant="dark" disabled={isPending}>
-          {isPending ? 'Guardando…' : 'Finalizar onboarding'}
+          {isPending ? 'Guardando…' : 'Guardar perfil'}
           {!isPending && <CheckIcon aria-hidden />}
         </Button>
       </div>

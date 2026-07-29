@@ -3,7 +3,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/Tabs';
 import { useTeamDirectory } from '../application/useTeamDirectory';
 import { TeamCalendar } from '../components/TeamCalendar';
 import { TeamDirectory } from '../components/TeamDirectory';
-import { TeamOrgChartPlaceholder } from '../components/TeamOrgChartPlaceholder';
+import { TeamOrgChart } from '../components/TeamOrgChart';
 import styles from './TeamPage.module.css';
 
 type TeamTab = 'directorio' | 'calendario' | 'organigrama';
@@ -35,7 +35,6 @@ export function TeamPage() {
   return (
     <div className={styles.root}>
       <div className={styles.header}>
-        <h1 className={styles.title}>Equipo</h1>
         <p className={styles.subtitle}>{subtitle}</p>
       </div>
 
@@ -53,7 +52,7 @@ export function TeamPage() {
           <TeamCalendar />
         </TabsContent>
         <TabsContent value="organigrama" className={styles.content}>
-          <TeamOrgChartPlaceholder />
+          <TeamOrgChart />
         </TabsContent>
       </Tabs>
     </div>

@@ -1,20 +1,18 @@
 import { CalendarHeartIcon } from '@/components/icons';
 import { Badge } from '@/components/ui/Badge';
-import type { BadgeProps } from '@/components/ui/Badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
+import { SCOPE_BADGE_VARIANT, SCOPE_LABEL } from '@/features/holidays/domain/scope';
 import type { UpcomingHoliday } from '../domain/models';
 import styles from './UpcomingHolidaysCard.module.css';
 
-// El backend (`holidays`, docs/fase-0-esquema-datos.md) todavía no tiene una
-// columna de ámbito (Nacional/Autonómico/Local) — es Fase 5. El ciclo aquí
-// es SOLO presentación (deck 01-home-empleado) para que el layout no se vea
-// vacío; en cuanto el backend exponga `scope`, esto se sustituye por el
-// dato real y deja de rotar.
-const SCOPE_CYCLE: Array<{ label: string; variant: BadgeProps['variant'] }> = [
-  { label: 'Nacional', variant: 'outline' },
-  { label: 'Autonómico', variant: 'success' },
-  { label: 'Local', variant: 'warning' },
-];
+/* El ámbito se PINTA, no se deduce. Aquí había un `SCOPE_CYCLE` que rotaba
+   Nacional/Autonómico/Local por posición en la lista, justificado con que el
+   backend "todavía no tiene columna de ámbito". Era falso: `holidays.scope`
+   existe desde la migración 018 y `HolidaysTable` ya la pintaba bien — lo único
+   que faltaba era que `GET /dashboard/summary` la proyectase, que ya lo hace.
+   El resultado era que un festivo local se anunciaba como nacional según en qué
+   posición cayera. Si vuelve a faltar el dato, se deja el hueco: ver la rama de
+   `scope === null`. */
 
 function formatDay(iso: string): { day: string; month: string } {
   const date = new Date(`${iso}T00:00:00`);
@@ -36,10 +34,8 @@ export function UpcomingHolidaysCard({ holidays }: { holidays: UpcomingHoliday[]
           <p className={styles.empty}>Todavía no hay festivos configurados (pendiente de Fase 5).</p>
         ) : (
           <ul className={styles.list}>
-            {holidays.map((holiday, index) => {
+            {holidays.map((holiday) => {
               const { day, month } = formatDay(holiday.day);
-              // `SCOPE_CYCLE` no está vacío — el índice siempre cae dentro del array.
-              const scope = SCOPE_CYCLE[index % SCOPE_CYCLE.length]!;
               return (
                 <li key={holiday.day} className={styles.row}>
                   <span className={styles.day}>
@@ -47,7 +43,18 @@ export function UpcomingHolidaysCard({ holidays }: { holidays: UpcomingHoliday[]
                     <span className={styles.dayNumber}>{day}</span>
                   </span>
                   <span className={styles.name}>{holiday.name}</span>
-                  <Badge variant={scope.variant}>{scope.label}</Badge>
+                  {holiday.scope ? (
+                    <Badge variant={SCOPE_BADGE_VARIANT[holiday.scope]}>
+                      {SCOPE_LABEL[holiday.scope]}
+                    </Badge>
+                  ) : (
+                    // Sin ámbito no hay etiqueta. Es el caso de un festivo dado
+                    // de alta a mano por el admin, y mismo tratamiento que en
+                    // `HolidaysTable`.
+                    <span className={styles.scopeEmpty} aria-hidden>
+                      —
+                    </span>
+                  )}
                 </li>
               );
             })}

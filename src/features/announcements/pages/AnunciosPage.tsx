@@ -18,7 +18,6 @@ export function AnunciosPage() {
     <div className={styles.root}>
       <div className={styles.header}>
         <div>
-          <h1 className={styles.title}>Anuncios</h1>
           <p className={styles.subtitle}>Comunicados para toda la plantilla</p>
         </div>
         <Button onClick={() => setSelectedId(null)}>

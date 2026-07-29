@@ -34,6 +34,18 @@ export interface QuizStepConfig {
  * `{score, passed}` de un quiz ya enviado) cuando el paso ya no está
  * disponible para reintentar.
  */
+/** Documento vigente del paso — solo lo traen `manual` y `signature`, y solo
+ * si RRHH ya lo configuró. `url` sale de `onboarding_documents.storage_ref`,
+ * la única fuente de verdad de dónde vive el fichero: NO se hardcodea en el
+ * front ni se duplica en el `config` del paso. */
+export interface OnboardingStepDocument {
+  id: string;
+  kind: string;
+  title: string;
+  version: number;
+  url: string | null;
+}
+
 export interface OnboardingStep {
   id: string;
   stepOrder: number;
@@ -45,6 +57,7 @@ export interface OnboardingStep {
   data: Record<string, unknown> | null;
   startedAt: string | null;
   completedAt: string | null;
+  document: OnboardingStepDocument | null;
 }
 
 export interface ReportVideoProgressInput {
@@ -69,6 +82,14 @@ export interface QuizResult {
   score: number;
   passed: boolean;
   submittedAt: string;
+  /** IDs de las preguntas falladas, en el orden del cuestionario. El backend
+   * manda IDS y nunca la respuesta correcta: la UI cruza el id con el
+   * enunciado que ya tiene en `config.questions` para señalar el fallo. */
+  incorrectQuestionIds: string[];
+  attemptsUsed: number;
+  /** Intentos que quedan DESPUÉS de este envío. 0 si se aprobó (el paso queda
+   * completado) o si se agotaron los 2. */
+  attemptsLeft: number;
 }
 
 /** Respuesta de `POST /steps/{id}/documents` — ya no incluye hash/IP (esa

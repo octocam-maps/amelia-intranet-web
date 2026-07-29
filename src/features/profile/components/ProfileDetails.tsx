@@ -8,8 +8,9 @@ import {
   Pencil2Icon,
   SewingPinIcon,
 } from '@radix-ui/react-icons';
-import { BuildingIcon, HourglassIcon, PhoneIcon, UserCogIcon, UsersIcon } from '@/components/icons';
+import { HourglassIcon, PhoneIcon, UserCogIcon } from '@/components/icons';
 import { Button } from '@/components/ui/Button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Input } from '@/components/ui/Input';
 import { Label } from '@/components/ui/Label';
 import { useUpdateMyProfile } from '../application/useUpdateMyProfile';
@@ -85,10 +86,10 @@ export function ProfileDetails({ profile }: ProfileDetailsProps) {
     values: { phone: profile.phone ?? '', city: profile.city ?? '' },
   });
 
-  const readOnlyRows = [
-    { icon: EnvelopeClosedIcon, label: 'Correo', value: profile.email },
-    { icon: BuildingIcon, label: 'Entidad', value: profile.entityName ?? 'Sin asignar' },
-    { icon: UsersIcon, label: 'Departamento', value: profile.departmentName ?? 'Sin asignar' },
+  // Entidad y departamento NO se repiten aquí: ya los muestra el hero
+  // (`ProfileHeader`, línea "{entidad} · {departamento}"). Repetirlos era el
+  // mismo tipo de duplicación que los títulos del topbar.
+  const workRows = [
     { icon: UserCogIcon, label: 'Responsable', value: profile.managerName ?? 'Sin asignar' },
     { icon: CalendarIcon, label: 'Fecha de incorporación', value: formatHireDate(profile.hireDate) },
     { icon: HourglassIcon, label: 'Antigüedad', value: formatTenure(profile.hireDate) },
@@ -113,50 +114,54 @@ export function ProfileDetails({ profile }: ProfileDetailsProps) {
   };
 
   return (
-    <div>
-      <div className={styles.header}>
-        <h2 className={styles.title}>Datos personales</h2>
-        {!isEditing && (
-          <Button type="button" variant="ghost" size="sm" onClick={startEditing}>
-            <Pencil2Icon className={styles.actionIcon} />
-            Editar
-          </Button>
-        )}
-      </div>
-
-      <dl className={styles.root}>
-        {readOnlyRows.map(({ icon: Icon, label, value }) => (
-          <div key={label} className={styles.row}>
-            <dt className={styles.label}>
-              <Icon className={styles.icon} />
-              {label}
-            </dt>
-            <dd className={styles.value}>{value}</dd>
-          </div>
-        ))}
-
-        {!isEditing && (
-          <>
+    <>
+      {/* Tarjeta 1 · Contacto. El botón "Editar" vive AQUÍ y no arriba de la
+          columna a propósito: `PATCH /profile/me` solo admite teléfono y
+          ciudad, que son estos dos campos. Un botón al nivel de la columna
+          daría a entender que también se puede editar la información laboral
+          (responsable, fecha de alta), que la gestiona RRHH. */}
+      <Card>
+        <CardHeader className={styles.cardHeader}>
+          <CardTitle>Información de contacto</CardTitle>
+          {!isEditing && (
+            <Button type="button" variant="outline" size="sm" onClick={startEditing}>
+              <Pencil2Icon className={styles.actionIcon} />
+              Editar
+            </Button>
+          )}
+        </CardHeader>
+        <CardContent>
+          <dl className={styles.root}>
             <div className={styles.row}>
               <dt className={styles.label}>
-                <PhoneIcon className={styles.icon} />
-                Teléfono
+                <EnvelopeClosedIcon className={styles.icon} />
+                Correo
               </dt>
-              <dd className={styles.value}>{profile.phone ?? '—'}</dd>
+              <dd className={styles.value}>{profile.email}</dd>
             </div>
-            <div className={styles.row}>
-              <dt className={styles.label}>
-                <SewingPinIcon className={styles.icon} />
-                Ciudad
-              </dt>
-              <dd className={styles.value}>{profile.city ?? '—'}</dd>
-            </div>
-          </>
-        )}
-      </dl>
 
-      {isEditing && (
-        <form className={styles.editForm} onSubmit={handleSubmit(onSubmit)}>
+            {!isEditing && (
+              <>
+                <div className={styles.row}>
+                  <dt className={styles.label}>
+                    <PhoneIcon className={styles.icon} />
+                    Teléfono
+                  </dt>
+                  <dd className={styles.value}>{profile.phone ?? '—'}</dd>
+                </div>
+                <div className={styles.row}>
+                  <dt className={styles.label}>
+                    <SewingPinIcon className={styles.icon} />
+                    Ciudad
+                  </dt>
+                  <dd className={styles.value}>{profile.city ?? '—'}</dd>
+                </div>
+              </>
+            )}
+          </dl>
+
+          {isEditing && (
+            <form className={styles.editForm} onSubmit={handleSubmit(onSubmit)}>
           <div className={styles.field}>
             <Label htmlFor="profile-phone">Teléfono</Label>
             <Input
@@ -191,18 +196,47 @@ export function ProfileDetails({ profile }: ProfileDetailsProps) {
             </p>
           )}
 
-          <div className={styles.formActions}>
-            <Button type="button" variant="outline" size="sm" onClick={cancelEditing} disabled={isPending}>
-              <Cross2Icon className={styles.actionIcon} />
-              Cancelar
-            </Button>
-            <Button type="submit" size="sm" disabled={isPending}>
-              <CheckIcon className={styles.actionIcon} />
-              {isPending ? 'Guardando…' : 'Guardar'}
-            </Button>
-          </div>
-        </form>
-      )}
-    </div>
+              <div className={styles.formActions}>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={cancelEditing}
+                  disabled={isPending}
+                >
+                  <Cross2Icon className={styles.actionIcon} />
+                  Cancelar
+                </Button>
+                <Button type="submit" size="sm" disabled={isPending}>
+                  <CheckIcon className={styles.actionIcon} />
+                  {isPending ? 'Guardando…' : 'Guardar'}
+                </Button>
+              </div>
+            </form>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Tarjeta 2 · Información laboral: solo lectura. La gestiona RRHH desde
+          Administración › Plantilla, no el propio empleado. */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Información laboral</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <dl className={styles.root}>
+            {workRows.map(({ icon: Icon, label, value }) => (
+              <div key={label} className={styles.row}>
+                <dt className={styles.label}>
+                  <Icon className={styles.icon} />
+                  {label}
+                </dt>
+                <dd className={styles.value}>{value}</dd>
+              </div>
+            ))}
+          </dl>
+        </CardContent>
+      </Card>
+    </>
   );
 }

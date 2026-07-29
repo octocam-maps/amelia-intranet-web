@@ -1,0 +1,52 @@
+.scope {
+  margin-top: var(--space-1);
+  font-size: 0.75rem;
+  color: hsl(var(--muted-foreground));
+}
+
+.muted {
+  padding: var(--space-4) 0;
+  text-align: center;
+  font-size: 0.875rem;
+  color: hsl(var(--muted-foreground));
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.avatar {
+  flex-shrink: 0;
+  width: 2rem;
+  height: 2rem;
+  font-size: 0.75rem;
+}
+
+.info {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-0_5);
+  min-width: 0;
+}
+
+.name {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: hsl(var(--foreground));
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.kind {
+  font-size: 0.75rem;
+  color: hsl(var(--muted-foreground));
+}

@@ -11,6 +11,7 @@ function buildMember(overrides: Partial<StaffMember> = {}): StaffMember {
     email: 'sandra@ameliahub.com',
     avatarUrl: null,
     jobTitle: 'Project Manager',
+    contractType: null,
     departmentId: null,
     departmentName: null,
     entityId: 'entity-hub',
@@ -119,5 +120,42 @@ describe('StaffTable', () => {
     );
 
     expect(screen.getByText('Invitación pendiente')).toBeInTheDocument();
+  });
+
+  it('muestra la etiqueta en español del tipo de contrato', () => {
+    const member = buildMember({ contractType: 'part_time' });
+
+    render(
+      <StaffTable
+        members={[member]}
+        isLoading={false}
+        onEdit={noop}
+        onToggleActive={noop}
+        pendingInvitationByEmail={new Map()}
+        onResendInvitation={noop}
+        onCancelInvitation={noop}
+      />
+    );
+
+    expect(screen.getByText('Jornada parcial')).toBeInTheDocument();
+  });
+
+  it('muestra un guion cuando no se conoce el tipo de contrato, no "Jornada completa" por defecto', () => {
+    const member = buildMember({ contractType: null });
+
+    render(
+      <StaffTable
+        members={[member]}
+        isLoading={false}
+        onEdit={noop}
+        onToggleActive={noop}
+        pendingInvitationByEmail={new Map()}
+        onResendInvitation={noop}
+        onCancelInvitation={noop}
+      />
+    );
+
+    expect(screen.queryByText('Jornada completa')).not.toBeInTheDocument();
+    expect(screen.getAllByText('—').length).toBeGreaterThan(0);
   });
 });

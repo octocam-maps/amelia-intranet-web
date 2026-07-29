@@ -77,7 +77,7 @@ export function AdminOnboardingSummaryCard() {
                 {pending.map((employee) => (
                   <li key={employee.userId} className={styles.row}>
                     <Avatar className={styles.avatar}>
-                      {employee.avatarUrl && <AvatarImage src={employee.avatarUrl} alt={employee.fullName} />}
+                      {employee.avatarUrl && <AvatarImage src={employee.avatarUrl} />}
                       <AvatarFallback>{initialsOf(employee.fullName)}</AvatarFallback>
                     </Avatar>
                     <span className={styles.name}>{employee.fullName}</span>

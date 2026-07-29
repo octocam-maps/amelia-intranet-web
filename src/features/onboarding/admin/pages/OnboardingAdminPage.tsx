@@ -38,7 +38,7 @@ export function OnboardingAdminPage() {
     <div className={styles.root}>
       <div className={styles.header}>
         <div>
-          <h1 className={styles.title}>Configuración · Onboarding</h1>
+          <h2 className={styles.title}>Configuración · Onboarding</h2>
           <p className={styles.subtitle}>Pasos del flujo de bienvenida y progreso de la plantilla</p>
         </div>
       </div>

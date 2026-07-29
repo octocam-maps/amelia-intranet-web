@@ -121,6 +121,23 @@
   align-self: center;
   height: 1rem;
   border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+/* RF-A5.7 (WCAG 1.4.1) — segundo canal: abreviatura de 2 letras dentro de
+   la barra, consistente con GeneralAbsenceCalendar.
+   El `color` NO se fija aquí (hallazgo A11Y-2) — lo decide en runtime
+   `contrastingTextColor` según la luminancia del color de fondo de cada
+   barra (ver TeamAbsenceGantt.tsx). */
+.barLabel {
+  font-size: 0.5rem;
+  font-weight: 700;
+  line-height: 1;
+  white-space: nowrap;
+  padding-inline: 2px;
 }
 
 .legend {

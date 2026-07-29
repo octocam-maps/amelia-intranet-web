@@ -4,18 +4,21 @@ import { Button } from '@/components/ui/Button';
 import { cn } from '@/lib/utils';
 import { useSubmitQuiz } from '../application/useSubmitQuiz';
 import type { OnboardingStep, QuizResult, QuizStepConfig } from '../domain/models';
+import { MAX_QUIZ_ATTEMPTS } from '../domain/quizPolicy';
 import styles from './QuizStep.module.css';
 
 interface QuizStepProps {
   step: OnboardingStep;
 }
 
-/** Lee un resultado ya guardado en `step.data` (intento único ya
- * consumido) sin depender de que `useSubmitQuiz` haya corrido en esta
- * sesión — así, si el usuario recarga la página tras enviar, ve el
- * resultado en vez del formulario. La forma de `data` no está fijada en el
- * contrato del backend; se asume el mismo shape que la respuesta de
- * `POST .../quiz` (`score`, `passed`, `submitted_at`). */
+/** Lee un resultado ya guardado en `step.data` sin depender de que
+ * `useSubmitQuiz` haya corrido en esta sesión — así, si el usuario recarga la
+ * página tras enviar, ve su resultado en vez del formulario en blanco.
+ *
+ * `data` solo guarda `{score}` (lo que persiste
+ * `mark_step_completed_if_operable`), así que de aquí NO salen las preguntas
+ * falladas ni los intentos restantes: eso solo viaja en la respuesta del
+ * `POST .../quiz`. Tras recargar se ve la nota, no el desglose. */
 function resultFromStepData(step: OnboardingStep): QuizResult | null {
   const data = step.data;
   if (!data || typeof data.score !== 'number' || typeof data.passed !== 'boolean') return null;
@@ -24,29 +27,51 @@ function resultFromStepData(step: OnboardingStep): QuizResult | null {
     score: data.score,
     passed: data.passed,
     submittedAt: typeof data.submitted_at === 'string' ? data.submitted_at : '',
+    incorrectQuestionIds: [],
+    attemptsUsed: 1,
+    attemptsLeft: 0,
   };
 }
 
-/** Cuestionario final del curso — de opción múltiple, intento único
- * (bloqueado por UNIQUE en el backend). Una vez enviado no se vuelve a
- * mostrar el formulario, ni siquiera tras recargar. */
+/**
+ * Cuestionario del curso, de opción múltiple y con el techo de intentos de
+ * `MAX_QUIZ_ATTEMPTS` (espejo de `domain/policy.py` en el backend; antes era
+ * uno solo, cambio de producto del 2026-07-29). El número NO se escribe a mano
+ * en el copy: así se quedó atrás el del panel del admin.
+ *
+ * Al fallar se muestran las preguntas erradas, pero NO la respuesta correcta:
+ * el backend manda solo los ids (`incorrectQuestionIds`) y aquí se cruzan con
+ * el enunciado que ya tenemos en `config.questions`. Enseñar la solución tras
+ * el primer intento convertiría el segundo en un trámite.
+ */
 export function QuizStep({ step }: QuizStepProps) {
   const config = step.config as QuizStepConfig;
   const { mutate, isPending, error } = useSubmitQuiz();
   const [answers, setAnswers] = useState<Record<string, string>>({});
-  const [localResult, setLocalResult] = useState<QuizResult | null>(null);
+  const [result, setResult] = useState<QuizResult | null>(null);
 
   const isLocked = step.status === 'locked';
-  const alreadyAttempted = step.status === 'completed' || resultFromStepData(step) !== null;
-  const result = localResult ?? resultFromStepData(step);
+  const persistedResult = resultFromStepData(step);
+  const shownResult = result ?? persistedResult;
+
+  // El formulario vuelve a estar disponible si se falló y AÚN queda intento.
+  // Con el paso ya `completed` (aprobado) o sin intentos, no se reintenta:
+  // el backend lo rechazaría igual (`ensure_step_operable`), así que ofrecerlo
+  // sería mentir.
+  const canRetry = !!result && !result.passed && result.attemptsLeft > 0;
+  const showResultOnly = !!shownResult && !canRetry;
 
   const allAnswered = config?.questions?.length > 0 && config.questions.every((q) => answers[q.id]);
 
   const onSubmit = () => {
-    mutate(
-      { stepId: step.id, input: { answers } },
-      { onSuccess: (data) => setLocalResult(data) }
-    );
+    mutate({ stepId: step.id, input: { answers } }, { onSuccess: (data) => setResult(data) });
+  };
+
+  const onRetry = () => {
+    // Se limpian las respuestas: reaprovecharlas invitaría a cambiar solo la
+    // que falló sin releer el resto, y el segundo intento es un intento nuevo.
+    setAnswers({});
+    setResult(null);
   };
 
   if (isLocked) {
@@ -57,24 +82,35 @@ export function QuizStep({ step }: QuizStepProps) {
     );
   }
 
-  if (alreadyAttempted && result) {
+  if (showResultOnly && shownResult) {
     return (
       <div className={styles.root}>
         <div className={styles.resultCard}>
-          <div className={cn(styles.resultRing, result.passed ? styles.resultRingPassed : styles.resultRingFailed)}>
-            {result.passed ? (
+          <div
+            className={cn(
+              styles.resultRing,
+              shownResult.passed ? styles.resultRingPassed : styles.resultRingFailed
+            )}
+          >
+            {shownResult.passed ? (
               <CheckCircledIcon className={styles.resultRingIcon} />
             ) : (
               <CrossCircledIcon className={styles.resultRingIcon} />
             )}
           </div>
           <h2 className={styles.resultTitle}>
-            {result.passed ? '¡Cuestionario superado!' : 'No has superado el cuestionario'}
+            {shownResult.passed ? '¡Cuestionario superado!' : 'No has superado el cuestionario'}
           </h2>
           <p className={styles.resultSubtitle}>
-            Puntuación: <b>{result.score}%</b>. Recuerda que era un único intento — tu resultado ya
-            queda registrado en tu expediente de onboarding.
+            Puntuación: <b>{shownResult.score}%</b>.{' '}
+            {shownResult.passed
+              ? 'Tu resultado queda registrado en tu expediente de onboarding.'
+              : /* Sin el número: el mensaje solo se muestra cuando ya no
+                   quedan intentos, así que decir cuántos eran no aporta y sí
+                   caduca al cambiar el techo. */
+                'Has agotado tus intentos. Habla con RRHH para que reabra el cuestionario.'}
           </p>
+          <IncorrectQuestions config={config} incorrectIds={shownResult.incorrectQuestionIds} />
         </div>
       </div>
     );
@@ -83,10 +119,30 @@ export function QuizStep({ step }: QuizStepProps) {
   return (
     <div className={styles.root}>
       <h2 className={styles.title}>{step.title}</h2>
-      <div className={styles.warningBanner}>
-        <ExclamationTriangleIcon className={styles.warningIcon} />
-        Solo tienes un intento. Revisa cada respuesta antes de enviar.
-      </div>
+
+      {canRetry && result ? (
+        <div className={styles.retryPanel}>
+          <div className={styles.retryHeader}>
+            <CrossCircledIcon className={styles.retryIcon} />
+            <div>
+              <p className={styles.retryTitle}>No has superado el cuestionario</p>
+              <p className={styles.retrySubtitle}>
+                Puntuación: <b>{result.score}%</b>. Te queda{' '}
+                <b>
+                  {result.attemptsLeft} {result.attemptsLeft === 1 ? 'intento' : 'intentos'}
+                </b>
+                .
+              </p>
+            </div>
+          </div>
+          <IncorrectQuestions config={config} incorrectIds={result.incorrectQuestionIds} />
+        </div>
+      ) : (
+        <div className={styles.warningBanner}>
+          <ExclamationTriangleIcon className={styles.warningIcon} />
+          Tienes {MAX_QUIZ_ATTEMPTS} intentos. Revisa cada respuesta antes de enviar.
+        </div>
+      )}
 
       <div className={styles.questions}>
         {config?.questions?.map((question, index) => (
@@ -123,10 +179,52 @@ export function QuizStep({ step }: QuizStepProps) {
       )}
 
       <div className={styles.footer}>
+        {canRetry && (
+          <Button variant="outline" onClick={onRetry}>
+            Empezar de nuevo
+          </Button>
+        )}
         <Button variant="dark" disabled={!allAnswered || isPending} onClick={onSubmit}>
           {isPending ? 'Enviando…' : 'Enviar cuestionario'}
         </Button>
       </div>
+    </div>
+  );
+}
+
+/**
+ * Lista de preguntas falladas. Muestra el ENUNCIADO, nunca la respuesta
+ * correcta: el backend solo manda ids y el enunciado sale de `config`, que ya
+ * llega con `correct` enmascarado desde `GET /onboarding/me`. Ni siquiera
+ * teniendo el dato podríamos filtrarlo — no lo tenemos.
+ */
+function IncorrectQuestions({
+  config,
+  incorrectIds,
+}: {
+  config: QuizStepConfig;
+  incorrectIds: string[];
+}) {
+  if (incorrectIds.length === 0) return null;
+
+  const textById = new Map(config?.questions?.map((q) => [q.id, q.text]) ?? []);
+
+  return (
+    <div className={styles.incorrectPanel}>
+      <p className={styles.incorrectTitle}>
+        {incorrectIds.length === 1 ? 'Pregunta que has fallado' : 'Preguntas que has fallado'}
+      </p>
+      <ul className={styles.incorrectList}>
+        {incorrectIds.map((id) => (
+          <li key={id} className={styles.incorrectItem}>
+            <CrossCircledIcon className={styles.incorrectItemIcon} />
+            {/* Si el id no cuadra con ninguna pregunta del `config` (catálogo
+                editado entre el envío y el render), se muestra el id antes que
+                una fila vacía. */}
+            {textById.get(id) ?? id}
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }

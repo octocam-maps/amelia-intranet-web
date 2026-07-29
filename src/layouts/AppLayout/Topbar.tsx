@@ -46,8 +46,12 @@ function LiveClockPill() {
   const elapsedSeconds = useElapsedSeconds(openEntry?.clockIn ?? null, openEntry?.onBreak ?? false);
 
   if (!openEntry) {
+    // `outline`, no `dark`: en Inicio y en Control horario, `LiveClockCard`
+    // pinta la MISMA acción con `dark`, y dos acciones primarias visibles a la
+    // vez dejan al usuario sin saber cuál es el camino esperado. La primaria es
+    // la de la página; esta es el atajo persistente desde cualquier vista.
     return (
-      <Button variant="dark" size="sm" disabled={isPending} onClick={() => clockIn()}>
+      <Button variant="outline" size="sm" disabled={isPending} onClick={() => clockIn()}>
         Fichar entrada
       </Button>
     );
@@ -122,7 +126,13 @@ export function Topbar({ menuButtonRef, isMobileNavOpen, onToggleMobileNav }: To
 
         {pageTitle && (
           <div className={styles.pageHeading}>
-            <span className={styles.pageTitle}>{pageTitle}</span>
+            {/* Es el <h1> REAL de la vista, no un rótulo decorativo: las páginas
+                repetían este mismo texto en su propio <h1> justo debajo
+                ("Documentos" arriba y "Documentos" otra vez en el contenido),
+                así que se retiró el de las páginas y el encabezado del documento
+                vive aquí — un único <h1> por vista, como espera un lector de
+                pantalla. */}
+            <h1 className={styles.pageTitle}>{pageTitle}</h1>
             <span className={styles.pageDate}>{todayLabel}</span>
           </div>
         )}
@@ -140,7 +150,10 @@ export function Topbar({ menuButtonRef, isMobileNavOpen, onToggleMobileNav }: To
               <p className={styles.userRole}>{user ? USER_ROLE_LABEL[user.role] : ''}</p>
             </div>
             <Avatar>
-              <AvatarImage src={user?.avatarUrl ?? undefined} alt={user?.fullName ?? ''} />
+              {/* Sin `alt`: `AvatarImage` ya lo pone vacío por defecto, porque
+                  el avatar es decorativo siempre que el nombre esté al lado
+                  (aquí, en `.userName`). Ver el docstring del componente. */}
+              <AvatarImage src={user?.avatarUrl ?? undefined} />
               <AvatarFallback>{initialsOf(user?.fullName)}</AvatarFallback>
             </Avatar>
           </DropdownMenuTrigger>

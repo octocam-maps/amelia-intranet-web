@@ -31,6 +31,9 @@ import {
 
 function calendarQuery(params: AbsenceCalendarRangeParams): string {
   const search = new URLSearchParams({ date_from: params.dateFrom, date_to: params.dateTo });
+  // RF-A1: solo los 2 exports aceptan `user_id` — `listCalendar` nunca lo
+  // pasa en su objeto de params, así que esta rama nunca se ejecuta ahí.
+  if (params.userId) search.set('user_id', params.userId);
   return `?${search.toString()}`;
 }
 

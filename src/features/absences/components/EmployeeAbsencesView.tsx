@@ -6,8 +6,10 @@ import { useAbsenceBalance } from '../application/useAbsenceBalance';
 import { useAbsenceRequests } from '../application/useAbsenceRequests';
 import { useAbsenceTypes } from '../application/useAbsenceTypes';
 import { AbsenceBalanceDonut } from './AbsenceBalanceDonut';
-import { AbsenceCompactList } from './AbsenceCompactList';
 import { AbsenceMonthCalendar } from './AbsenceMonthCalendar';
+import { AbsenceRequestsTabs } from './AbsenceRequestsTabs';
+import { TeamAbsencesTodayCard } from './TeamAbsencesTodayCard';
+import { UpcomingAbsencesCard } from './UpcomingAbsencesCard';
 import { NewAbsenceRequestDialog } from './NewAbsenceRequestDialog';
 import styles from './EmployeeAbsencesView.module.css';
 
@@ -35,7 +37,7 @@ export function EmployeeAbsencesView() {
     <div className={styles.root}>
       <div className={styles.header}>
         <div>
-          <h1 className={styles.title}>Ausencias y vacaciones</h1>
+          <h2 className={styles.title}>Ausencias y vacaciones</h2>
           <p className={styles.subtitle}>Gestiona tus días libres</p>
         </div>
         <NewAbsenceRequestDialog
@@ -79,18 +81,7 @@ export function EmployeeAbsencesView() {
             </CardContent>
           </Card>
 
-          <Card>
-            <CardHeader>
-              <CardTitle>Mis ausencias</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <AbsenceCompactList requests={requests} types={types} />
-            </CardContent>
-          </Card>
-        </div>
-
-        <div className={styles.rightColumn}>
-          <AbsenceMonthCalendar requests={requests} types={types} />
+          <AbsenceRequestsTabs requests={requests} types={types} />
 
           <Card>
             <CardHeader>
@@ -113,6 +104,15 @@ export function EmployeeAbsencesView() {
               )}
             </CardContent>
           </Card>
+        </div>
+
+        <div className={styles.centerColumn}>
+          <AbsenceMonthCalendar requests={requests} types={types} />
+          <UpcomingAbsencesCard requests={requests} types={types} />
+        </div>
+
+        <div className={styles.rightColumn}>
+          <TeamAbsencesTodayCard />
         </div>
       </div>
     </div>

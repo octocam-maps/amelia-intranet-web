@@ -21,6 +21,42 @@ export interface CreateTimeClockEntryInput {
   clockOut?: string | null;
 }
 
+/** Motivo por el que un día del lote (RF-A3) no generó tramo, sin que eso
+ * tumbe el resto del lote — igual que el backend, primer match gana:
+ * `fin_de_semana` -> `festivo` -> `ausencia` -> `ya_registrado` ->
+ * `fuera_de_ventana`. Un día futuro SIN ninguna de estas exclusiones no
+ * tiene motivo de omisión: tumba el lote entero (422), nunca llega aquí. */
+export type TimeClockBatchOmissionReason =
+  | 'fin_de_semana'
+  | 'festivo'
+  | 'ausencia'
+  | 'ya_registrado'
+  | 'fuera_de_ventana';
+
+export interface OmittedTimeClockBatchDay {
+  workDate: string; // 'YYYY-MM-DD'
+  reason: TimeClockBatchOmissionReason;
+}
+
+/** Alta en lote sobre un rango de hasta 7 días — `clockInTime`/`clockOutTime`
+ * son hora de PARED 'HH:MM' Europe/Madrid, SIN offset (a diferencia de
+ * `CreateTimeClockEntryInput.clockIn`, que sí lo exige): el lote aplica UN
+ * MISMO horario a varios días. */
+export interface CreateTimeClockEntriesBatchInput {
+  dateFrom: string; // 'YYYY-MM-DD'
+  dateTo: string; // 'YYYY-MM-DD'
+  clockInTime: string; // 'HH:MM'
+  clockOutTime?: string | null; // 'HH:MM'
+}
+
+/** Respuesta del alta en lote — SIEMPRE 200 en el backend (nunca 201: el
+ * lote puede no crear nada, p.ej. una ausencia aprobada que cubre todo el
+ * rango, y seguir siendo un resultado válido). */
+export interface TimeClockEntriesBatchResult {
+  created: TimeClockEntry[];
+  omitted: OmittedTimeClockBatchDay[];
+}
+
 export interface UpdateTimeClockEntryInput {
   clockIn: string;
   clockOut?: string | null;

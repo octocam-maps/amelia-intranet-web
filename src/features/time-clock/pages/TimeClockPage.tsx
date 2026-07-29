@@ -12,7 +12,7 @@ import { useTimeClockEntries } from '../application/useTimeClockEntries';
 import { EditTimeClockEntryDialog } from '../components/EditTimeClockEntryDialog';
 import { LiveClockCard } from '../components/LiveClockCard';
 import { PersonMultiSelect } from '../components/PersonMultiSelect';
-import { TimeClockEntryForm } from '../components/TimeClockEntryForm';
+import { RegisterWorkdayCard } from '../components/RegisterWorkdayCard';
 import { TimeClockEntryNotesDialog } from '../components/TimeClockEntryNotesDialog';
 import { TimeClockEntryTable } from '../components/TimeClockEntryTable';
 import type { TimeClockEntry } from '../domain/models';
@@ -106,7 +106,6 @@ export function TimeClockPage() {
   return (
     <div className={styles.root}>
       <div className={styles.header}>
-        <h1 className={styles.title}>Control horario</h1>
         <div className={styles.actions}>
           {admin && (
             <Button variant="outline" onClick={handleToggleShowAll}>
@@ -136,14 +135,12 @@ export function TimeClockPage() {
           sustituye, la corrección manual de tramos de más abajo. */}
       <LiveClockCard />
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Añadir o corregir un tramo manualmente</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <TimeClockEntryForm />
-        </CardContent>
-      </Card>
+      {/* Una sola tarjeta con dos pestañas: los dos formularios pedían los
+          mismos campos y abrían con la fecha de hoy, así que como tarjetas
+          separadas se leían como lo mismo repetido. Siguen siendo dos flujos
+          porque el de un día registra sábados y festivos y el de rango los
+          excluye — ver `RegisterWorkdayCard`. */}
+      <RegisterWorkdayCard />
 
       <Card>
         <CardHeader className={styles.historyHeader}>

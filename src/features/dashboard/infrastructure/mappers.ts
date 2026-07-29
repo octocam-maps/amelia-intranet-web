@@ -1,24 +1,20 @@
+import { ENTITY_CODES, ENTITY_NAME } from '@/lib/entities';
 import { parseEnum } from '@/lib/parseEnum';
 import type {
   AdminDashboardMetrics,
   DashboardSummary,
   OrgDepartmentOption,
-  OrgEntityCode,
   OrgEntityOption,
   OrgFilterOptions,
 } from '../domain/models';
 import type { AdminMetricsDTO, DashboardSummaryDTO, StaffLookupMemberDTO } from './dtos';
 
-const ENTITY_CODES: OrgEntityCode[] = ['hub', 'lab', 'ops'];
+
 
 // Nombre para mostrar por código de entidad — el backend solo manda el
 // código corto en `/staff` (`entity_code`), no un nombre; mismo criterio que
 // `ENTITY_LABEL` en `announcements`/`team`.
-const ENTITY_NAME: Record<OrgEntityCode, string> = {
-  hub: 'Amelia Hub',
-  lab: 'Amelia Lab',
-  ops: 'Amelia Ops',
-};
+
 
 export function summaryFromDTO(dto: DashboardSummaryDTO): DashboardSummary {
   return {
@@ -34,7 +30,11 @@ export function summaryFromDTO(dto: DashboardSummaryDTO): DashboardSummary {
       hasOpenEntry: dto.today_clock_status.has_open_entry,
       workedMinutesToday: dto.today_clock_status.worked_minutes_today,
     },
-    upcomingHolidays: dto.upcoming_holidays.map((h) => ({ day: h.day, name: h.name })),
+    upcomingHolidays: dto.upcoming_holidays.map((h) => ({
+      day: h.day,
+      name: h.name,
+      scope: h.scope ?? null,
+    })),
     pendingAbsenceRequests: dto.pending_absence_requests
       ? dto.pending_absence_requests.map((r) => ({
           id: r.id,

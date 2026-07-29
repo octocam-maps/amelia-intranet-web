@@ -22,7 +22,7 @@ export function AdminAbsencesView() {
   return (
     <div className={styles.root}>
       <div className={styles.header}>
-        <h1 className={styles.title}>Ausencias · gestión</h1>
+        <h2 className={styles.title}>Ausencias · gestión</h2>
         <p className={styles.subtitle}>Aprueba solicitudes y consulta el calendario de la plantilla</p>
       </div>
 

@@ -1,8 +1,9 @@
+import { ENTITY_CODES, ENTITY_NAME } from '@/lib/entities';
 import { USER_ROLES } from '@/features/auth/domain/models';
 import { parseEnum, parseEnumNullable } from '@/lib/parseEnum';
+import { CONTRACT_TYPES } from '../domain/contractType';
 import type {
   CreateStaffMemberInput,
-  EntityCode,
   StaffMember,
   StaffStatus,
   UpdateStaffMemberInput,
@@ -16,17 +17,13 @@ import type { CreateStaffMemberDTO, StaffMemberDTO, UpdateStaffMemberDTO } from 
 // `STAFF_ROLES`; si no incluyera `socio`, un `role_code: 'socio'` real caería
 // al fallback `'empleado'` y un PATCH posterior sobre esa persona (aunque
 // solo cambie el puesto) le quitaría el rol socio en silencio.
-const ENTITY_CODES: EntityCode[] = ['hub', 'lab', 'ops'];
+
 const STAFF_STATUSES: StaffStatus[] = ['active', 'invited', 'suspended'];
 
 /** El backend NO manda `entity_name` (solo `entity_code`) — se deriva aquí
  * con un mapa fijo. Si se necesita el nombre real de la entidad (p. ej. si
  * cambia el naming comercial), este es el único lugar a tocar. */
-const ENTITY_NAME: Record<EntityCode, string> = {
-  hub: 'Amelia Hub',
-  lab: 'Amelia Lab',
-  ops: 'Amelia Ops',
-};
+
 
 export function staffMemberFromDTO(dto: StaffMemberDTO): StaffMember {
   const entityCode = parseEnumNullable(dto.entity_code, ENTITY_CODES);
@@ -37,6 +34,10 @@ export function staffMemberFromDTO(dto: StaffMemberDTO): StaffMember {
     email: dto.email,
     avatarUrl: dto.avatar_url,
     jobTitle: dto.job_title,
+    // `null` = desconocido: `parseEnumNullable`, NUNCA `parseEnum` — un
+    // fallback aquí mostraría "Jornada completa" a alguien cuyo tipo de
+    // contrato no se conoce, un dato inventado con aspecto de real.
+    contractType: parseEnumNullable(dto.contract_type, CONTRACT_TYPES),
     departmentId: dto.department_id,
     departmentName: dto.department_name,
     entityId: dto.entity_id,
@@ -59,6 +60,7 @@ export function createStaffMemberInputToDTO(input: CreateStaffMemberInput): Crea
     full_name: input.fullName,
     email: input.email,
     job_title: input.jobTitle ?? null,
+    contract_type: input.contractType ?? null,
     department: input.department ?? null,
     entity: input.entityCode,
     role: input.role,
@@ -68,12 +70,14 @@ export function createStaffMemberInputToDTO(input: CreateStaffMemberInput): Crea
 }
 
 /** Body de `PATCH /staff/{id}` — todo opcional; solo incluye lo que cambió.
- * `vacationDaysOverride` se incluye tanto si es un número como si es
- * `null` explícito (vaciar) — SOLO se omite cuando es `undefined` (no
- * tocar). El backend distingue "ausente" de "null" con `model_fields_set`. */
+ * `vacationDaysOverride` y `contractType` se incluyen tanto si traen un
+ * valor como si son `null` explícito (vaciar) — SOLO se omiten cuando son
+ * `undefined` (no tocar). El backend distingue "ausente" de "null" con
+ * `model_fields_set`. */
 export function updateStaffMemberInputToDTO(input: UpdateStaffMemberInput): UpdateStaffMemberDTO {
   const dto: UpdateStaffMemberDTO = {};
   if (input.jobTitle !== undefined) dto.job_title = input.jobTitle;
+  if (input.contractType !== undefined) dto.contract_type = input.contractType;
   if (input.department !== undefined) dto.department = input.department;
   if (input.entityCode !== undefined) dto.entity = input.entityCode;
   if (input.role !== undefined) dto.role = input.role;

@@ -1,3 +1,4 @@
+import { ENTITY_SHORT_NAME } from '@/lib/entities';
 import { DotsHorizontalIcon, Pencil2Icon } from '@radix-ui/react-icons';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/Avatar';
 import { Badge } from '@/components/ui/Badge';
@@ -10,6 +11,7 @@ import {
 } from '@/components/ui/DropdownMenu';
 import type { Invitation } from '@/features/invitations/domain/models';
 import { cn } from '@/lib/utils';
+import { CONTRACT_TYPE_LABEL } from '../domain/contractType';
 import type { EntityCode, StaffMember, StaffStatus } from '../domain/models';
 import styles from './StaffTable.module.css';
 
@@ -29,14 +31,19 @@ const STATUS_CLASS: Record<StaffStatus, string | undefined> = {
 // entidad distinta a la del directorio de Equipo (Fase 5, `TeamDirectory`):
 // aquí Hub va en gris neutro y Lab en verde. Se respeta el deck de esta
 // fase en vez de forzar la paleta de Fase 5.
-const ENTITY_BADGE_VARIANT: Record<EntityCode, 'outline' | 'success' | 'warning'> = {
+const ENTITY_BADGE_VARIANT: Record<EntityCode, 'outline' | 'success' | 'warning' | 'info'> = {
   hub: 'outline',
   lab: 'success',
   ops: 'warning',
+  // `hincator` (2026-07-29) no está en el deck: es la cuarta sociedad, posterior.
+  // Se le da `info` porque es la única variante libre que no cambia de
+  // significado — `destructive` se leería como error y `dark` compite con el
+  // navy del propio encabezado de la tabla.
+  hincator: 'info',
 };
 
 function entityShortLabel(code: EntityCode): string {
-  return code.charAt(0).toUpperCase() + code.slice(1);
+  return ENTITY_SHORT_NAME[code];
 }
 
 function initialsOf(fullName: string): string {
@@ -85,6 +92,7 @@ export function StaffTable({
         <tr>
           <th>Persona</th>
           <th>Puesto</th>
+          <th>Contrato</th>
           <th>Entidad</th>
           <th>Estado</th>
           <th aria-label="Acciones" />
@@ -106,7 +114,7 @@ export function StaffTable({
                 <div className={styles.person}>
                   <Avatar>
                     {member.avatarUrl && (
-                      <AvatarImage src={member.avatarUrl} alt={member.fullName} />
+                      <AvatarImage src={member.avatarUrl} />
                     )}
                     <AvatarFallback>{initialsOf(member.fullName)}</AvatarFallback>
                   </Avatar>
@@ -122,6 +130,9 @@ export function StaffTable({
                 </div>
               </td>
               <td>{member.jobTitle ?? '—'}</td>
+              {/* `null` = desconocido, NUNCA "Jornada completa" por
+               * defecto — mismo criterio que `contractType.ts`/`mappers.ts`. */}
+              <td>{member.contractType ? CONTRACT_TYPE_LABEL[member.contractType] : '—'}</td>
               <td>
                 {member.entityCode ? (
                   <Badge variant={ENTITY_BADGE_VARIANT[member.entityCode]}>

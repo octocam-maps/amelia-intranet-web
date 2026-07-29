@@ -46,7 +46,7 @@ export function UpcomingBirthdaysCard({ title = 'Próximos cumpleaños' }: { tit
               <li key={birthday.userId} className={styles.row}>
                 <Avatar className={styles.avatar}>
                   {birthday.avatarUrl && (
-                    <AvatarImage src={birthday.avatarUrl} alt={birthday.fullName} />
+                    <AvatarImage src={birthday.avatarUrl} />
                   )}
                   <AvatarFallback>{initialsOf(birthday.fullName)}</AvatarFallback>
                 </Avatar>

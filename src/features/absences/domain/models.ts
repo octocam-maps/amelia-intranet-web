@@ -94,4 +94,9 @@ export interface AbsenceCalendarEntry {
 export interface AbsenceCalendarRangeParams {
   dateFrom: string;
   dateTo: string;
+  /** RF-A1: filtro por empleado en el export (`export.xlsx`/`export.pdf`).
+   * `undefined` -> comportamiento actual (global para Admin/Socio, propio
+   * para Empleado, resuelto en el backend). NO se usa en `listCalendar`
+   * (`/absences/calendar/all` no acepta este parámetro — sin cambios). */
+  userId?: string;
 }

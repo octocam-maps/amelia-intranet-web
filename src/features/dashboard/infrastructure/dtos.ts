@@ -15,6 +15,10 @@ export interface TodayClockStatusDTO {
 export interface UpcomingHolidayDTO {
   day: string;
   name: string;
+  /** Añadido al contrato junto con el fix de la tarjeta "Próximos festivos",
+   *  que se lo inventaba. Opcional en el tipo para tolerar una respuesta de un
+   *  backend anterior al cambio; el mapper lo normaliza a `null`. */
+  scope?: 'nacional' | 'autonomico' | 'local' | 'empresa' | null;
 }
 
 export interface PendingAbsenceRequestDTO {

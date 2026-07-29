@@ -50,3 +50,9 @@
   font-size: 0.8125rem;
   color: hsl(var(--muted-foreground));
 }
+
+/* Hueco del festivo sin ámbito — mismo tratamiento que `.muted` de
+   `HolidaysTable`: se marca la ausencia del dato en vez de inventarlo. */
+.scopeEmpty {
+  color: hsl(var(--muted-foreground));
+}

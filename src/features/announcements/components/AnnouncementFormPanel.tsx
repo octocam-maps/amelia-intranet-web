@@ -1,3 +1,4 @@
+import { ENTITY_NAME, ENTITY_OPTIONS } from '@/lib/entities';
 import { useEffect, useRef } from 'react';
 import { FontBoldIcon, FontItalicIcon, Link2Icon, PaperPlaneIcon } from '@radix-ui/react-icons';
 import { useForm } from 'react-hook-form';
@@ -15,11 +16,12 @@ import styles from './AnnouncementFormPanel.module.css';
  * Se traduce a `{audience, entity}` recién al guardar (ver `save`). */
 type AudienceTarget = 'all' | AnnouncementEntity;
 
+// "Toda la plantilla" + una opción por sociedad, DERIVADA de `lib/entities` en
+// vez de escrita a mano: escrita a mano se quedó sin `hincator` —19 de los 36
+// trabajadores—, y un anuncio dirigido a esa sociedad no se podía crear.
 const AUDIENCE_OPTIONS: { value: AudienceTarget; label: string }[] = [
   { value: 'all', label: 'Toda la plantilla' },
-  { value: 'hub', label: 'Amelia Hub' },
-  { value: 'lab', label: 'Amelia Lab' },
-  { value: 'ops', label: 'Amelia Ops' },
+  ...ENTITY_OPTIONS.map((entity) => ({ value: entity.code, label: ENTITY_NAME[entity.code] })),
 ];
 
 function targetFromAnnouncement(announcement: Announcement | undefined): AudienceTarget {

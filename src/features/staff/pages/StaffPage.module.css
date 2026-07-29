@@ -12,12 +12,6 @@
   gap: var(--space-3);
 }
 
-.title {
-  font-size: 1.25rem;
-  font-weight: 600;
-  color: hsl(var(--foreground));
-}
-
 .subtitle {
   font-size: 0.875rem;
   color: hsl(var(--muted-foreground));

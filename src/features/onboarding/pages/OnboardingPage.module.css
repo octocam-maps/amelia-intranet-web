@@ -178,8 +178,10 @@
   }
 }
 
-.completedCard,
-.completedCardDisabled {
+/* `.completedCardDisabled` eliminado: era la tarjeta apagada de "Equipo ·
+   próximamente", y Equipo lleva tiempo activo. No quedan accesos deshabilitados
+   en esta pantalla. */
+.completedCard {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -193,11 +195,6 @@
 
 .completedCard:hover {
   background-color: hsl(var(--header-foreground) / 0.1);
-}
-
-.completedCardDisabled {
-  opacity: 0.55;
-  cursor: not-allowed;
 }
 
 .completedCardIcon {

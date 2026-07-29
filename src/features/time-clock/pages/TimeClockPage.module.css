@@ -8,14 +8,12 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  justify-content: space-between;
+  /* Antes era `space-between` con el <h1> "Control horario" a la izquierda y las
+     acciones a la derecha. El <h1> se retiró (el topbar ya rotula la sección y
+     lo duplicaba), así que las acciones quedan solas: se alinean al final para
+     que no salten al borde izquierdo al desaparecer su pareja. */
+  justify-content: flex-end;
   gap: var(--space-3);
-}
-
-.title {
-  font-size: 1.25rem;
-  font-weight: 600;
-  color: hsl(var(--foreground));
 }
 
 .actions {

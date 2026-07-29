@@ -1,23 +1,8 @@
 import { Pencil2Icon, TrashIcon } from '@radix-ui/react-icons';
 import { Badge } from '@/components/ui/Badge';
-import type { Holiday, HolidayScope } from '../domain/models';
+import type { Holiday } from '../domain/models';
+import { SCOPE_BADGE_VARIANT, SCOPE_LABEL } from '../domain/scope';
 import styles from './HolidaysTable.module.css';
-
-const SCOPE_LABEL: Record<HolidayScope, string> = {
-  nacional: 'Nacional',
-  autonomico: 'Autonómico',
-  local: 'Local',
-  empresa: 'Empresa',
-};
-
-// deck-fase6/14-festivos.png § leyenda — nacional en navy sólido, autonómico
-// en verde, local en naranja. Reutiliza los variantes de Badge existentes.
-const SCOPE_BADGE_VARIANT: Record<HolidayScope, 'dark' | 'success' | 'warning' | 'info'> = {
-  nacional: 'dark',
-  autonomico: 'success',
-  local: 'warning',
-  empresa: 'info',
-};
 
 function formatShortDate(iso: string): string {
   const [, month, day] = iso.split('-');

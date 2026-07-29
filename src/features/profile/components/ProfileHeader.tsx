@@ -40,13 +40,13 @@ export function ProfileHeader({ profile }: ProfileHeaderProps) {
   return (
     <div className={styles.root}>
       <Avatar className={styles.avatar}>
-        {profile.avatarUrl && <AvatarImage src={profile.avatarUrl} alt={profile.fullName} />}
+        {profile.avatarUrl && <AvatarImage src={profile.avatarUrl} />}
         <AvatarFallback className={styles.fallback}>{initialsOf(profile.fullName)}</AvatarFallback>
       </Avatar>
 
       <div className={styles.identity}>
         <div className={styles.nameRow}>
-          <h1 className={styles.name}>{profile.fullName}</h1>
+          <h2 className={styles.name}>{profile.fullName}</h2>
           <Badge variant="outline" style={ROLE_BADGE_STYLE}>
             {USER_ROLE_LABEL[profile.role]}
           </Badge>

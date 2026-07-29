@@ -13,7 +13,13 @@ export function AnonymousMailboxPage() {
           <div className={styles.icon}>
             <ChatBubbleIcon />
           </div>
-          <p className={styles.title}>Buzón anónimo</p>
+          {/* NO repetir "Buzón anónimo": el Topbar ya lo imprime como `<h1>`
+              (es el label del ítem de navegación, vía `pageTitleForPath`) y
+              aquí quedaba el mismo texto palabra por palabra, sin matiz. El
+              rótulo dice QUÉ haces, igual que "Seguimiento de tu mensaje" en
+              `MailboxTrackingPage`, que es la otra cosa que puedes hacer en
+              esta misma ruta. */}
+          <p className={styles.title}>Nuevo mensaje</p>
         </div>
         <CardContent className={styles.body}>
           <AnonymousMailboxForm />

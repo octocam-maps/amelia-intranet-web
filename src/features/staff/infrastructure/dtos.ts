@@ -12,6 +12,8 @@ export interface StaffMemberDTO {
   email: string;
   avatar_url: string | null;
   job_title: string | null;
+  /** `null` = desconocido, NO jornada completa — ver `contractType.ts`. */
+  contract_type: string | null;
   department_id: string | null;
   department_name: string | null;
   entity_id: string | null;
@@ -43,6 +45,7 @@ export interface CreateStaffMemberDTO {
   full_name: string;
   email: string;
   job_title?: string | null;
+  contract_type?: string | null;
   department?: string | null;
   entity: string;
   role: string;
@@ -60,9 +63,14 @@ export interface CreateStaffMemberDTO {
  * automático); un número -> lo fija. El backend distingue "ausente" de
  * "null" con `model_fields_set` — por eso el mapper (`updateStaffMemberInputToDTO`)
  * solo incluye esta clave cuando el input trae un valor distinto de
- * `undefined` (puede ser `null`). */
+ * `undefined` (puede ser `null`).
+ *
+ * `contract_type` sigue el mismo esquema de tres estados: clave AUSENTE ->
+ * no tocar; `contract_type: null` explícito -> lo vacía (vuelve a "sin
+ * especificar"); un valor -> lo fija. */
 export interface UpdateStaffMemberDTO {
   job_title?: string | null;
+  contract_type?: string | null;
   department?: string | null;
   entity?: string;
   role?: string;
