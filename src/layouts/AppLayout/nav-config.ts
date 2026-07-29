@@ -79,9 +79,9 @@ const calendarioGeneral: NavItem = {
 // gestión de toda la plantilla de la carpeta personal de cada persona.
 //
 // Ampliación v1.1 (RF-A2): "Organigrama" SE RETIRA de esta sección y NO debe
-// reponerse. El organigrama pasa a ser el diseño publicado de Canva que
-// mantiene el equipo, incrustado en `Equipo` (donde hoy está
-// `TeamOrgChartPlaceholder`) y visible para todos los roles — no una pantalla
+// reponerse. El organigrama es material publicado por el equipo —hoy el PDF
+// `Organigrama Amelia 2026`, servido como imagen en la pestaña Organigrama de
+// `Equipo` (`TeamOrgChart`)— visible para todos los roles, no una pantalla
 // administrable. Su ítem aquí apuntaba además a `/administracion/organigrama`,
 // una ruta que no existe. La línea de reporte sigue viviendo en el dato
 // (`users.manager_id`, editable vía `PATCH /staff/{id}`), no en una UI de árbol.

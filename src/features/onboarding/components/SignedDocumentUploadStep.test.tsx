@@ -11,8 +11,10 @@ vi.mock('../application/useUploadSignedDocument', () => ({
 
 function buildStep(overrides: Partial<OnboardingStep> = {}): OnboardingStep {
   return {
-    id: 'step-3',
-    stepOrder: 3,
+    // Paso 5 y ÚLTIMO desde la reordenación de v1.1
+    // (`033_onboarding_steps_reorder_v11.sql`) — antes era el 3.
+    id: 'step-5',
+    stepOrder: 5,
     type: 'signature',
     title: 'Documentación laboral',
     config: null,
@@ -48,11 +50,30 @@ describe('SignedDocumentUploadStep', () => {
     vi.clearAllMocks();
   });
 
-  it('muestra el mensaje de bloqueo cuando el paso está locked', () => {
+  it('el bloqueo nombra la lectura de los manuales, que es la puerta a este paso', () => {
     mockHook();
     renderStep(buildStep({ status: 'locked' }));
 
-    expect(screen.getByText('Completa el paso anterior para desbloquear la firma.')).toBeInTheDocument();
+    expect(screen.getByText(/lectura de los manuales/i)).toBeInTheDocument();
+  });
+
+  it('no promete una descarga que todavía no existe', () => {
+    // `onboarding_documents.storage_ref` sigue a NULL y no hay endpoint que
+    // sirva el binario: hasta que RRHH aporte las plantillas y exista la vía
+    // de descarga, el copy no debe mandar al trabajador a buscar un botón que
+    // no está. Ver el docstring del componente.
+    mockHook();
+    renderStep(buildStep());
+
+    expect(screen.queryByText(/descarga el documento/i)).not.toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: /descargar/i })).not.toBeInTheDocument();
+  });
+
+  it('dice que este paso cierra el onboarding', () => {
+    mockHook();
+    renderStep(buildStep());
+
+    expect(screen.getByText(/último paso/i)).toBeInTheDocument();
   });
 
   it('estado completado: lee employee_document_id de step.data, sin hash/IP, con enlace a Documentos', () => {

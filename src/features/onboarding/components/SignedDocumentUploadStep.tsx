@@ -39,6 +39,18 @@ function uploadResultFromStepData(step: OnboardingStep): UploadSignedDocumentRes
  * prueba legal) — el trabajador firma fuera y sube aquí el PDF resultante.
  * `POST .../documents` solo recibe el archivo; el `user_id` lo deriva el
  * backend del JWT.
+ *
+ * Desde la reordenación de v1.1 (`033_onboarding_steps_reorder_v11.sql`) este
+ * es EL ÚLTIMO paso: al subir la documentación firmada, el onboarding queda
+ * completado y RRHH recibe el aviso.
+ *
+ * PENDIENTE (bloqueado por material de RRHH): la DESCARGA de las plantillas
+ * a firmar. Hoy no se puede ofrecer porque no existe ni el fichero ni la vía
+ * de servirlo — `onboarding_documents.storage_ref` sigue a NULL (placeholders
+ * sembrados en `020_onboarding_steps_seed.sql`) y no hay ningún endpoint que
+ * devuelva el binario del documento de onboarding. El copy de este paso NO
+ * debe decir "descarga el documento" hasta que ambas cosas existan: decirlo
+ * sin un enlace deja al trabajador buscando un botón que no está.
  */
 export function SignedDocumentUploadStep({ step }: SignedDocumentUploadStepProps) {
   const { mutate, isPending, error, data: uploadResult } = useUploadSignedDocument();
@@ -78,7 +90,10 @@ export function SignedDocumentUploadStep({ step }: SignedDocumentUploadStepProps
   if (isLocked) {
     return (
       <div className={styles.root}>
-        <p className={styles.locked}>Completa el paso anterior para desbloquear la firma.</p>
+        <p className={styles.locked}>
+          Completa los pasos anteriores —incluida la lectura de los manuales— para desbloquear la
+          documentación.
+        </p>
       </div>
     );
   }
@@ -106,8 +121,8 @@ export function SignedDocumentUploadStep({ step }: SignedDocumentUploadStepProps
     <div className={styles.root}>
       <h2 className={styles.title}>{step.title}</h2>
       <p className={styles.subtitle}>
-        Descarga el documento, fírmalo fuera de la plataforma y sube aquí el PDF firmado para continuar
-        con tu incorporación.
+        Firma tu documentación fuera de la plataforma y súbela aquí en PDF. Es el último paso: al
+        subirla, tu onboarding queda completado.
       </p>
 
       <label className={styles.fileField}>

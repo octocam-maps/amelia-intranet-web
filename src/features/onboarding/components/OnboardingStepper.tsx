@@ -6,12 +6,16 @@ import styles from './OnboardingStepper.module.css';
 // Etiqueta corta por `type` — el `title` que manda el backend es una frase
 // completa ("Vídeo de bienvenida e historia del Hincator") pensada para la
 // cabecera del paso, no para el riel de navegación (deck Fase 2, paso 1-5).
+//
+// El riel se pinta en el orden que manda el backend (`step_order`), así que
+// tras la reordenación de v1.1 sale: Vídeo · Curso · Manuales · Perfil ·
+// Documentación. Este mapa NO codifica el orden, solo el rótulo de cada tipo.
 const STEP_LABEL: Record<OnboardingStepType, string> = {
   video: 'Vídeo',
   quiz: 'Curso',
-  signature: 'Documento',
-  manual: 'Manual',
+  manual: 'Manuales',
   profile: 'Perfil',
+  signature: 'Documentación',
 };
 
 interface OnboardingStepperProps {
