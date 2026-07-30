@@ -88,6 +88,23 @@
   white-space: nowrap;
 }
 
+/* Aprobar / Rechazar más compactos que el `size="icon"` por defecto (2.5rem):
+   en una fila de bandeja son acciones repetidas, no la acción principal de la
+   pantalla, y a 2.5rem pesaban más que el nombre de la persona.
+
+   2rem es el suelo cómodo: WCAG 2.2 SC 2.5.8 (Target Size Minimum, AA) exige
+   24×24 CSS px, así que quedan 8px de margen. NO bajar de 1.5rem.
+
+   Selector anidado a propósito: `.sizeIcon` de `Button.module.css` tiene la
+   misma especificidad que una clase suelta, y entre dos clases empatadas gana
+   la que el bundler cargue después — no el orden del `cn()`. `.row .action`
+   sube a (0,2,0) y deja de depender del orden de carga. Es el mismo problema
+   que resolvió con `style` inline el color del botón Rechazar. */
+.row .action {
+  height: 2rem;
+  width: 2rem;
+}
+
 .type {
   font-size: 0.8125rem;
   color: hsl(var(--muted-foreground));
