@@ -16,14 +16,22 @@
   --popover-foreground: 222 47% 11%;
 
   --primary: 152 100% 41%; /* #00D170 — verde de marca, INTOCABLE */
-  /* NAVY, no blanco. El verde de marca es un color claro: blanco encima da
-     2,03:1 y AA pide 4,5:1 (ni siquiera llega al 3:1 del texto grande). Navy
-     sobre ese mismo verde da 8,81:1 y pasa AAA. El botón primario es el control
-     más usado del producto, así que era el peor sitio donde tener el peor
-     contraste de la paleta. Para mantener texto blanco habría que oscurecer el
-     verde hasta #00784F, que ya no es el verde de Amelia.
-     Medido en `lib/a11y/palette.test.ts` — no lo cambies sin volver a medirlo. */
-  --primary-foreground: 222 47% 11%; /* #0F1729 */
+  /* BLANCO por DECISIÓN DE PRODUCTO del team-lead (2026-07-30): criterio
+     visual, "resalta mucho más" que el navy.
+
+     ⚠️ INCUMPLE AA A SABIENDAS. Blanco sobre este verde da 2,03:1; AA pide
+     4,5:1 en texto normal y 3:1 en texto grande — no llega a ninguno de los
+     dos. Entre f6de515 y este cambio el token fue navy (8,81:1, AAA); se
+     revierte por criterio de diseño, no porque la medición cambiara.
+
+     Si algún día se quiere recuperar el cumplimiento manteniendo el texto
+     blanco, el color del texto NO es la palanca: hay que cambiar la
+     SUPERFICIE. Dos caminos medidos: oscurecer el verde de fondo a #00784F
+     (5,53:1 con blanco) o pasar el contenedor a navy (17,87:1).
+
+     El valor real está fijado en `lib/a11y/palette.test.ts` — si alguien toca
+     el verde, ese test salta y obliga a volver a medir. */
+  --primary-foreground: 0 0% 100%; /* #FFFFFF — 2,03:1 sobre el verde */
 
   --secondary: 220 14% 96%;
   --secondary-foreground: 222 47% 11%;
@@ -46,7 +54,10 @@
   --warning-on-tint: 38 92% 29%; /* #8E5C06 — 1,84:1 -> 4,92:1 */
 
   --success: 152 100% 41%; /* mismo valor que --primary */
-  --success-foreground: 222 47% 11%; /* navy, por el mismo motivo que --primary-foreground */
+  /* Blanco, por el mismo motivo que --primary-foreground: es EL MISMO verde,
+     así que dejarlo en navy pintaría dos contenedores idénticos con texto de
+     distinto color. Hereda el mismo 2,03:1 y la misma excepción. */
+  --success-foreground: 0 0% 100%; /* #FFFFFF — 2,03:1 sobre el verde */
   --success-on-tint: 152 100% 24%; /* #007A42 — 1,76:1 -> 4,73:1 */
 
   /* Era `217 91% 60%` (#3C83F6) y FALLABA contraste AA en sus dos usos con

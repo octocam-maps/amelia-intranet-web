@@ -31,19 +31,38 @@ const SUPERFICIES = [
 ] as const;
 
 describe('Paleta — texto sobre color sólido', () => {
-  // El verde de marca es intocable (`#00D170`, regla de producto). Lo que
-  // cambió es el color del TEXTO encima: blanco daba 2,03:1, navy da 8,81:1.
-  it('el botón primario pasa AA', () => {
+  /**
+   * EXCEPCIÓN DE PRODUCTO, decidida por el team-lead el 2026-07-30: el texto
+   * sobre el verde de marca vuelve a BLANCO por criterio visual. Se deja
+   * MEDIDA aquí en vez de borrar la comprobación — un incumplimiento conocido
+   * y con su número a la vista no es lo mismo que un descuido silencioso.
+   *
+   * Blanco sobre `#00D170` da 2,03:1: no llega ni al 4,5:1 de AA en texto
+   * normal ni al 3:1 de texto grande. Navy daba 8,81:1 (AAA) y estuvo vigente
+   * entre f6de515 y este cambio.
+   *
+   * Fijar el ratio esperado mantiene el test útil como canario: si alguien
+   * toca el verde de marca, el número se mueve y esto salta.
+   */
+  it('el texto sobre el verde es blanco por decisión de producto, con AA incumplido a sabiendas', () => {
+    expect(token('primary-foreground')).toBe('0 0% 100%');
     const ratio = contrastRatio(token('primary-foreground'), token('primary'));
 
-    expect(ratio).toBeGreaterThanOrEqual(AA_NORMAL_TEXT);
+    expect(ratio).toBeCloseTo(2.03, 2);
+    expect(ratio).toBeLessThan(AA_NORMAL_TEXT);
   });
 
-  it('el texto del botón primario NO es blanco', () => {
-    // Blanco sobre el verde de marca da 2,03:1 y no hay forma de arreglarlo sin
-    // cambiar el verde. Esta aserción impide que vuelva por "consistencia".
-    expect(contrastRatio('#FFFFFF', token('primary'))).toBeLessThan(AA_NORMAL_TEXT);
-    expect(token('primary-foreground')).not.toMatch(/^0\s+0%\s+100%$/);
+  it('--success arrastra la misma excepción que --primary (es el mismo verde)', () => {
+    // Si los dos tokens son el mismo color, su texto debe ser el mismo o
+    // aparecerían dos contenedores idénticos con texto de distinto color.
+    expect(token('success')).toBe(token('primary'));
+    expect(token('success-foreground')).toBe(token('primary-foreground'));
+  });
+
+  it('la vía para recuperar AA es la SUPERFICIE, no el color del texto', () => {
+    // Documenta las dos salidas medidas, por si se reabre la decisión.
+    expect(contrastRatio('#FFFFFF', '#00784F')).toBeGreaterThanOrEqual(AA_NORMAL_TEXT);
+    expect(contrastRatio('#FFFFFF', token('header-bg'))).toBeGreaterThanOrEqual(AA_NORMAL_TEXT);
   });
 
   it('el azul de información pasa AA con texto blanco', () => {
