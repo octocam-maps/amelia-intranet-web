@@ -53,10 +53,17 @@
   padding: var(--space-3) 0;
 }
 
+/* La cabecera de días debe repartir EXACTAMENTE el mismo ancho que `.track`
+   para que cada número caiga sobre su columna. `.track` arranca tras
+   `.employeeLabel` (9.5rem) MÁS el `gap` de `.employeeRow` (--space-3): si
+   aquí solo se reserva 9.5rem, el grid de la cabecera es --space-3 más ancho
+   y el desfase CRECE día a día (12px acumulados en el día 31). Se notaba
+   sobre todo en los fines de semana, donde la etiqueta en negrita no caía
+   sobre el par de celdas resaltadas. */
 .headerDays {
   display: grid;
   gap: 2px;
-  padding-left: 9.5rem;
+  padding-left: calc(9.5rem + var(--space-3));
   margin-bottom: var(--space-2);
   min-width: 40rem;
 }
