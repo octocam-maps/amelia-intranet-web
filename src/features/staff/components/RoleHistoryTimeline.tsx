@@ -24,7 +24,7 @@ function formatDateTime(iso: string): string {
  * Timeline de cambios de rol (`user_role_history`, migración backend 039), de
  * lo más reciente a lo más antiguo — el orden lo da el backend.
  *
- * Es la respuesta a "¿desde cuándo es trabajador?" cuando un becario promociona.
+ * Es la respuesta a "¿desde cuándo es empleado?" cuando un becario promociona.
  * NO muestra la antigüedad laboral: esa es `hireDate`, vive en la ficha y no
  * cambia nunca.
  */

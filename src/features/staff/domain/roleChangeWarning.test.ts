@@ -8,10 +8,10 @@ describe('buildRoleChangeWarning', () => {
     expect(buildRoleChangeWarning('Ana Ruiz', 'empleado', 'empleado')).toBeNull();
   });
 
-  it('al promocionar de becario a trabajador avisa de que se habilita el fichaje', () => {
+  it('al promocionar de becario a empleado avisa de que se habilita el fichaje', () => {
     const warning = buildRoleChangeWarning('Miquel Sala', 'becario', 'empleado');
 
-    expect(warning).toContain('Miquel Sala pasa de Becario a Trabajador.');
+    expect(warning).toContain('Miquel Sala pasa de Becario a Empleado.');
     expect(warning).toContain('Se le habilita el registro horario.');
   });
 

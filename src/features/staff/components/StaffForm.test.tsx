@@ -181,10 +181,13 @@ describe('StaffForm — confirmación del cambio de rol', () => {
   }
 
   beforeEach(() => {
-    // Dos roles para poder cambiar de uno a otro.
+    // Dos roles para poder cambiar de uno a otro. Los `name` son los de
+    // `roles.name` en la BD, que es lo que devuelve `GET /roles`: este selector
+    // pinta ese nombre, no `USER_ROLE_LABEL`. El mock decía 'Trabajador' y por
+    // eso no delataba que la etiqueta discrepara del resto de la aplicación.
     vi.mocked(useRoles).mockReturnValue({
       data: [
-        { id: 'role-1', code: 'empleado', name: 'Trabajador' },
+        { id: 'role-1', code: 'empleado', name: 'Empleado' },
         { id: 'role-2', code: 'becario', name: 'Becario' },
       ],
       isLoading: false,

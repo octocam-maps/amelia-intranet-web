@@ -35,8 +35,8 @@ describe('RoleHistoryTimeline', () => {
   it('usa las etiquetas de la UI, no los codes del backend', () => {
     render(<RoleHistoryTimeline changes={[change()]} isLoading={false} isError={false} />);
 
-    // `empleado` se muestra como «Trabajador», que es como lo llama RRHH.
-    expect(screen.getByText('Trabajador')).toBeInTheDocument();
+    // `empleado` se muestra como «Empleado» (`USER_ROLE_LABEL`), nunca el code.
+    expect(screen.getByText('Empleado')).toBeInTheDocument();
     expect(screen.queryByText('empleado')).not.toBeInTheDocument();
   });
 
@@ -68,7 +68,7 @@ describe('RoleHistoryTimeline', () => {
 
     const items = screen.getAllByRole('listitem');
     expect(items).toHaveLength(2);
-    expect(items[0]).toHaveTextContent('De Becario a Trabajador');
+    expect(items[0]).toHaveTextContent('De Becario a Empleado');
     expect(items[1]).toHaveTextContent('Alta como Becario');
   });
 
