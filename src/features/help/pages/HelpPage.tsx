@@ -1,5 +1,6 @@
 import { DownloadIcon, ExternalLinkIcon, MagnifyingGlassIcon } from '@radix-ui/react-icons';
 import { Card, CardContent } from '@/components/ui/Card';
+import { ManualsLibrary } from '@/features/manuals/components/ManualsLibrary';
 import styles from './HelpPage.module.css';
 
 // Servidos desde `public/` (no importados como assets de Vite): la URL es
@@ -111,6 +112,23 @@ export function HelpPage() {
               </span>
             </a>
           ))}
+        </CardContent>
+      </Card>
+
+      {/* Biblioteca de manuales (`GET /manuals`, migración backend 043). Va aquí y
+          no en una ruta propia: quien busca "el manual de X" ya viene a Ayuda, y
+          repartir el mismo material en dos pantallas obligaría a adivinar cuál
+          mirar. Abierta a los cinco roles, igual que esta página. */}
+      <Card>
+        <CardContent className={styles.manualsSection}>
+          <div>
+            <p className={styles.title}>Manuales</p>
+            <p className={styles.note}>
+              Documentación de referencia del equipo. Los de lectura obligatoria se confirman en tu
+              onboarding; el resto están para consultar cuando los necesites.
+            </p>
+          </div>
+          <ManualsLibrary />
         </CardContent>
       </Card>
 

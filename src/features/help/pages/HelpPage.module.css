@@ -132,3 +132,11 @@
   margin-top: 0.125rem;
   color: hsl(var(--muted-foreground));
 }
+
+/* Biblioteca de manuales (2026-07-31) — misma separación que `.intro`, para que se
+   lea como otra sección de la página y no como parte del índice de capítulos. */
+.manualsSection {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}

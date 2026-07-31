@@ -1,7 +1,21 @@
 import { render, screen } from '@testing-library/react';
-import { describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { useManuals } from '@/features/manuals/application/useManuals';
 import { NAV_BY_ROLE } from '@/layouts/AppLayout/nav-config';
 import { HelpPage } from './HelpPage';
+
+// La página monta la biblioteca de manuales (`GET /manuals`, migración backend
+// 043), que es una query de React Query — se mockea para que estos tests sigan
+// probando la Ayuda y no el fetch.
+vi.mock('@/features/manuals/application/useManuals', () => ({ useManuals: vi.fn() }));
+
+beforeEach(() => {
+  vi.mocked(useManuals).mockReturnValue({
+    data: [],
+    isLoading: false,
+    isError: false,
+  } as unknown as ReturnType<typeof useManuals>);
+});
 
 describe('HelpPage', () => {
   it('sirve el manual con enlaces, NO en un iframe', () => {
