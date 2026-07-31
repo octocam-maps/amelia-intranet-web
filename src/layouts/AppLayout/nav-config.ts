@@ -101,6 +101,10 @@ export const ADMIN_SECTION_ITEMS: NavItem[] = [
   { label: 'Onboarding', to: '/administracion/onboarding', icon: GraduationCapIcon },
   { label: 'Festivos', to: '/administracion/festivos', icon: CalendarIcon },
   { label: 'Tipos de ausencia', to: '/administracion/tipos-ausencia', icon: TagIcon },
+  // Plantillas de los correos automáticos (migración backend 041). ADMIN_ONLY en
+  // el backend: quien las edita escribe el texto que la intranet manda EN NOMBRE
+  // de la empresa a toda la plantilla.
+  { label: 'Plantillas de correo', to: '/administracion/plantillas-email', icon: MailboxIcon },
 ];
 
 // docs/permisos-roles.md § "Navbar por rol" — copiado literal, un ítem por rol.

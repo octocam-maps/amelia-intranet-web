@@ -14,6 +14,7 @@ import { FestivosPage } from '@/features/holidays/pages/FestivosPage';
 import { AdminMailboxPage } from '@/features/mailbox/pages/AdminMailboxPage';
 import { AnonymousMailboxPage } from '@/features/mailbox/pages/AnonymousMailboxPage';
 import { MailboxTrackingPage } from '@/features/mailbox/pages/MailboxTrackingPage';
+import { EmailTemplatesPage } from '@/features/email-templates/pages/EmailTemplatesPage';
 import { OnboardingAdminPage } from '@/features/onboarding/admin/pages/OnboardingAdminPage';
 import { OnboardingPage } from '@/features/onboarding/pages/OnboardingPage';
 import { ProfilePage } from '@/features/profile/pages/ProfilePage';
@@ -66,6 +67,7 @@ export function AppRoutes() {
         <Route path="/administracion/tipos-ausencia" element={<AbsenceTypesAdminPage />} />
         <Route path="/administracion/calendario" element={<AbsenceGeneralCalendarPage />} />
         <Route path="/administracion/onboarding" element={<OnboardingAdminPage />} />
+        <Route path="/administracion/plantillas-email" element={<EmailTemplatesPage />} />
       </Route>
 
       <Route path="*" element={<Navigate to="/" replace />} />
