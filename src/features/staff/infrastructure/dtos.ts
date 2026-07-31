@@ -77,3 +77,18 @@ export interface UpdateStaffMemberDTO {
   vacation_days_override?: number | null;
   is_active?: boolean;
 }
+
+/** `GET /staff/{id}/role-history` — ver `RoleChangeDTO` en schemas.py. */
+export interface RoleChangeDTO {
+  id: string;
+  from_role_code: string | null;
+  to_role_code: string;
+  changed_by_id: string | null;
+  changed_by_name: string | null;
+  changed_at: string;
+  note: string | null;
+}
+
+export interface RoleChangeListDTO {
+  changes: RoleChangeDTO[];
+}

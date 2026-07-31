@@ -1,0 +1,75 @@
+.timeline {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.item {
+  position: relative;
+  display: flex;
+  gap: var(--space-3);
+  padding-left: var(--space-1);
+}
+
+/* La línea vertical se dibuja desde el punto hacia abajo, y NO en el último
+   ítem: una línea que sigue después de la entrada más antigua sugiere que hay
+   más historial del que se está mostrando. */
+.item:not(:last-child)::before {
+  content: '';
+  position: absolute;
+  left: 0.5rem;
+  top: 1.1rem;
+  bottom: calc(-1 * var(--space-4));
+  width: 1px;
+  background: hsl(var(--border));
+}
+
+.dot {
+  flex: 0 0 auto;
+  height: 0.5rem;
+  width: 0.5rem;
+  margin-top: 0.35rem;
+  border-radius: 9999px;
+  background: hsl(var(--primary));
+}
+
+/* El más reciente es el primero (orden del backend): se marca en verde de marca
+   y el resto en gris, para que "el rol de ahora" se lea de un vistazo. */
+.item:not(:first-child) .dot {
+  background: hsl(var(--muted-foreground));
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  min-width: 0;
+}
+
+.transition {
+  margin: 0;
+  font-size: 0.875rem;
+  color: hsl(var(--foreground));
+}
+
+.meta {
+  margin: 0;
+  font-size: 0.8125rem;
+  color: hsl(var(--muted-foreground));
+}
+
+.note {
+  margin: 0;
+  font-size: 0.8125rem;
+  font-style: italic;
+  color: hsl(var(--muted-foreground));
+}
+
+.empty {
+  margin: 0;
+  font-size: 0.875rem;
+  color: hsl(var(--muted-foreground));
+}

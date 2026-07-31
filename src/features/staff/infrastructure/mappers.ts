@@ -4,11 +4,17 @@ import { parseEnum, parseEnumNullable } from '@/lib/parseEnum';
 import { CONTRACT_TYPES } from '../domain/contractType';
 import type {
   CreateStaffMemberInput,
+  RoleChange,
   StaffMember,
   StaffStatus,
   UpdateStaffMemberInput,
 } from '../domain/models';
-import type { CreateStaffMemberDTO, StaffMemberDTO, UpdateStaffMemberDTO } from './dtos';
+import type {
+  CreateStaffMemberDTO,
+  RoleChangeDTO,
+  StaffMemberDTO,
+  UpdateStaffMemberDTO,
+} from './dtos';
 
 // Los dos se pintan como badge en StaffTable (`ENTITY_BADGE_VARIANT`,
 // `STATUS_LABEL`/`STATUS_CLASS`) — un valor fuera de contrato deja el badge
@@ -84,4 +90,25 @@ export function updateStaffMemberInputToDTO(input: UpdateStaffMemberInput): Upda
   if (input.vacationDaysOverride !== undefined) dto.vacation_days_override = input.vacationDaysOverride;
   if (input.isActive !== undefined) dto.is_active = input.isActive;
   return dto;
+}
+
+/**
+ * `fromRole` se valida con `parseEnumNullable` y `toRole` con `parseEnum`: el
+ * `null` de `from_role_code` es SIGNIFICATIVO (= alta inicial), no un dato que
+ * falte, así que no puede caer a un fallback como hace `toRole`.
+ *
+ * El autor NO se rellena con «Sistema» cuando viene `null`: el backend
+ * distingue a propósito «no consta» de un autor conocido (ver la migración
+ * 039), y pisar ese hueco aquí convertiría la auditoría en una que miente.
+ */
+export function roleChangeFromDTO(dto: RoleChangeDTO): RoleChange {
+  return {
+    id: dto.id,
+    fromRole: parseEnumNullable(dto.from_role_code, USER_ROLES),
+    toRole: parseEnum(dto.to_role_code, USER_ROLES, 'empleado'),
+    changedById: dto.changed_by_id,
+    changedByName: dto.changed_by_name,
+    changedAt: dto.changed_at,
+    note: dto.note,
+  };
 }

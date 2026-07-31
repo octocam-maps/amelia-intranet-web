@@ -1,14 +1,20 @@
 import { apiClient } from '@/lib/http/api-client';
 import type {
   CreateStaffMemberInput,
+  RoleChange,
   StaffListParams,
   StaffListResult,
   StaffMember,
   UpdateStaffMemberInput,
 } from '../domain/models';
 import type { StaffRepository } from '../domain/ports';
-import type { StaffListDTO, StaffMemberDTO } from './dtos';
-import { createStaffMemberInputToDTO, staffMemberFromDTO, updateStaffMemberInputToDTO } from './mappers';
+import type { RoleChangeListDTO, StaffListDTO, StaffMemberDTO } from './dtos';
+import {
+  createStaffMemberInputToDTO,
+  roleChangeFromDTO,
+  staffMemberFromDTO,
+  updateStaffMemberInputToDTO,
+} from './mappers';
 
 export const staffApiAdapter: StaffRepository = {
   async list(params: StaffListParams = {}): Promise<StaffListResult> {
@@ -42,5 +48,12 @@ export const staffApiAdapter: StaffRepository = {
       body: JSON.stringify(updateStaffMemberInputToDTO(input)),
     });
     return staffMemberFromDTO(dto);
+  },
+
+  async roleHistory(id: string): Promise<RoleChange[]> {
+    // Ya llega ordenado de lo más reciente a lo más antiguo (`ORDER BY
+    // changed_at DESC` en el repositorio) — no se reordena aquí.
+    const dto = await apiClient<RoleChangeListDTO>(`/staff/${id}/role-history`);
+    return dto.changes.map(roleChangeFromDTO);
   },
 };
