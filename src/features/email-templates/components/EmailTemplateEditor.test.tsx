@@ -30,7 +30,12 @@ const save = vi.fn();
 const restore = vi.fn();
 const preview = vi.fn();
 
-function mockHooks({ previewResult = undefined } = {}) {
+/** `previewResult` se tipa EXPLÍCITAMENTE: con `= undefined` sin tipo, TypeScript
+ * infiere el tipo `undefined` (no "opcional") y rechaza cualquier objeto. Es el
+ * error que tumbó el build de producción. */
+function mockHooks({
+  previewResult,
+}: { previewResult?: { subject: string; html: string } } = {}) {
   vi.mocked(useUpdateEmailTemplate).mockReturnValue({
     mutate: save,
     isPending: false,
