@@ -9,10 +9,12 @@ import { DashboardPage } from '@/features/dashboard/pages/DashboardPage';
 import { AdminDocumentsPage } from '@/features/documents/pages/AdminDocumentsPage';
 import { DocumentsPage } from '@/features/documents/pages/DocumentsPage';
 import { PayslipsPage } from '@/features/documents/pages/PayslipsPage';
+import { HelpPage } from '@/features/help/pages/HelpPage';
 import { FestivosPage } from '@/features/holidays/pages/FestivosPage';
 import { AdminMailboxPage } from '@/features/mailbox/pages/AdminMailboxPage';
 import { AnonymousMailboxPage } from '@/features/mailbox/pages/AnonymousMailboxPage';
 import { MailboxTrackingPage } from '@/features/mailbox/pages/MailboxTrackingPage';
+import { EmailTemplatesPage } from '@/features/email-templates/pages/EmailTemplatesPage';
 import { OnboardingAdminPage } from '@/features/onboarding/admin/pages/OnboardingAdminPage';
 import { OnboardingPage } from '@/features/onboarding/pages/OnboardingPage';
 import { ProfilePage } from '@/features/profile/pages/ProfilePage';
@@ -53,6 +55,10 @@ export function AppRoutes() {
         <Route path="/equipo" element={<TeamPage />} />
         <Route path="/perfil" element={<ProfilePage />} />
         <Route path="/onboarding" element={<OnboardingPage />} />
+        {/* Ayuda: índice del manual de uso, disponible para los cinco roles.
+            No lleva guard porque no expone dato alguno de plantilla — el
+            manual es un fichero estático de `public/ayuda/`. */}
+        <Route path="/ayuda" element={<HelpPage />} />
         <Route path="/administracion/plantilla" element={<StaffPage />} />
         <Route path="/administracion/documentos" element={<AdminDocumentsPage />} />
         <Route path="/administracion/buzon" element={<AdminMailboxPage />} />
@@ -61,6 +67,7 @@ export function AppRoutes() {
         <Route path="/administracion/tipos-ausencia" element={<AbsenceTypesAdminPage />} />
         <Route path="/administracion/calendario" element={<AbsenceGeneralCalendarPage />} />
         <Route path="/administracion/onboarding" element={<OnboardingAdminPage />} />
+        <Route path="/administracion/plantillas-email" element={<EmailTemplatesPage />} />
       </Route>
 
       <Route path="*" element={<Navigate to="/" replace />} />

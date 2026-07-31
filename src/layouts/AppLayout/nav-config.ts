@@ -6,6 +6,7 @@ import {
   ClockIcon,
   FileTextIcon,
   HomeIcon,
+  QuestionMarkCircledIcon,
 } from '@radix-ui/react-icons';
 import {
   CalendarClockIcon,
@@ -53,6 +54,11 @@ const perfil: NavItem = { label: 'Mi perfil', to: '/perfil', icon: AvatarIcon };
 // además de vídeo/manual, así que se muestra también en su navbar (ver
 // engram: "Onboarding — nav por rol y contrato backend").
 const onboarding: NavItem = { label: 'Onboarding', to: '/onboarding', icon: GraduationCapIcon };
+// Ayuda: índice del manual de uso (`public/ayuda/manual-de-uso.html`). Va en
+// TODOS los roles, incluido `externo_invitado` — el manual explica también su
+// onboarding recortado, y es el único módulo del que nadie debería quedar
+// fuera. Último ítem del navbar a propósito: es referencia, no tarea diaria.
+const ayuda: NavItem = { label: 'Ayuda', to: '/ayuda', icon: QuestionMarkCircledIcon };
 
 // "Calendario general" (LOTE 4) — vista de RRHH de TODA la plantilla (no
 // solo el propio departamento como `TeamCalendar`), con exportación
@@ -95,6 +101,10 @@ export const ADMIN_SECTION_ITEMS: NavItem[] = [
   { label: 'Onboarding', to: '/administracion/onboarding', icon: GraduationCapIcon },
   { label: 'Festivos', to: '/administracion/festivos', icon: CalendarIcon },
   { label: 'Tipos de ausencia', to: '/administracion/tipos-ausencia', icon: TagIcon },
+  // Plantillas de los correos automáticos (migración backend 041). ADMIN_ONLY en
+  // el backend: quien las edita escribe el texto que la intranet manda EN NOMBRE
+  // de la empresa a toda la plantilla.
+  { label: 'Plantillas de correo', to: '/administracion/plantillas-email', icon: MailboxIcon },
 ];
 
 // docs/permisos-roles.md § "Navbar por rol" — copiado literal, un ítem por rol.
@@ -105,11 +115,32 @@ export const ADMIN_SECTION_ITEMS: NavItem[] = [
 // 403 en los 3 endpoints de `/absences/calendar/*`, esto es solo la
 // composición visual del navbar de `socio`.
 export const NAV_BY_ROLE: Record<UserRole, NavItem[]> = {
-  empleado: [inicio, onboarding, ausencias, controlHorario, nominas, documentos, equipo, buzonAnonimo, perfil],
-  administrador: [inicio, onboarding, ausencias, controlHorario, nominas, documentos, equipo, perfil],
+  empleado: [
+    inicio,
+    onboarding,
+    ausencias,
+    controlHorario,
+    nominas,
+    documentos,
+    equipo,
+    buzonAnonimo,
+    perfil,
+    ayuda,
+  ],
+  administrador: [
+    inicio,
+    onboarding,
+    ausencias,
+    controlHorario,
+    nominas,
+    documentos,
+    equipo,
+    perfil,
+    ayuda,
+  ],
   // El "Inicio" del externo es un mini-dashboard recortado (solo Anuncios +
   // Cumpleaños del equipo, ver `DashboardPage`) — no el Home de empleado.
-  externo_invitado: [inicio, onboarding, equipo, perfil],
+  externo_invitado: [inicio, onboarding, equipo, perfil, ayuda],
   socio: [
     inicio,
     onboarding,
@@ -121,7 +152,17 @@ export const NAV_BY_ROLE: Record<UserRole, NavItem[]> = {
     buzonAnonimo,
     perfil,
     calendarioGeneral,
+    ayuda,
   ],
+  // `becario` (migración 038, RF-A10): el navbar de `empleado` MENOS "Control
+  // horario". Es la única diferencia — todo lo demás (ausencias, nóminas,
+  // documentos, equipo, buzón, onboarding completo) lo ve igual que un
+  // trabajador, y en el backend lo hereda por estar en `INTERNAL_ROLES`.
+  //
+  // "Ocultar ≠ proteger": los 13 endpoints de `/time-clock` usan
+  // `TIME_CLOCK_ROLES`, que no lo incluye — escribir `/control-horario` a mano
+  // da 403, no la pantalla.
+  becario: [inicio, onboarding, ausencias, nominas, documentos, equipo, buzonAnonimo, perfil, ayuda],
 };
 
 /**

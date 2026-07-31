@@ -6,6 +6,7 @@ import { useOnboardingProgress } from '../application/useOnboardingProgress';
 import { OnboardingProgressTable } from '../components/OnboardingProgressTable';
 import { OnboardingStepFormDialog } from '../components/OnboardingStepFormDialog';
 import { OnboardingStepsList } from '../components/OnboardingStepsList';
+import { StepPreviewDialog } from '../components/StepPreviewDialog';
 import type { AdminOnboardingStep } from '../domain/models';
 import styles from './OnboardingAdminPage.module.css';
 
@@ -17,6 +18,7 @@ import styles from './OnboardingAdminPage.module.css';
  */
 export function OnboardingAdminPage() {
   const [editingStep, setEditingStep] = useState<AdminOnboardingStep | null>(null);
+  const [previewStep, setPreviewStep] = useState<AdminOnboardingStep | null>(null);
 
   const {
     data: steps = [],
@@ -58,7 +60,12 @@ export function OnboardingAdminPage() {
             No se han podido cargar los pasos del onboarding. Inténtalo de nuevo en unos minutos.
           </p>
         )}
-        <OnboardingStepsList steps={steps} isLoading={stepsLoading} onEdit={setEditingStep} />
+        <OnboardingStepsList
+          steps={steps}
+          isLoading={stepsLoading}
+          onEdit={setEditingStep}
+          onPreview={setPreviewStep}
+        />
       </Card>
 
       <Card className={styles.card}>
@@ -80,6 +87,11 @@ export function OnboardingAdminPage() {
           quizStepId={quizStepId}
         />
       </Card>
+
+      <StepPreviewDialog
+        step={previewStep}
+        onOpenChange={(open) => !open && setPreviewStep(null)}
+      />
 
       <OnboardingStepFormDialog
         open={editingStep !== null}

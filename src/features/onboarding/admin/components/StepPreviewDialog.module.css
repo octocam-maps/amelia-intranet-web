@@ -1,0 +1,169 @@
+/* Alto acotado con scroll interno: un cuestionario de 10 preguntas no debe hacer
+   crecer el diálogo hasta salirse de la pantalla. */
+.content {
+  max-width: 44rem;
+  max-height: 85vh;
+  overflow-y: auto;
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.note {
+  margin: 0;
+  border-left: 3px solid hsl(var(--info));
+  padding-left: var(--space-3);
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  color: hsl(var(--muted-foreground));
+}
+
+.meta,
+.empty {
+  margin: 0;
+  font-size: 0.8125rem;
+  color: hsl(var(--muted-foreground));
+}
+
+.video {
+  width: 100%;
+  border-radius: var(--radius);
+  background-color: hsl(var(--navy, var(--foreground)));
+}
+
+.questions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: question;
+}
+
+.question {
+  border-radius: var(--radius);
+  border: 1px solid hsl(var(--border));
+  padding: var(--space-3);
+}
+
+.questionText {
+  margin: 0 0 var(--space-2);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: hsl(var(--foreground));
+}
+
+.options {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.option,
+.optionCorrect {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1_5);
+  border-radius: var(--radius);
+  padding: 0.25rem var(--space-2);
+  font-size: 0.875rem;
+  color: hsl(var(--foreground));
+}
+
+/* La correcta se marca con color Y con icono: el color solo no basta para quien
+   no distingue verdes (WCAG 1.4.1, mismo criterio que los tipos de ausencia). */
+.optionCorrect {
+  background-color: hsl(var(--success) / 0.12);
+  font-weight: 600;
+  color: hsl(var(--success-on-tint));
+}
+
+.optionIcon {
+  flex: 0 0 auto;
+  height: 0.875rem;
+  width: 0.875rem;
+}
+
+.documents,
+.fields {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.document {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  border-radius: var(--radius);
+  border: 1px solid hsl(var(--border));
+  padding: var(--space-2) var(--space-3);
+  font-size: 0.875rem;
+}
+
+.documentOrder {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 1.25rem;
+  width: 1.25rem;
+  border-radius: 999px;
+  background-color: hsl(var(--muted));
+  font-size: 0.6875rem;
+  font-weight: 700;
+  color: hsl(var(--muted-foreground));
+}
+
+.documentTitle {
+  flex: 1 1 auto;
+  min-width: 0;
+  color: hsl(var(--foreground));
+}
+
+.documentActions {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.documentAction {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.8125rem;
+  color: hsl(var(--info));
+  text-decoration: none;
+}
+
+.documentAction:hover {
+  text-decoration: underline;
+}
+
+.documentPending {
+  font-size: 0.8125rem;
+  color: hsl(var(--warning-on-tint));
+}
+
+.field {
+  border-radius: var(--radius);
+  background-color: hsl(var(--muted));
+  padding: var(--space-1_5) var(--space-3);
+  font-size: 0.875rem;
+  color: hsl(var(--foreground));
+}

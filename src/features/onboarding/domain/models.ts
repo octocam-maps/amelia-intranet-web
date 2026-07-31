@@ -44,6 +44,15 @@ export interface OnboardingStepDocument {
   title: string;
   version: number;
   url: string | null;
+  /** Orden de lectura dentro del paso (migración backend 040). */
+  displayOrder: number;
+  acknowledged: boolean;
+  /** `true` = queda un manual anterior de la cascada sin confirmar. Lo decide el
+   * BACKEND (`resolve_step_documents`), con la misma regla que valida el POST de
+   * confirmación. NO se recalcula aquí: si el candado y el 422 salieran de dos
+   * sitios, acabarían discrepando y el trabajador vería un botón habilitado que
+   * devuelve error. */
+  locked: boolean;
 }
 
 export interface OnboardingStep {
@@ -57,7 +66,10 @@ export interface OnboardingStep {
   data: Record<string, unknown> | null;
   startedAt: string | null;
   completedAt: string | null;
-  document: OnboardingStepDocument | null;
+  /** Documentos del paso en orden de lectura. El paso `manual` puede traer
+   * varios: se leen en cascada y el paso no se completa hasta confirmarlos
+   * todos (RF-A6.3). */
+  documents: OnboardingStepDocument[];
 }
 
 export interface ReportVideoProgressInput {

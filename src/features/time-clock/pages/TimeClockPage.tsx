@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react';
 import { ChevronLeftIcon, ChevronRightIcon, DownloadIcon } from '@radix-ui/react-icons';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
-import { isAdmin } from '@/features/auth/domain/models';
+import { canUseTimeClock, isAdmin } from '@/features/auth/domain/models';
 import { useStaffList } from '@/features/staff/application/useStaffList';
 import { useStore } from '@/store';
 import { useDeleteTimeClockEntry } from '../application/useDeleteTimeClockEntry';
@@ -37,7 +37,40 @@ function defaultRange() {
   return { dateFrom: from.toISOString().slice(0, 10), dateTo: to.toISOString().slice(0, 10) };
 }
 
+/**
+ * Guard de rol de la pantalla. `becario` y `externo_invitado` no tienen módulo
+ * de control horario (docs/permisos-roles.md; RF-A10) y su navbar no lo ofrece,
+ * pero la ruta existe y se puede escribir a mano.
+ *
+ * Va ENVOLVIENDO al contenido, no dentro: `TimeClockContent` monta cuatro
+ * hooks de datos, y sin este corte los cuatro saldrían a la red para recibir
+ * 403 y pintar un error crudo. Ocultar sigue sin ser proteger — quien protege
+ * es `TIME_CLOCK_ROLES` en el backend; esto solo evita ofrecer y explicar mal
+ * lo que ya está negado.
+ */
 export function TimeClockPage() {
+  const role = useStore((s) => s.user?.role);
+
+  if (!canUseTimeClock(role)) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>Control horario no disponible</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p>
+            Tu perfil no incluye el registro de jornada. Si crees que deberías
+            fichar, escribe a RRHH.
+          </p>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  return <TimeClockContent />;
+}
+
+function TimeClockContent() {
   const currentUser = useStore((s) => s.user);
   const admin = isAdmin(currentUser?.role);
   const [showAll, setShowAll] = useState(false);

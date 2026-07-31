@@ -1,0 +1,1109 @@
+<!DOCTYPE html>
+<html lang="es-ES">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Manual de uso · Amelia intranet</title>
+<style>
+:root{
+  --primary:#00D170; --primary-dark:#00A36F;
+  --navy:#0F1729; --navy-soft:#1B2438;
+  --bg:#F9FAFB; --card:#FFFFFF; --border:#E5E7EB;
+  --fg:#0F1729; --muted:#6B7280;
+  --warning:#F59F0A; --error:#EF4343; --info:#1D4FD7;
+  --sidebar-w:290px;
+  --font:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--font);background:var(--bg);color:var(--fg);line-height:1.65;-webkit-font-smoothing:antialiased}
+
+/* ---------- Sidebar ---------- */
+#nav{position:fixed;top:0;left:0;width:var(--sidebar-w);height:100vh;background:var(--navy);
+     color:#fff;overflow-y:auto;padding:22px 0 40px;z-index:50}
+#nav .brand{padding:0 22px 18px;border-bottom:1px solid rgba(255,255,255,.12);margin-bottom:14px}
+#nav .brand strong{display:block;font-size:15px;letter-spacing:.2px}
+#nav .brand span{display:block;font-size:12px;color:#9CA3AF;margin-top:3px}
+#nav .dot{display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--primary);margin-right:7px}
+#search{width:calc(100% - 44px);margin:0 22px 16px;padding:9px 11px;border-radius:8px;
+        border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.07);color:#fff;font-size:13px;font-family:var(--font)}
+#search::placeholder{color:#9CA3AF}
+#search:focus{outline:2px solid var(--primary);outline-offset:1px}
+#nav ol{list-style:none;counter-reset:ch}
+#nav a{display:block;padding:7px 22px 7px 22px;color:#D1D5DB;text-decoration:none;font-size:13.5px;border-left:3px solid transparent}
+#nav a:hover{background:rgba(255,255,255,.06);color:#fff}
+#nav a.on{background:rgba(0,209,112,.14);border-left-color:var(--primary);color:#fff;font-weight:600}
+#nav .sub a{padding-left:38px;font-size:12.5px;color:#9CA3AF}
+#nav .num{display:inline-block;min-width:20px;color:var(--primary);font-weight:700;font-size:12px}
+#nav li.hide{display:none}
+#noHit{display:none;padding:10px 22px;font-size:12.5px;color:#9CA3AF}
+
+/* ---------- Content ---------- */
+main{margin-left:var(--sidebar-w);padding:0 0 90px}
+.wrap{max-width:880px;margin:0 auto;padding:0 32px}
+header.hero{background:var(--navy);color:#fff;padding:52px 0 44px;margin-bottom:40px}
+header.hero .wrap{max-width:880px}
+header.hero h1{font-size:34px;line-height:1.2;letter-spacing:-.5px;font-weight:700}
+header.hero .sub{color:#D1D5DB;font-size:16px;margin-top:12px;max-width:620px}
+header.hero .meta{margin-top:26px;display:flex;gap:10px;flex-wrap:wrap}
+header.hero .tag{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.16);
+                 padding:5px 11px;border-radius:999px;font-size:12.5px;color:#fff}
+
+section{margin-bottom:52px;scroll-margin-top:20px}
+h2{font-size:25px;letter-spacing:-.3px;padding-bottom:11px;border-bottom:2px solid var(--border);margin-bottom:20px;display:flex;align-items:baseline;gap:11px}
+h2 .n{color:var(--primary-dark);font-size:15px;font-weight:800;letter-spacing:0}
+h3{font-size:18px;margin:28px 0 11px;color:var(--navy)}
+h4{font-size:15px;margin:20px 0 8px;color:var(--navy)}
+p{margin-bottom:13px}
+ul,ol{margin:0 0 14px 22px}
+li{margin-bottom:6px}
+a{color:var(--info)}
+code{background:#F3F4F6;border:1px solid var(--border);border-radius:4px;padding:1px 5px;
+     font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12.5px}
+strong{font-weight:650}
+
+table{width:100%;border-collapse:collapse;margin:16px 0;font-size:14px;background:var(--card);
+      border:1px solid var(--border);border-radius:8px;overflow:hidden}
+.scroll{overflow-x:auto;margin:16px 0}
+.scroll table{margin:0}
+th{background:var(--navy);color:#fff;text-align:left;padding:10px 13px;font-size:13px;font-weight:600}
+td{padding:10px 13px;border-top:1px solid var(--border);vertical-align:top}
+tbody tr:nth-child(even){background:#FCFCFD}
+
+.card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:18px 20px;margin:16px 0}
+.card h4{margin-top:0}
+
+.note{border-left:4px solid var(--info);background:#EEF2FF;padding:13px 16px;border-radius:0 8px 8px 0;margin:16px 0;font-size:14.5px}
+.warn{border-left:4px solid var(--warning);background:#FFFBEB;padding:13px 16px;border-radius:0 8px 8px 0;margin:16px 0;font-size:14.5px}
+.stop{border-left:4px solid var(--error);background:#FEF2F2;padding:13px 16px;border-radius:0 8px 8px 0;margin:16px 0;font-size:14.5px}
+.ok{border-left:4px solid var(--primary-dark);background:#ECFDF5;padding:13px 16px;border-radius:0 8px 8px 0;margin:16px 0;font-size:14.5px}
+.note strong:first-child,.warn strong:first-child,.stop strong:first-child,.ok strong:first-child{display:block;margin-bottom:4px}
+
+.steps{list-style:none;margin-left:0;counter-reset:s}
+.steps>li{counter-increment:s;position:relative;padding-left:42px;margin-bottom:14px}
+.steps>li::before{content:counter(s);position:absolute;left:0;top:1px;width:27px;height:27px;
+  border-radius:50%;background:var(--navy);color:#fff;font-size:13px;font-weight:700;
+  display:flex;align-items:center;justify-content:center}
+
+.chk{list-style:none;margin-left:0}
+.chk li{padding-left:28px;position:relative;margin-bottom:8px}
+.chk li::before{content:"";position:absolute;left:0;top:6px;width:15px;height:15px;
+  border:2px solid var(--primary-dark);border-radius:4px}
+
+.btn{display:inline-block;background:var(--navy);color:#fff;border-radius:6px;padding:2px 9px;
+     font-size:12.5px;font-weight:600;white-space:nowrap}
+.btn.g{background:var(--primary-dark)}
+.btn.o{background:#fff;color:var(--navy);border:1px solid var(--border)}
+
+.swatch{display:inline-block;width:13px;height:13px;border-radius:3px;margin-right:7px;
+        vertical-align:-2px;border:1px solid rgba(0,0,0,.12)}
+.pill{display:inline-block;font-size:11.5px;font-weight:700;padding:2px 8px;border-radius:999px;
+      background:#F3F4F6;color:var(--navy);border:1px solid var(--border);white-space:nowrap}
+.pill.emp{background:#ECFDF5;color:#065F46;border-color:#A7F3D0}
+.pill.adm{background:#EEF2FF;color:#1E3A8A;border-color:#C7D2FE}
+.pill.ext{background:#FFFBEB;color:#92400E;border-color:#FDE68A}
+.pill.soc{background:#F5F3FF;color:#5B21B6;border-color:#DDD6FE}
+.pill.bec{background:#FDF2F8;color:#9D174D;border-color:#FBCFE8}
+
+.roleline{display:flex;gap:7px;flex-wrap:wrap;margin:0 0 18px}
+.faq{border:1px solid var(--border);border-radius:9px;background:var(--card);margin-bottom:11px;overflow:hidden}
+.faq summary{padding:13px 17px;font-weight:600;cursor:pointer;font-size:15px;list-style:none}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::before{content:"›";display:inline-block;margin-right:10px;color:var(--primary-dark);
+  font-weight:800;transition:transform .15s}
+.faq[open] summary::before{transform:rotate(90deg)}
+.faq[open] summary{border-bottom:1px solid var(--border)}
+.faq .body{padding:14px 17px 4px 38px}
+
+footer{border-top:1px solid var(--border);margin-top:20px;padding-top:22px;color:var(--muted);font-size:13px}
+.toplink{position:fixed;right:22px;bottom:22px;background:var(--navy);color:#fff;
+  border-radius:50%;width:42px;height:42px;display:flex;align-items:center;justify-content:center;
+  text-decoration:none;font-size:17px;box-shadow:0 3px 12px rgba(15,23,41,.25);z-index:40}
+#burger{display:none}
+
+@media (max-width:1024px){
+  :root{--sidebar-w:0px}
+  #nav{transform:translateX(-100%);transition:transform .2s;width:280px}
+  #nav.open{transform:none;box-shadow:0 0 40px rgba(0,0,0,.35)}
+  main{margin-left:0}
+  #burger{display:flex;position:fixed;top:14px;left:14px;z-index:60;background:var(--navy);color:#fff;
+    border:0;border-radius:8px;width:42px;height:42px;align-items:center;justify-content:center;
+    font-size:19px;cursor:pointer}
+  header.hero{padding-top:70px}
+  .wrap{padding:0 20px}
+  header.hero h1{font-size:27px}
+}
+/* Bloques exclusivos del PDF (portada e índice impreso) */
+.print-only{display:none}
+
+@media print{
+  #nav,#burger,.toplink,#search{display:none}
+  body{background:#fff}
+  main{margin-left:0}
+  .wrap{max-width:none;padding:0}
+  .print-only{display:block}
+
+  /* Portada a página completa */
+  header.hero{min-height:95vh;display:flex;flex-direction:column;justify-content:center}
+  header.hero .cover-foot{margin-top:auto;padding-top:40px;color:#9CA3AF;font-size:13px}
+
+  /* Índice impreso */
+  #print-toc{page-break-before:always;break-before:page;padding:44px 40px 0}
+  #print-toc h2{border-bottom-color:var(--navy)}
+  #print-toc ol{list-style:none;margin:0}
+  #print-toc li{display:flex;gap:14px;align-items:baseline;padding:9px 0;
+                border-bottom:1px dotted var(--border);font-size:15px}
+  #print-toc .n{color:var(--primary-dark);font-weight:800;min-width:26px;font-size:13px}
+  #print-toc .d{color:var(--muted);font-size:13.5px;margin-left:auto;text-align:right;max-width:46%}
+  h2{page-break-after:avoid;break-after:avoid}
+  h3,h4{page-break-after:avoid;break-after:avoid}
+  table,.card,.note,.warn,.stop,.ok,.faq{page-break-inside:avoid;break-inside:avoid}
+  section{page-break-before:always;break-before:page;margin-bottom:0}
+  section#c1{page-break-before:avoid;break-before:avoid}
+  header.hero{background:var(--navy);color:#fff;padding:60px 40px;margin-bottom:0;
+              page-break-after:always;break-after:page}
+  .scroll{overflow:visible}
+  /* Los acordeones del capítulo 9 se imprimen desplegados: en papel no hay
+     nada que pulsar, y un FAQ cerrado sería una página de titulares vacíos.
+     OJO: Chrome oculta los hijos de un <details> cerrado con
+     `content-visibility:hidden`, NO con `display:none` — sin la primera línea
+     el capítulo 9 se imprime vacío. */
+  details.faq>*{content-visibility:visible !important}
+  details.faq .body{display:block !important}
+  details.faq summary::before{display:none}
+  details.faq summary{border-bottom:1px solid var(--border)}
+  a{color:var(--fg);text-decoration:none}
+  a[href^="mailto:"]{color:var(--info);text-decoration:underline}
+}
+</style>
+</head>
+<body>
+
+<button id="burger" aria-label="Abrir índice">☰</button>
+
+<nav id="nav" aria-label="Índice del manual">
+  <div class="brand">
+    <strong><span class="dot"></span>Manual de uso</strong>
+    <span>Amelia intranet · v1.1</span>
+  </div>
+  <input id="search" type="search" placeholder="Buscar en el índice…" autocomplete="off" aria-label="Buscar en el índice">
+  <ol id="toc">
+    <li><a href="#c1"><span class="num">1</span>Bienvenida</a></li>
+    <li><a href="#c2"><span class="num">2</span>Antes de empezar</a></li>
+    <li><a href="#c3"><span class="num">3</span>Tus primeros 15 minutos</a></li>
+    <li><a href="#c4"><span class="num">4</span>Tu onboarding paso a paso</a>
+      <ul class="sub" style="list-style:none;margin:0">
+        <li><a href="#c4-1">Paso 1 · Vídeo</a></li>
+        <li><a href="#c4-2">Paso 2 · Cuestionario</a></li>
+        <li><a href="#c4-3">Paso 3 · Manuales</a></li>
+        <li><a href="#c4-4">Paso 4 · Perfil</a></li>
+        <li><a href="#c4-5">Paso 5 · Documentación</a></li>
+      </ul>
+    </li>
+    <li><a href="#c5"><span class="num">5</span>El día a día</a>
+      <ul class="sub" style="list-style:none;margin:0">
+        <li><a href="#c5-1">5.1 Inicio</a></li>
+        <li><a href="#c5-2">5.2 Control horario</a></li>
+        <li><a href="#c5-3">5.3 Ausencias</a></li>
+        <li><a href="#c5-4">5.4 Nóminas y contrato</a></li>
+        <li><a href="#c5-5">5.5 Documentos</a></li>
+        <li><a href="#c5-6">5.6 Equipo</a></li>
+        <li><a href="#c5-7">5.7 Buzón anónimo</a></li>
+        <li><a href="#c5-8">5.8 Mi perfil</a></li>
+        <li><a href="#c5-9">5.9 Notificaciones</a></li>
+      </ul>
+    </li>
+    <li><a href="#c6"><span class="num">6</span>Manual del administrador</a></li>
+    <li><a href="#c7"><span class="num">7</span>Qué ve cada rol</a></li>
+    <li><a href="#c8"><span class="num">8</span>La app móvil</a></li>
+    <li><a href="#c9"><span class="num">9</span>«¿Por qué no puedo…?»</a></li>
+    <li><a href="#c10"><span class="num">10</span>Resolución de problemas</a></li>
+    <li><a href="#c11"><span class="num">11</span>Privacidad y tus datos</a></li>
+    <li><a href="#c12"><span class="num">12</span>Contacto y soporte</a></li>
+    <li><a href="#c13"><span class="num">13</span>Glosario</a></li>
+    <li><a href="#c14"><span class="num">14</span>Control de versiones</a></li>
+  </ol>
+  <p id="noHit">Sin resultados en el índice.</p>
+</nav>
+
+<main>
+<header class="hero">
+  <div class="wrap">
+    <h1>Manual de uso de la intranet</h1>
+    <p class="sub">Todo lo que necesitas para trabajar con la intranet de Amelia: tu onboarding, el
+    fichaje, las vacaciones, tus documentos y el equipo. Escrito para leerse por partes, no de un tirón.</p>
+    <div class="meta">
+      <span class="tag">Amelia Hub · Lab · Ops · Hincator</span>
+      <span class="tag">Versión 1.1 — 31 de julio de 2026</span>
+      <span class="tag">Español de España</span>
+    </div>
+    <p class="cover-foot print-only">Amelia intranet · Documento interno · Si algo de este manual no
+    coincide con lo que ves en pantalla, escribe a RRHH: people@ameliahub.com · admin@ameliahub.com</p>
+  </div>
+</header>
+
+<div class="wrap">
+
+<!-- Índice: solo en el PDF. En pantalla, el índice es el menú lateral. -->
+<section id="print-toc" class="print-only">
+  <h2>Índice</h2>
+  <ol>
+    <li><span class="n">01</span><span>Bienvenida</span><span class="d">Qué es la intranet y qué hay dentro</span></li>
+    <li><span class="n">02</span><span>Antes de empezar</span><span class="d">Qué necesitas y cómo entrar</span></li>
+    <li><span class="n">03</span><span>Tus primeros 15 minutos</span><span class="d">Lo imprescindible del primer día</span></li>
+    <li><span class="n">04</span><span>Tu onboarding paso a paso</span><span class="d">Los 5 pasos, uno por uno</span></li>
+    <li><span class="n">05</span><span>El día a día</span><span class="d">Fichaje, ausencias, nóminas, documentos, equipo, buzón</span></li>
+    <li><span class="n">06</span><span>Manual del administrador</span><span class="d">Solo rol Administrador</span></li>
+    <li><span class="n">07</span><span>Qué ve cada rol</span><span class="d">Los cinco roles, comparados</span></li>
+    <li><span class="n">08</span><span>La app móvil</span><span class="d">Qué sí y qué no está en el móvil</span></li>
+    <li><span class="n">09</span><span>«¿Por qué no puedo…?»</span><span class="d">Los límites del sistema y su motivo</span></li>
+    <li><span class="n">10</span><span>Resolución de problemas</span><span class="d">Síntoma → qué hacer</span></li>
+    <li><span class="n">11</span><span>Privacidad y tus datos</span><span class="d">Quién ve qué de ti</span></li>
+    <li><span class="n">12</span><span>Contacto y soporte</span><span class="d">A quién escribir según el caso</span></li>
+    <li><span class="n">13</span><span>Glosario</span><span class="d">Los términos que se usan aquí</span></li>
+    <li><span class="n">14</span><span>Control de versiones</span><span class="d">Qué recoge esta edición</span></li>
+  </ol>
+  <p style="margin-top:22px;color:var(--muted);font-size:13.5px">Cada capítulo empieza en página nueva
+  y lleva su número en verde en la cabecera. El capítulo 9 es el más útil si tienes prisa.</p>
+</section>
+
+<!-- ============ 1 ============ -->
+<section id="c1">
+  <h2><span class="n">01</span>Bienvenida</h2>
+
+  <p>La intranet es <strong>el único sitio</strong> donde tienes que entrar para todo lo laboral:
+  fichar tu jornada, pedir vacaciones, consultar tus nóminas y tu contrato, encontrar el teléfono de
+  un compañero o escribir a RRHH. Sustituye a Holded y centraliza la gestión que hasta ahora estaba
+  repartida entre correos, hojas de cálculo y proveedores externos.</p>
+
+  <h3>Qué encontrarás dentro</h3>
+  <div class="scroll">
+  <table>
+    <thead><tr><th style="width:26%">Módulo</th><th>Para qué sirve</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Inicio</strong></td><td>Tu resumen del día: fichaje, saldo de vacaciones, próximos festivos, cumpleaños del equipo y anuncios de RRHH</td></tr>
+      <tr><td><strong>Onboarding</strong></td><td>Los 5 pasos que completas al entrar en la empresa</td></tr>
+      <tr><td><strong>Ausencias</strong></td><td>Solicitar vacaciones y cualquier otro tipo de ausencia, y ver en qué estado están</td></tr>
+      <tr><td><strong>Control horario</strong></td><td>Fichar entrada y salida, pausas, y consultar o corregir tu historial</td></tr>
+      <tr><td><strong>Nóminas</strong></td><td>Tus nóminas, mes a mes</td></tr>
+      <tr><td><strong>Documentos</strong></td><td>Tu carpeta personal: contrato, PRL, certificados y lo que firmaste en el onboarding</td></tr>
+      <tr><td><strong>Equipo</strong></td><td>Directorio de contactos, calendario de vacaciones del equipo y organigrama</td></tr>
+      <tr><td><strong>Buzón anónimo</strong></td><td>Escribir a RRHH sin dar tu nombre, y leer su respuesta</td></tr>
+      <tr><td><strong>Mi perfil</strong></td><td>Tus datos personales</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <div class="note"><strong>No todo el mundo ve lo mismo</strong>
+  Lo que aparece en tu menú depende de tu rol. Si echas algo en falta, mira el
+  <a href="#c7">capítulo 7</a>: puede que simplemente no te corresponda.</div>
+</section>
+
+<!-- ============ 2 ============ -->
+<section id="c2">
+  <h2><span class="n">02</span>Antes de empezar</h2>
+
+  <h3>Qué necesitas</h3>
+  <ul class="chk">
+    <li><strong>Tu cuenta de Google corporativa</strong> (la de <code>@ameliahub.com</code> o la del dominio de tu sociedad). Es la única forma de entrar.</li>
+    <li><strong>Un navegador actualizado</strong>: Chrome, Edge, Firefox o Safari en su versión reciente.</li>
+    <li><strong>Nada que instalar</strong> para la versión de escritorio. La app móvil es opcional (<a href="#c8">capítulo 8</a>).</li>
+  </ul>
+
+  <h3>Cómo entrar</h3>
+  <ol class="steps">
+    <li>Abre la dirección de la intranet que te ha facilitado RRHH.</li>
+    <li>Verás la pantalla de bienvenida: <em>«Inicia sesión con tu cuenta corporativa de Google»</em>.</li>
+    <li>Pulsa el botón de Google y elige tu cuenta corporativa.</li>
+    <li>Ya estás dentro. Si es tu primera vez, la intranet te lleva directamente a tu <a href="#c4">onboarding</a>.</li>
+  </ol>
+
+  <div class="warn"><strong>No hay usuario y contraseña propios de la intranet</strong>
+  La identidad es tu cuenta de Google, y por eso no existe un «recuperar contraseña» aquí: si no
+  puedes entrar en tu cuenta de Google, el problema se resuelve en Google, no en la intranet. Usa
+  siempre tu cuenta <strong>nominal</strong> (la que lleva tu nombre), nunca una cuenta compartida de
+  departamento: la intranet muestra <em>tus</em> nóminas y <em>tu</em> contrato a quien entra con esa cuenta.</div>
+
+  <h3>Cómo moverte</h3>
+  <p>A la izquierda tienes el <strong>menú lateral</strong> con todos tus módulos. Arriba, la
+  <strong>barra superior</strong> con el nombre de la página en la que estás, la <strong>campana</strong>
+  de notificaciones y tu <strong>avatar</strong>. En móvil el menú se abre con el botón de las tres
+  líneas.</p>
+</section>
+
+<!-- ============ 3 ============ -->
+<section id="c3">
+  <h2><span class="n">03</span>Tus primeros 15 minutos</h2>
+
+  <p>Si acabas de entrar y solo quieres hacer lo imprescindible, esto es lo mínimo, en este orden:</p>
+
+  <ol class="steps">
+    <li><strong>Ficha tu entrada.</strong> Ve a <span class="btn o">Control horario</span> o usa la
+    tarjeta «Fichaje de hoy» de Inicio, y pulsa <span class="btn">Fichar entrada</span>. Hazlo el
+    primer día, aunque todavía no hayas terminado el onboarding.</li>
+    <li><strong>Empieza el onboarding.</strong> Entra en <span class="btn o">Onboarding</span> y dale al
+    paso 1. Son 5 pasos y hay que hacerlos en orden.</li>
+    <li><strong>Mira tu saldo de vacaciones.</strong> En Inicio, la tarjeta de vacaciones te dice
+    cuántos días te corresponden este año. Lee el <a href="#c5-3">apartado 5.3</a> para entender el cálculo.</li>
+    <li><strong>Encuentra a tu equipo.</strong> <span class="btn o">Equipo</span> → pestaña
+    <em>Directorio</em>: ahí están los teléfonos y correos de todo el mundo.</li>
+    <li><strong>Ficha tu salida</strong> al terminar la jornada: <span class="btn">Fichar salida</span>.</li>
+  </ol>
+
+  <div class="ok"><strong>Con esto ya funcionas</strong>
+  El resto del manual está para consultarlo cuando lo necesites. Si solo lees un capítulo más, que sea
+  el <a href="#c9">9: «¿Por qué no puedo…?»</a> — resuelve las dudas que genera el 90 % de los mensajes a RRHH.</div>
+</section>
+
+<!-- ============ 4 ============ -->
+<section id="c4">
+  <h2><span class="n">04</span>Tu onboarding paso a paso</h2>
+
+  <p>El onboarding son <strong>5 pasos en orden fijo</strong>. Cada uno se desbloquea al completar el
+  anterior al 100 %: no puedes adelantarte ni saltarte ninguno. Verás el riel de progreso arriba, con
+  cada paso marcado como <em>Completado</em>, <em>En curso</em> o bloqueado.</p>
+
+  <div class="scroll">
+  <table>
+    <thead><tr><th style="width:8%">#</th><th style="width:30%">Paso</th><th>Qué tienes que hacer</th><th style="width:19%">Qué desbloquea</th></tr></thead>
+    <tbody>
+      <tr><td><strong>1</strong></td><td>Bienvenida a Amelia</td><td>Ver el vídeo completo</td><td>El cuestionario</td></tr>
+      <tr><td><strong>2</strong></td><td>Cuestionario: El Hincator</td><td>Aprobar con un 70 %</td><td>Los manuales</td></tr>
+      <tr><td><strong>3</strong></td><td>Manuales</td><td>Leer y confirmar cada manual</td><td>Tu perfil</td></tr>
+      <tr><td><strong>4</strong></td><td>Completa tu perfil</td><td>Rellenar tus datos</td><td>La documentación</td></tr>
+      <tr><td><strong>5</strong></td><td>Documentación firmada</td><td>Descargar, firmar y subir</td><td><strong>Fin del onboarding</strong></td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <div class="note"><strong>Puedes parar y seguir mañana</strong>
+  El progreso se guarda solo. Sal cuando quieras y al volver retomas donde lo dejaste.</div>
+
+  <h3 id="c4-1">Paso 1 · Bienvenida a Amelia (vídeo)</h3>
+  <p>Un vídeo corto de presentación de la empresa y del Hincator. <strong>No se puede saltar</strong>:
+  la intranet controla que lo veas de verdad y no admite adelantar grandes trozos de golpe. Si arrastras
+  la barra hacia delante, el progreso no se registra y el paso no se completa.</p>
+  <p>Cuando termina, el paso queda como <em>Vídeo completado</em> y se abre el 2.</p>
+  <div class="note"><strong>Puedes volver a verlo</strong>
+  Una vez completado, el vídeo sigue accesible. Rebobinar o repetirlo no borra tu progreso.</div>
+
+  <h3 id="c4-2">Paso 2 · Cuestionario: El Hincator</h3>
+  <p>Cuatro preguntas de opción única sobre el contenido del vídeo. Para aprobar necesitas el
+  <strong>70 % de aciertos</strong>: con 4 preguntas, eso significa <strong>acertar 3</strong>. Puedes
+  fallar una.</p>
+
+  <div class="card">
+    <h4>Las reglas del cuestionario</h4>
+    <ul>
+      <li><strong>Tienes 2 intentos.</strong> No uno.</li>
+      <li>Si fallas el primero, verás <strong>qué preguntas has fallado</strong> —el enunciado, no la
+      respuesta correcta— y el formulario se queda en pantalla para releerlas.</li>
+      <li>El botón <span class="btn o">Empezar de nuevo</span> <strong>limpia tus respuestas
+      anteriores</strong> a propósito: el segundo intento es un intento nuevo, no una corrección del
+      primero. Relee las preguntas antes de contestar.</li>
+      <li>Al aprobar también se te muestran las falladas, si hubo alguna. El paso ya está cerrado,
+      así que saber cuál era es solo información útil.</li>
+    </ul>
+  </div>
+
+  <div class="stop"><strong>Si agotas los 2 intentos sin aprobar</strong>
+  El paso <em>no</em> se completa y no verás ningún botón para un tercer intento (no existe).
+  <strong>Escribe a RRHH</strong> (<a href="#c12">capítulo 12</a>): solo RRHH puede reabrirte el
+  cuestionario. No es un castigo ni queda en tu expediente — es simplemente el único camino.</div>
+
+  <div class="warn"><strong>La respuesta correcta nunca se revela</strong>
+  Ni al fallar, ni al agotar los intentos. Con un segundo intento por delante, decirte la solución
+  convertiría el examen en un trámite. Si has fallado, la respuesta está en el vídeo del paso 1: vuelve a verlo.</div>
+
+  <h3 id="c4-3">Paso 3 · Manuales</h3>
+  <p>Aquí está el <strong>Manual de usuario del Hincator® 2026</strong>, la documentación de referencia
+  del producto. Ábrelo, léelo y <strong>confirma la lectura</strong>. Si hay varios manuales, la
+  confirmación se registra <strong>uno por uno</strong> y el paso no se completa hasta que estén todos.</p>
+  <p>Puedes descargar el PDF para leerlo con calma; la confirmación queda pendiente hasta que la pulses.</p>
+  <div class="note"><strong>Este paso es la puerta al resto</strong>
+  Está antes del perfil y de la documentación a propósito: la idea es que no llegues a firmar nada sin
+  haber leído antes la documentación de referencia.</div>
+
+  <h3 id="c4-4">Paso 4 · Completa tu perfil</h3>
+  <p>Un formulario con tus datos. <strong>Todos los campos son obligatorios salvo el móvil de
+  empresa</strong>, que está marcado como opcional:</p>
+  <ul>
+    <li>Nombre completo</li>
+    <li>Fecha de nacimiento</li>
+    <li>DNI / NIE</li>
+    <li>Móvil personal</li>
+    <li>Móvil de empresa <em>(opcional)</em></li>
+    <li>Dirección postal</li>
+    <li>Departamento</li>
+  </ul>
+  <div class="warn"><strong>La fecha de nacimiento se usa</strong>
+  Alimenta el widget de cumpleaños del equipo. Si no quieres que tu cumpleaños aparezca ahí,
+  háblalo con RRHH antes de rellenarlo — no es algo que puedas desactivar tú desde la pantalla.</div>
+
+  <h3 id="c4-5">Paso 5 · Documentación firmada</h3>
+  <p>El último paso, y el que <strong>cierra el onboarding</strong>. Tienes que:</p>
+  <ol class="steps">
+    <li><strong>Descargar</strong> las plantillas de los documentos que hay que firmar.</li>
+    <li><strong>Firmarlas</strong> por tu parte.</li>
+    <li><strong>Subirlas</strong> firmadas desde esta misma pantalla.</li>
+  </ol>
+  <p>Cada documento se sube por separado y verás <em>Documento subido</em> en los que ya tengas hechos.
+  El paso no se completa hasta que estén todos.</p>
+  <div class="note"><strong>Límite de tamaño: 10 MB por fichero</strong>
+  Si tu escáner genera ficheros más grandes, escanea en blanco y negro o a menor resolución. Un
+  documento firmado no necesita calidad fotográfica.</div>
+  <div class="ok"><strong>Al terminar</strong>
+  Se avisa automáticamente a RRHH de que has completado el onboarding. No tienes que escribir a nadie.</div>
+
+  <h3>Si eres externo o invitado</h3>
+  <p>Tu onboarding es <strong>más corto</strong>: solo el <strong>paso 1 (vídeo)</strong> y el
+  <strong>paso 3 (manuales)</strong>. No tienes cuestionario, ni perfil que completar, ni documentación
+  que firmar. Al confirmar los manuales, tu onboarding queda terminado.</p>
+</section>
+
+<!-- ============ 5 ============ -->
+<section id="c5">
+  <h2><span class="n">05</span>El día a día</h2>
+  <p>Un apartado por módulo. Salta al que necesites.</p>
+
+  <!-- 5.1 -->
+  <h3 id="c5-1">5.1 · Inicio</h3>
+  <p>Tu pantalla de resumen. Lo que verás:</p>
+  <div class="scroll">
+  <table>
+    <thead><tr><th style="width:30%">Tarjeta</th><th>Qué te dice</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Fichaje de hoy</strong></td><td>Si has fichado o no, y el cronómetro de tu jornada en marcha. Puedes fichar desde aquí sin ir a Control horario</td></tr>
+      <tr><td><strong>Vacaciones</strong></td><td>Los días que te corresponden este año y los que ya has gastado o solicitado</td></tr>
+      <tr><td><strong>Mis solicitudes de ausencia</strong></td><td>Tus últimas peticiones y en qué estado están</td></tr>
+      <tr><td><strong>Próximos festivos</strong></td><td>Los siguientes días festivos de tu sede</td></tr>
+      <tr><td><strong>Cumpleaños</strong></td><td>Quién cumple años en los próximos días</td></tr>
+      <tr><td><strong>Anuncios</strong></td><td>Comunicados de RRHH</td></tr>
+      <tr><td><strong>Accesos rápidos</strong></td><td>Atajos a los módulos que más se usan</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p>Además, algunos días te saldrá un <strong>aviso emergente</strong> al entrar: la felicitación de tu
+  aniversario en la empresa, o el recordatorio de que hoy todavía no has fichado. Aparecen
+  <strong>una sola vez al día</strong> y se cierran solos al atenderlos.</p>
+  <div class="note"><strong>Si eres externo o invitado</strong>
+  Tu Inicio es una versión reducida: solo <strong>Anuncios</strong> y <strong>Cumpleaños del
+  equipo</strong>. No verás fichaje, vacaciones ni solicitudes, porque esos módulos no forman parte de tu acceso.</div>
+
+  <!-- 5.2 -->
+  <h3 id="c5-2">5.2 · Control horario</h3>
+  <p>Aquí registras tu jornada. Es un <strong>registro legal obligatorio</strong> (artículo 34.9 del
+  Estatuto de los Trabajadores), y es la razón de que tenga reglas más estrictas que el resto de la
+  intranet.</p>
+
+  <h4>El fichaje del día</h4>
+  <p>La tarjeta «Fichaje de hoy» tiene cuatro botones, según el momento:</p>
+  <div class="scroll">
+  <table>
+    <thead><tr><th style="width:26%">Botón</th><th>Cuándo aparece</th><th>Qué hace</th></tr></thead>
+    <tbody>
+      <tr><td><span class="btn">Fichar entrada</span></td><td>Antes de empezar</td><td>Abre tu jornada y arranca el cronómetro</td></tr>
+      <tr><td><span class="btn o">Pausa</span></td><td>Con la jornada abierta</td><td>Detiene el contador — comida, gestiones, cualquier interrupción</td></tr>
+      <tr><td><span class="btn o">Reanudar</span></td><td>Estando en pausa</td><td>Vuelve a contar</td></tr>
+      <tr><td><span class="btn">Fichar salida</span></td><td>Con la jornada abierta</td><td>Cierra tu jornada del día</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p>El estado se ve de un vistazo: <span class="pill">En jornada</span> o
+  <span class="pill">En pausa</span>, con la hora a la que fichaste la entrada y el tiempo acumulado.</p>
+
+  <div class="warn"><strong>Las pausas cuentan</strong>
+  El tiempo en pausa no suma a tu jornada. Usa <span class="btn o">Pausa</span> para la comida en
+  lugar de fichar salida y volver a fichar entrada: es más fiel y te deja un único tramo limpio en el historial.</div>
+
+  <h4>Se me olvidó fichar</h4>
+  <p>Pasa. Tienes dos formas de arreglarlo, ambas en Control horario:</p>
+
+  <div class="card">
+    <h4>Un solo día — «Añadir o corregir un tramo manualmente»</h4>
+    <p>Indicas la fecha, la hora de entrada y la de salida, y opcionalmente una <strong>nota para
+    RRHH</strong> explicando qué pasó. Se registra como fichaje manual.</p>
+    <p><strong>Hasta 30 días hacia atrás.</strong> Más allá de eso ya no puedes hacerlo tú: escribe a RRHH.</p>
+  </div>
+
+  <div class="card">
+    <h4>Varios días seguidos — «Fichar rango»</h4>
+    <p>Para cuando se te ha olvidado toda la semana. Eliges el rango de fechas y un mismo horario de
+    entrada y salida, y la intranet crea un tramo por día.</p>
+    <p><strong>Máximo 7 días por operación.</strong> Y es más listo de lo que parece: <strong>se salta
+    automáticamente</strong> los sábados, los domingos, los festivos, los días en los que tenías una
+    <strong>ausencia aprobada</strong> y los que ya tenían fichaje. Al terminar te muestra el desglose
+    de qué ha creado y qué ha omitido, con el motivo de cada omisión.</p>
+  </div>
+
+  <div class="stop"><strong>No puedes fichar días futuros. Nunca.</strong>
+  Ni un día, ni en el alta de un solo día ni en el rango. El registro de jornada es un registro de
+  <em>horas ya trabajadas</em>: declarar la jornada del viernes que viene sería declarar horas que
+  nadie ha hecho todavía, y esas horas acabarían en el mismo informe que se entrega en una inspección
+  de trabajo. Si necesitas <em>planificar</em> turnos, eso no es el registro horario: háblalo con RRHH.</div>
+
+  <h4>Tu historial</h4>
+  <p>Debajo tienes la tabla de tus fichajes con fecha, entrada, salida, total y el origen del registro
+  (automático o manual). Puedes <strong>exportarlo</strong> eligiendo un rango de fechas, un trimestre
+  o un año completo, en <strong>Excel o PDF</strong>. Es el documento que necesitas si alguna vez
+  tienes que justificar tu jornada.</p>
+
+  <!-- 5.3 -->
+  <h3 id="c5-3">5.3 · Ausencias</h3>
+  <p>Vacaciones, bajas, permisos y cualquier otra ausencia se piden aquí.</p>
+
+  <h4>Pedir una ausencia</h4>
+  <ol class="steps">
+    <li>Pulsa <span class="btn">Nueva solicitud</span>.</li>
+    <li>Elige el <strong>tipo de ausencia</strong> en el desplegable.</li>
+    <li>Marca el <strong>rango de fechas</strong>. Verás en tiempo real cuántos días consume y cuántos te quedarían.</li>
+    <li>Envía. La solicitud queda <span class="pill">Pendiente</span> hasta que RRHH la revise.</li>
+  </ol>
+  <p>Cuando se resuelva pasará a <span class="pill">Aprobada</span> o
+  <span class="pill">Rechazada</span>, y te llega un aviso. Las ves todas en la pestaña de tus solicitudes.</p>
+
+  <h4>Cuántos días de vacaciones tengo</h4>
+  <p>No es una cifra fija: <strong>se calcula por semestres completos trabajados</strong>, a razón de
+  <strong>10 días laborables por semestre</strong>.</p>
+  <div class="scroll">
+  <table>
+    <thead><tr><th style="width:52%">Tu situación en el año</th><th>Días que te corresponden</th></tr></thead>
+    <tbody>
+      <tr><td>Llevas todo el año (entraste en un año anterior)</td><td><strong>20 días</strong></td></tr>
+      <tr><td>Entraste este año y llevas entre 6 y 11 meses</td><td><strong>10 días</strong></td></tr>
+      <tr><td>Entraste este año y llevas menos de 6 meses</td><td><strong>0 días</strong></td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p>Los meses se cuentan por calendario: el mes en que entraste cuenta como mes trabajado.</p>
+  <div class="note"><strong>Si crees que tu saldo no es el correcto</strong>
+  RRHH puede <strong>ajustarlo a mano</strong>, y ese ajuste manual manda sobre el cálculo automático.
+  Es lo que se usa en incorporaciones a mitad de año, acuerdos concretos o cuando la fecha de alta que
+  hay en el sistema no es la real. Escríbeles con tu caso en lugar de dar el número por perdido.</div>
+
+  <h4>Los tipos de ausencia</h4>
+  <p>Diez tipos, cada uno con su color en el calendario:</p>
+  <div class="scroll">
+  <table>
+    <thead><tr><th style="width:46%">Tipo</th><th>Color en el calendario</th></tr></thead>
+    <tbody>
+      <tr><td>Vacaciones</td><td><span class="swatch" style="background:#F59F0A"></span>Ámbar</td></tr>
+      <tr><td>Enfermedades</td><td><span class="swatch" style="background:#EF4343"></span>Rojo</td></tr>
+      <tr><td>Asuntos Propios</td><td><span class="swatch" style="background:#C2410C"></span>Naranja quemado</td></tr>
+      <tr><td>Remoto</td><td><span class="swatch" style="background:#8B5CF6"></span>Violeta</td></tr>
+      <tr><td>Permiso Matrimonio</td><td><span class="swatch" style="background:#F9A8D4"></span>Rosa claro</td></tr>
+      <tr><td>Paternidad</td><td><span class="swatch" style="background:#1E3A8A"></span>Azul marino</td></tr>
+      <tr><td>Enfermedad de un familiar</td><td><span class="swatch" style="background:#0E7490"></span>Cian oscuro</td></tr>
+      <tr><td>Descanso por horas extra</td><td><span class="swatch" style="background:#78716C"></span>Piedra</td></tr>
+      <tr><td>Fallecimiento Familiar</td><td><span class="swatch" style="background:#44403C"></span>Carbón</td></tr>
+      <tr><td>Bloqueado</td><td><span class="swatch" style="background:#94A3B8"></span>Gris azulado</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p>Cada ausencia lleva además su <strong>inicial o icono</strong> junto al color, para que se
+  distinga sin depender de la vista: los diez colores no son distinguibles para todo el mundo, y el
+  color por sí solo nunca es la información.</p>
+  <div class="note"><strong>Solo Vacaciones y Asuntos Propios descuentan de tu saldo</strong>
+  Una baja médica o un permiso por fallecimiento no te quitan días de vacaciones.</div>
+
+  <h4>Exportar tu calendario</h4>
+  <p>Puedes descargar <strong>tu</strong> calendario de ausencias en Excel o PDF, por mes, por año
+  natural o por un rango que elijas. El fichero indica en la cabecera de quién y de qué periodo es.</p>
+  <div class="note"><strong>Solo el tuyo</strong>
+  Un empleado exporta únicamente su propio calendario. RRHH y los socios pueden exportar el de
+  cualquier persona y el global.</div>
+
+  <!-- 5.4 -->
+  <h3 id="c5-4">5.4 · Nóminas y contrato</h3>
+  <p><span class="btn o">Nóminas</span> lista las tuyas por mes y año. Pulsa una para abrirla en el
+  visor, y descárgala si la necesitas. Tu <strong>contrato</strong> vigente está en tu carpeta de
+  Documentos, en el mismo visor.</p>
+  <div class="ok"><strong>Solo tú ves lo tuyo</strong>
+  Nadie de la plantilla puede ver tus nóminas ni tu contrato. El filtro no está en la pantalla: está
+  en el servidor. Aunque alguien escribiese la dirección exacta de tu nómina, recibiría un rechazo.
+  Las únicas personas con acceso son RRHH.</div>
+
+  <!-- 5.5 -->
+  <h3 id="c5-5">5.5 · Documentos</h3>
+  <p>Tu carpeta personal. Aquí acaban tu contrato, la documentación de PRL, tus certificados y los
+  documentos que firmaste en el onboarding. Puedes abrirlos en el visor y descargarlos.</p>
+  <p>Si tienes que <strong>subir</strong> algo, el límite es de <strong>10 MB por fichero</strong>.</p>
+
+  <!-- 5.6 -->
+  <h3 id="c5-6">5.6 · Equipo</h3>
+  <p>Tres pestañas:</p>
+
+  <h4>Directorio</h4>
+  <p>Toda la plantilla con <strong>nombre, teléfono y correo corporativo</strong>. Es el sitio para
+  buscar el contacto de alguien. Puedes filtrar por sede y por departamento.</p>
+
+  <h4>Calendario del equipo</h4>
+  <p>Vista mensual con las ausencias <strong>aprobadas</strong> de tus compañeros. Verás
+  <strong>quién está fuera y qué días</strong>, pero <strong>no de qué tipo</strong> es su ausencia: si
+  alguien está de baja médica o de permiso por fallecimiento de un familiar, eso es un dato de salud o
+  personal que no te corresponde. Solo RRHH ve el detalle.</p>
+
+  <h4>Organigrama</h4>
+  <p>El organigrama publicado del grupo, con la estructura del equipo. Puedes abrirlo a tamaño completo
+  y descargar el PDF — en pantalla pequeña el texto es diminuto, así que el enlace a tamaño completo es
+  la forma de leerlo.</p>
+  <div class="warn"><strong>Si no te encuentras en el organigrama, no falta ningún dato tuyo</strong>
+  El gráfico publicado hoy recoge al <strong>equipo del Hincator</strong> (28 personas), no a las 36
+  del grupo: la parte de inspección con dron queda fuera. Está pendiente una versión que cubra a todo
+  el mundo. Para la plantilla completa, usa el <strong>Directorio</strong>. El organigrama está además
+  en inglés, porque es material de marca tal y como lo publicó el equipo.</div>
+
+  <!-- 5.7 -->
+  <h3 id="c5-7">5.7 · Buzón anónimo</h3>
+  <p>Para escribir a RRHH <strong>sin dar tu nombre</strong>: una sugerencia, una queja, algo incómodo
+  de decir en persona.</p>
+  <ol class="steps">
+    <li><span class="btn">Nuevo mensaje</span> y escribe. Mínimo 10 caracteres.</li>
+    <li>Envía. RRHH lo recibe <strong>sin ningún dato tuyo</strong>: no ven quién lo ha mandado.</li>
+    <li>Al enviarlo, la intranet te da un <strong>código de referencia</strong>.
+    <strong>Guárdalo.</strong></li>
+    <li>Cuando RRHH responda, vuelves al buzón, introduces ese código y lees la respuesta.</li>
+  </ol>
+  <div class="stop"><strong>El código es la única forma de leer la respuesta</strong>
+  Precisamente porque el mensaje es anónimo, la intranet no puede avisarte ni asociar la respuesta a tu
+  cuenta. Si pierdes el código, pierdes la conversación: no hay manera de recuperarla, ni siquiera para
+  RRHH. Cópialo en algún sitio antes de cerrar la pantalla.</div>
+  <div class="warn"><strong>El anonimato lo rompe el contenido, no el sistema</strong>
+  La intranet no guarda tu identidad, pero si en el texto escribes datos que solo pueden ser tuyos
+  («soy el único de mi equipo que…»), te habrás identificado tú. Si quieres anonimato completo, cuida
+  qué detalles das.</div>
+
+  <!-- 5.8 -->
+  <h3 id="c5-8">5.8 · Mi perfil</h3>
+  <p>Tus datos personales: los que rellenaste en el paso 4 del onboarding, más tu sede, tu departamento
+  y tu fecha de alta. Revísalo de vez en cuando — un teléfono desactualizado ahí es un teléfono
+  desactualizado en el directorio de todo el mundo.</p>
+  <div class="note"><strong>Algunos campos no los cambias tú</strong>
+  Tu sede, tu departamento, tu fecha de alta y tu rol los gestiona RRHH. Si alguno está mal,
+  escríbeles: afectan a tu saldo de vacaciones y a lo que ves en la intranet.</div>
+
+  <!-- 5.9 -->
+  <h3 id="c5-9">5.9 · Notificaciones</h3>
+  <p>La <strong>campana</strong> de la barra superior acumula lo que te afecta. Los avisos habituales:</p>
+  <ul>
+    <li>Tu solicitud de ausencia ha sido <strong>aprobada</strong> o <strong>rechazada</strong>.</li>
+    <li>Tienes <strong>documentación pendiente de firmar</strong>.</li>
+    <li><strong>Recordatorio de fichaje</strong>: hoy no has registrado tu jornada.</li>
+    <li>Tu <strong>aniversario</strong> en la empresa, y los <strong>cumpleaños</strong> del equipo.</li>
+    <li>Hay un <strong>anuncio nuevo</strong> de RRHH.</li>
+    <li>Has <strong>completado el onboarding</strong>.</li>
+  </ul>
+  <p>Los más importantes te llegan también <strong>por correo</strong>. Los recordatorios de fichaje se
+  envían de <strong>lunes a viernes</strong>, y solo a quien de verdad tenía que fichar ese día: si es
+  festivo o estás de vacaciones aprobadas, no recibes nada.</p>
+</section>
+
+<!-- ============ 6 ============ -->
+<section id="c6">
+  <h2><span class="n">06</span>Manual del administrador</h2>
+  <div class="roleline"><span class="pill adm">Solo rol Administrador</span></div>
+  <p>Si tu rol es Administrador, además del menú común tienes la sección
+  <strong>Administración</strong>, con nueve pantallas. El resto de la plantilla no ve esta sección ni
+  puede llegar a ella escribiendo la dirección a mano.</p>
+
+  <div class="scroll">
+  <table>
+    <thead><tr><th style="width:27%">Pantalla</th><th>Qué gestionas ahí</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Plantilla</strong></td><td>Alta, edición y baja de personas: rol, sede, departamento, tipo de contrato, fecha de alta, responsable y ajuste manual de días de vacaciones</td></tr>
+      <tr><td><strong>Aprobar ausencias</strong></td><td>La bandeja de solicitudes pendientes. Aprobar o rechazar avisa automáticamente a la persona</td></tr>
+      <tr><td><strong>Calendario general</strong></td><td>Todas las ausencias de toda la plantilla, con el detalle del tipo, y exportación a Excel o PDF por persona o global</td></tr>
+      <tr><td><strong>Documentos</strong></td><td>Gestión documental de toda la plantilla: subida manual y sincronización con Google Drive</td></tr>
+      <tr><td><strong>Anuncios</strong></td><td>Crear y publicar comunicados. Puedes dirigirlos a todo el mundo, a una sociedad o a un rol concreto</td></tr>
+      <tr><td><strong>Buzón (recepción)</strong></td><td>Los mensajes anónimos recibidos, sin identidad del remitente, y tus respuestas</td></tr>
+      <tr><td><strong>Onboarding</strong></td><td>Contenido de los pasos y documentos a firmar, más el <strong>progreso de cada persona</strong>. Aquí es donde reinicias el cuestionario de quien agotó sus 2 intentos</td></tr>
+      <tr><td><strong>Festivos</strong></td><td>Los festivos vigentes de cada año, con su alcance por sede</td></tr>
+      <tr><td><strong>Tipos de ausencia</strong></td><td>Crear y editar tipos: color, días asignados, si descuenta del saldo, si exige justificante</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h3>Cosas que conviene saber antes de tocar</h3>
+
+  <div class="card">
+    <h4>La fecha de alta mueve dinero y días</h4>
+    <p>Al fijar la fecha de inicio de contrato de alguien, se calcula automáticamente su saldo de
+    vacaciones (10 días por semestre completo) y su aniversario laboral. Una fecha mal puesta no da
+    ningún error visible: da un saldo equivocado que nadie detecta hasta que la persona reclama.
+    Verifica esa fecha en cada alta.</p>
+  </div>
+
+  <div class="card">
+    <h4>Tus propias ausencias se aprueban solas</h4>
+    <p>Como el rol de administrador es único, no hay un segundo aprobador. Tus solicitudes nacen ya
+    aprobadas, sin pasar por la bandeja. Se siguen aplicando todas las validaciones (solapes, saldo,
+    días laborables) y queda registrado que fue una autoaprobación sin revisión de terceros.</p>
+  </div>
+
+  <div class="card">
+    <h4>Desactivar un tipo de ausencia, nunca borrarlo</h4>
+    <p>Un tipo de ausencia que ya se ha usado está referenciado por solicitudes históricas.
+    Desactivarlo lo saca del desplegable de nuevas solicitudes y lo conserva en el histórico, que es lo
+    que quieres. Borrarlo destruiría ese histórico.</p>
+  </div>
+
+  <div class="card">
+    <h4>El organigrama y la línea de reporte son dos cosas distintas</h4>
+    <p>El gráfico de <em>Equipo › Organigrama</em> es material publicado: una imagen. La jerarquía
+    real, la que usa el sistema, es el <strong>responsable</strong> de cada persona en
+    <em>Plantilla</em>. Cuando cambie la estructura hay que actualizar <strong>las dos cosas</strong>, y
+    la que manda para cualquier cálculo es la de Plantilla.</p>
+  </div>
+
+  <div class="card">
+    <h4>Alcance de los anuncios</h4>
+    <p>Puedes dirigir un anuncio a toda la plantilla, a una sociedad concreta o a un rol. Los externos
+    e invitados nunca reciben anuncios internos, aunque elijas «toda la plantilla».</p>
+  </div>
+</section>
+
+<!-- ============ 7 ============ -->
+<section id="c7">
+  <h2><span class="n">07</span>Qué ve cada rol</h2>
+  <p>Cinco roles. Si un módulo no aparece en tu menú, es porque tu rol no lo incluye — y el servidor
+  también lo rechaza, así que escribir la dirección a mano no sirve de nada.</p>
+
+  <div class="roleline">
+    <span class="pill emp">Empleado</span>
+    <span class="pill adm">Administrador</span>
+    <span class="pill soc">Socio</span>
+    <span class="pill bec">Becario</span>
+    <span class="pill ext">Externo / invitado</span>
+  </div>
+
+  <div class="scroll">
+  <table>
+    <thead><tr>
+      <th style="width:24%">Módulo</th><th>Empleado</th><th>Administrador</th><th>Socio</th><th>Becario</th><th>Externo</th>
+    </tr></thead>
+    <tbody>
+      <tr><td><strong>Inicio</strong></td><td>Completo</td><td>+ bandeja de aprobaciones</td><td>Completo</td><td>Completo</td><td>Reducido: anuncios y cumpleaños</td></tr>
+      <tr><td><strong>Onboarding</strong></td><td>5 pasos</td><td>5 pasos + gestión</td><td>5 pasos</td><td>5 pasos</td><td>Solo vídeo y manuales</td></tr>
+      <tr><td><strong>Ausencias</strong></td><td>Las suyas</td><td>+ aprobación y calendario global</td><td>Las suyas + calendario global</td><td>Las suyas</td><td>—</td></tr>
+      <tr><td><strong>Control horario</strong></td><td>El suyo</td><td>+ toda la plantilla</td><td>El suyo</td><td><strong>—</strong></td><td>—</td></tr>
+      <tr><td><strong>Nóminas</strong></td><td>Las suyas</td><td>Gestión completa</td><td>Las suyas</td><td>Las suyas</td><td>—</td></tr>
+      <tr><td><strong>Documentos</strong></td><td>Su carpeta</td><td>Gestión completa</td><td>Su carpeta</td><td>Su carpeta</td><td>—</td></tr>
+      <tr><td><strong>Equipo</strong></td><td>Lectura</td><td>Completo</td><td>Lectura</td><td>Lectura</td><td>Lectura</td></tr>
+      <tr><td><strong>Buzón anónimo</strong></td><td>Enviar</td><td>Recibir y responder</td><td>Enviar</td><td>Enviar</td><td>—</td></tr>
+      <tr><td><strong>Mi perfil</strong></td><td>El suyo</td><td>El suyo</td><td>El suyo</td><td>El suyo</td><td>El suyo</td></tr>
+      <tr><td><strong>Administración</strong></td><td>—</td><td><strong>Sí</strong></td><td>—</td><td>—</td><td>—</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h3>En una frase</h3>
+  <ul>
+    <li><span class="pill emp">Empleado</span> La plantilla. Todo lo suyo, y el equipo en lectura.</li>
+    <li><span class="pill adm">Administrador</span> RRHH. Un solo rol para una sola persona: gestiona la plataforma entera.</li>
+    <li><span class="pill soc">Socio</span> Igual que un empleado, más el calendario global de vacaciones (verlo y exportarlo). No aprueba ni administra nada.</li>
+    <li><span class="pill bec">Becario</span> Igual que un empleado, <strong>menos Control horario</strong>.</li>
+    <li><span class="pill ext">Externo / invitado</span> Colaboradores de fuera: onboarding reducido, directorio y organigrama en lectura.</li>
+  </ul>
+
+  <div class="warn"><strong>Becarios y registro de jornada</strong>
+  El rol Becario no tiene Control horario. Ojo: quien tenga un <strong>contrato formativo en
+  alternancia</strong> mantiene una relación laboral y por tanto la obligación legal de registro de
+  jornada; una <strong>práctica académica por convenio</strong> no. Si tu caso es el primero, este rol
+  no te corresponde y hay que revisarlo con RRHH.</div>
+</section>
+
+<!-- ============ 8 ============ -->
+<section id="c8">
+  <h2><span class="n">08</span>La app móvil</h2>
+  <p>La app es un <strong>acompañante de acceso rápido</strong>, no la intranet entera. Está pensada
+  para lo que se hace de pie y con prisa: fichar, mirar el calendario, pedir un día.</p>
+
+  <div class="scroll">
+  <table>
+    <thead><tr><th style="width:50%">En la app</th><th>Solo en el escritorio</th></tr></thead>
+    <tbody>
+      <tr><td>Fichaje (pantalla principal)</td><td>Todo el onboarding</td></tr>
+      <tr><td>Ausencias: pedir y consultar</td><td>Nóminas y contrato</td></tr>
+      <tr><td>Calendario: equipo, festivos y global</td><td>Documentos y tu carpeta personal</td></tr>
+      <tr><td>Buzón anónimo</td><td>Directorio y organigrama</td></tr>
+      <tr><td>Notificaciones</td><td>Panel de Administración</td></tr>
+      <tr><td>Tu perfil (solo lectura)</td><td>Exportaciones a Excel y PDF</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <p>Entras igual que en el escritorio: con tu cuenta de Google corporativa.</p>
+
+  <div class="note"><strong>Sin avisos push, por ahora</strong>
+  La app no te manda notificaciones al móvil todavía. Las verás dentro de la app y en tu correo.</div>
+  <div class="note"><strong>Si eres externo o invitado</strong>
+  La app no es para tu perfil: al entrar verás una pantalla que te remite a la versión de escritorio,
+  donde sí tienes tu onboarding y el equipo.</div>
+</section>
+
+<!-- ============ 9 ============ -->
+<section id="c9">
+  <h2><span class="n">09</span>«¿Por qué no puedo…?»</h2>
+  <p>Los límites de la intranet que más extrañan. Ninguno es un fallo: cada uno tiene un motivo legal
+  o de protección de datos detrás.</p>
+
+  <details class="faq"><summary>¿Por qué no puedo fichar los días de la semana que viene?</summary>
+  <div class="body"><p>Porque el registro de jornada es un registro de horas <strong>ya
+  trabajadas</strong>. Declarar el viernes que viene sería anotar horas que nadie ha hecho, y quedarían
+  mezcladas con las reales en el mismo informe que se entrega en una inspección de trabajo. Si lo que
+  necesitas es planificar turnos, es otra cosa: háblalo con RRHH.</p></div></details>
+
+  <details class="faq"><summary>¿Por qué el rango de fichaje no me deja más de 7 días?</summary>
+  <div class="body"><p>Es un tope deliberado. El alta en lote crea un tramo por día en una sola
+  operación, así que un rango mal seleccionado puede ensuciar semanas de registro de golpe. Con 7 días
+  el daño de una equivocación es acotado y fácil de revisar. Si vuelves de tres semanas sin fichar,
+  repite la operación varias veces.</p></div></details>
+
+  <details class="faq"><summary>¿Por qué no puedo hacer un tercer intento del cuestionario?</summary>
+  <div class="body"><p>El máximo son 2 intentos, y no existe un botón para pedir más. Escribe a RRHH:
+  pueden reabrirte el cuestionario desde su panel. Antes de eso, vuelve a ver el vídeo del paso 1 —
+  todas las respuestas están ahí.</p></div></details>
+
+  <details class="faq"><summary>¿Por qué no me dicen qué respuesta era la correcta?</summary>
+  <div class="body"><p>Porque tienes un segundo intento. Si te diéramos la solución al fallar, el
+  segundo intento sería copiar la respuesta, no demostrar que has entendido el contenido. Sí te
+  decimos <strong>qué preguntas</strong> has fallado, para que sepas dónde volver a mirar.</p></div></details>
+
+  <details class="faq"><summary>¿Por qué el vídeo no me deja adelantar?</summary>
+  <div class="body"><p>Porque el paso se completa cuando lo has visto, no cuando la barra llega al
+  final. Si arrastras hacia delante, el progreso no se registra. Una vez completado sí puedes
+  reproducirlo libremente.</p></div></details>
+
+  <details class="faq"><summary>¿Por qué veo que un compañero está fuera pero no de qué tipo es su ausencia?</summary>
+  <div class="body"><p>Porque el tipo de ausencia puede ser un dato de salud o algo estrictamente
+  personal — una baja médica, un fallecimiento en la familia. Saber que alguien no está es información
+  que necesitas para organizarte; saber por qué, no. Solo RRHH ve el detalle.</p></div></details>
+
+  <details class="faq"><summary>¿Por qué no me encuentro en el organigrama?</summary>
+  <div class="body"><p>Porque el gráfico publicado hoy cubre al equipo del Hincator (28 personas) y no
+  a las 36 del grupo: la parte de inspección con dron queda fuera. No te falta ningún dato en el
+  sistema. Para la plantilla completa, usa el Directorio.</p></div></details>
+
+  <details class="faq"><summary>¿Por qué mi saldo de vacaciones no son 23 días?</summary>
+  <div class="body"><p>El cálculo vigente es de 10 días laborables por semestre completo trabajado: 20
+  días para un año completo, 10 si entraste hace entre 6 y 11 meses, 0 si llevas menos de 6 meses. Si
+  tu caso tiene un acuerdo distinto, RRHH puede ajustar tu saldo a mano y ese ajuste manda sobre el
+  cálculo automático.</p></div></details>
+
+  <details class="faq"><summary>¿Por qué no tengo Control horario si soy becario?</summary>
+  <div class="body"><p>Porque el rol Becario no incluye ese módulo. Si tu beca es un
+  <strong>contrato formativo en alternancia</strong>, sí tienes relación laboral y sí debes registrar
+  tu jornada: eso significa que tu rol está mal asignado. Escribe a RRHH.</p></div></details>
+
+  <details class="faq"><summary>Me han pasado una dirección de la intranet y me dice que no tengo acceso.</summary>
+  <div class="body"><p>Está funcionando como debe. Los permisos no se aplican escondiendo enlaces: el
+  servidor comprueba tu rol en cada petición. Si crees que ese módulo sí te corresponde, es un tema de
+  rol, y lo arregla RRHH.</p></div></details>
+</section>
+
+<!-- ============ 10 ============ -->
+<section id="c10">
+  <h2><span class="n">10</span>Resolución de problemas</h2>
+
+  <div class="scroll">
+  <table>
+    <thead><tr><th style="width:34%">Lo que te pasa</th><th>Qué hacer</th></tr></thead>
+    <tbody>
+      <tr><td><strong>No puedo iniciar sesión</strong></td><td>Comprueba que estás usando tu cuenta corporativa de Google y no una personal. Si Google te deja entrar pero la intranet no, es que tu usuario aún no está dado de alta: escribe a RRHH.</td></tr>
+      <tr><td><strong>Entro pero no veo un módulo</strong></td><td>Mira el <a href="#c7">capítulo 7</a>. Si te corresponde y no lo tienes, es un tema de rol: RRHH.</td></tr>
+      <tr><td><strong>Se me quedó la jornada abierta de ayer</strong></td><td>Corrígelo con «Añadir o corregir un tramo manualmente», dentro de los 30 días. Deja una nota explicando qué pasó.</td></tr>
+      <tr><td><strong>Olvidé fichar hace más de 30 días</strong></td><td>Ya no puedes hacerlo tú. Escribe a RRHH con las fechas y los horarios.</td></tr>
+      <tr><td><strong>El rango de fichaje se ha saltado días</strong></td><td>Es correcto: omite fines de semana, festivos, días con ausencia aprobada y días que ya tenían fichaje. El resumen de la operación te dice el motivo de cada omisión.</td></tr>
+      <tr><td><strong>Agoté los 2 intentos del cuestionario</strong></td><td>Escribe a RRHH para que te lo reabra. No hay botón de reintento.</td></tr>
+      <tr><td><strong>No puedo subir un documento</strong></td><td>Pesa más de 10 MB. Vuelve a escanearlo en blanco y negro o a menor resolución.</td></tr>
+      <tr><td><strong>Mi saldo de vacaciones no cuadra</strong></td><td>Revisa tu fecha de alta en Mi perfil. Si está mal, es la causa. RRHH la corrige y puede ajustar el saldo a mano.</td></tr>
+      <tr><td><strong>Perdí el código del buzón anónimo</strong></td><td>No hay forma de recuperarlo, tampoco para RRHH. Manda un mensaje nuevo y guarda el código esta vez.</td></tr>
+      <tr><td><strong>Mis datos del directorio están desactualizados</strong></td><td>Los que dependen de ti, cámbialos en Mi perfil. Sede, departamento, fecha de alta y rol los cambia RRHH.</td></tr>
+      <tr><td><strong>Algo se ve raro o no responde</strong></td><td>Recarga la página. Si sigue, prueba en otro navegador y avisa a soporte técnico indicando qué pantalla y qué estabas haciendo.</td></tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<!-- ============ 11 ============ -->
+<section id="c11">
+  <h2><span class="n">11</span>Privacidad y tus datos</h2>
+
+  <h3>Cada uno ve lo suyo</h3>
+  <p>Tus nóminas, tu contrato, tus documentos y tu perfil son <strong>solo tuyos</strong>. Ese
+  aislamiento no depende de que la pantalla te oculte un botón: se aplica en el servidor, en cada
+  petición. Nadie de la plantilla puede llegar a tus datos manipulando una dirección.</p>
+
+  <h3>Qué se registra cuando firmas</h3>
+  <p>La firma de documentos del onboarding es <strong>trazable</strong>. Al firmar se guarda la
+  <strong>fecha y la hora</strong>, la <strong>dirección IP</strong> desde la que firmaste y una
+  <strong>huella digital del documento</strong>. Esa huella permite demostrar después que el fichero no
+  se ha modificado desde que lo firmaste — te protege a ti tanto como a la empresa.</p>
+
+  <h3>El buzón anónimo, en concreto</h3>
+  <p>RRHH recibe tu mensaje <strong>sin ningún dato de quién lo envía</strong>. El precio de ese
+  anonimato es el código de referencia: como no hay nada que te vincule al mensaje, la respuesta solo
+  se puede recuperar con el código. Lo que sí puede identificarte es el <strong>contenido</strong> que
+  escribas — eso está en tu mano.</p>
+
+  <h3>Qué se ve de ti</h3>
+  <div class="scroll">
+  <table>
+    <thead><tr><th style="width:38%">Dato</th><th>Quién lo ve</th></tr></thead>
+    <tbody>
+      <tr><td>Nombre, teléfono, correo corporativo</td><td>Toda la plantilla, en el Directorio</td></tr>
+      <tr><td>Que estás ausente, y qué días</td><td>Tu equipo, en el calendario</td></tr>
+      <tr><td><strong>El tipo</strong> de tu ausencia</td><td>Solo RRHH</td></tr>
+      <tr><td>Día y mes de tu cumpleaños</td><td>Toda la plantilla, en el widget de cumpleaños</td></tr>
+      <tr><td>Nóminas, contrato, documentos</td><td>Solo tú y RRHH</td></tr>
+      <tr><td>DNI/NIE, dirección, móvil personal</td><td>Solo tú y RRHH</td></tr>
+      <tr><td>Tus fichajes</td><td>Solo tú y RRHH</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p>Si algo de esto te plantea un problema concreto, plantéalo a RRHH: hay campos que se pueden dejar
+  fuera del directorio.</p>
+</section>
+
+<!-- ============ 12 ============ -->
+<section id="c12">
+  <h2><span class="n">12</span>Contacto y soporte</h2>
+
+  <div class="scroll">
+  <table>
+    <thead><tr><th style="width:38%">Si tu duda es sobre…</th><th>Escribe a</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><strong>Personas y gestión laboral</strong><br>
+        <span style="color:var(--muted);font-size:13px">Vacaciones y saldo, aprobaciones, nóminas,
+        contrato, tu rol o tus datos, reabrir el cuestionario, fichajes de más de 30 días</span></td>
+        <td><a href="mailto:people@ameliahub.com"><strong>people@ameliahub.com</strong></a><br>
+        <a href="mailto:admin@ameliahub.com"><strong>admin@ameliahub.com</strong></a><br>
+        <span style="color:var(--muted);font-size:13px">Las dos llegan a RRHH (Beatriz Luna, People
+        Manager). Usa cualquiera de ellas.</span></td>
+      </tr>
+      <tr>
+        <td><strong>Algo no funciona</strong><br>
+        <span style="color:var(--muted);font-size:13px">Errores, pantallas en blanco, no puedes entrar,
+        la app móvil falla</span></td>
+        <td>Soporte técnico interno<br>
+        <span style="color:var(--muted);font-size:13px">Indica siempre: en qué pantalla estabas, qué
+        intentabas hacer, qué mensaje viste y en qué navegador o móvil.</span></td>
+      </tr>
+      <tr>
+        <td><strong>Algo delicado, o preferirías no dar tu nombre</strong></td>
+        <td><strong>Buzón anónimo</strong> de la intranet<br>
+        <span style="color:var(--muted);font-size:13px">Guarda el código de referencia para leer la respuesta.</span></td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+
+  <div class="note"><strong>Cómo pedir ayuda para que te resuelvan a la primera</strong>
+  Di <strong>qué</strong> querías hacer, <strong>dónde</strong> estabas (el nombre de la pantalla),
+  <strong>qué</strong> pasó y <strong>cuándo</strong>. «No me deja fichar» tarda tres correos de ida y
+  vuelta; «en Control horario, al añadir un tramo del 12 de julio, me dice que la fecha está fuera de
+  plazo» se resuelve en uno.</div>
+</section>
+
+<!-- ============ 13 ============ -->
+<section id="c13">
+  <h2><span class="n">13</span>Glosario</h2>
+  <div class="scroll">
+  <table>
+    <thead><tr><th style="width:27%">Término</th><th>Qué significa aquí</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Fichar</strong></td><td>Registrar tu hora de entrada o de salida. Obligación legal, no un control interno.</td></tr>
+      <tr><td><strong>Tramo</strong></td><td>Un bloque de jornada con su entrada y su salida. Un día normal tiene un tramo.</td></tr>
+      <tr><td><strong>Fichaje manual</strong></td><td>El que añades tú a posteriori, en lugar de con los botones del día. Queda marcado como manual.</td></tr>
+      <tr><td><strong>Saldo / días disponibles</strong></td><td>Días de vacaciones que te quedan: los que te corresponden menos los ya gastados o solicitados.</td></tr>
+      <tr><td><strong>Ausencia</strong></td><td>Cualquier día que no trabajas y está justificado: vacaciones, baja, permiso, remoto.</td></tr>
+      <tr><td><strong>Onboarding</strong></td><td>Los 5 pasos de incorporación.</td></tr>
+      <tr><td><strong>Rol</strong></td><td>Tu perfil de acceso: determina qué módulos ves. Lo asigna RRHH.</td></tr>
+      <tr><td><strong>Sociedad / sede</strong></td><td>La empresa del grupo a la que perteneces: Amelia Hub, Lab, Ops o Hincator.</td></tr>
+      <tr><td><strong>Hincator®</strong></td><td>El producto de Amelia. El vídeo, el cuestionario y el manual del onboarding van sobre él.</td></tr>
+      <tr><td><strong>Código de referencia</strong></td><td>El código que te da el buzón anónimo para leer después la respuesta de RRHH.</td></tr>
+      <tr><td><strong>PRL</strong></td><td>Prevención de Riesgos Laborales. Su documentación está en tu carpeta de Documentos.</td></tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<!-- ============ 14 ============ -->
+<section id="c14">
+  <h2><span class="n">14</span>Control de versiones</h2>
+  <div class="scroll">
+  <table>
+    <thead><tr><th style="width:12%">Versión</th><th style="width:18%">Fecha</th><th>Cambios</th></tr></thead>
+    <tbody>
+      <tr><td><strong>1.1</strong></td><td>31/07/2026</td><td>Primera edición del manual de uso. Recoge el onboarding reordenado (manuales antes de perfil y documentación), el cuestionario con 2 intentos, el catálogo de 10 tipos de ausencia, el fichaje en lote, el organigrama publicado y el rol Becario.</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h3>Notas de esta edición, para quien la mantenga</h3>
+  <ul>
+    <li><strong>Días de vacaciones.</strong> El manual documenta el cálculo vigente en el sistema: 10
+    días laborables por semestre completo (20 al año completo). El requerimiento original y varios
+    documentos de diseño siguen diciendo «23 días/año»; esa cifra está derogada por la regla de
+    semestres. Si algún día se vuelve al 23, hay que corregir el apartado 5.3 y el capítulo 9.</li>
+    <li><strong>Rol Becario.</strong> Documentado aquí como quinto rol, sin Control horario. Queda
+    pendiente la validación laboral de si un contrato formativo en alternancia puede quedar fuera del
+    registro de jornada — si la respuesta es que no, cambia el capítulo 7.</li>
+    <li><strong>Organigrama.</strong> Cubre 28 de las 36 personas del grupo y está en inglés. Cuando
+    llegue una versión completa y en español, hay que quitar los avisos del apartado 5.6 y del
+    capítulo 9.</li>
+    <li><strong>Soporte técnico.</strong> El capítulo 12 no indica una dirección concreta: falta
+    decidirla. Rellenar antes de repartir el manual.</li>
+  </ul>
+
+  <footer>
+    <p><strong>Manual de uso de la intranet de Amelia</strong> · Versión 1.1 · 31 de julio de 2026<br>
+    Amelia Hub · Amelia Lab · Amelia Ops · Hincator<br>
+    Para cualquier duda que este manual no resuelva:
+    <a href="mailto:people@ameliahub.com">people@ameliahub.com</a> ·
+    <a href="mailto:admin@ameliahub.com">admin@ameliahub.com</a></p>
+  </footer>
+</section>
+
+</div>
+</main>
+
+<a href="#" class="toplink" aria-label="Volver arriba">↑</a>
+
+<script>
+(function(){
+  var nav=document.getElementById('nav'),burger=document.getElementById('burger');
+  burger.addEventListener('click',function(){nav.classList.toggle('open');});
+
+  var links=[].slice.call(nav.querySelectorAll('a[href^="#"]'));
+  links.forEach(function(a){
+    a.addEventListener('click',function(){if(window.innerWidth<=1024)nav.classList.remove('open');});
+  });
+
+  /* Resaltado de la sección visible */
+  var targets=[].slice.call(document.querySelectorAll('section[id],h3[id]'));
+  function mark(){
+    var y=window.scrollY+90,cur=null;
+    targets.forEach(function(t){if(t.offsetTop<=y)cur=t.id;});
+    links.forEach(function(a){a.classList.toggle('on',a.getAttribute('href')==='#'+cur);});
+  }
+  window.addEventListener('scroll',mark,{passive:true});mark();
+
+  /* Filtro del índice */
+  var search=document.getElementById('search'),
+      items=[].slice.call(document.querySelectorAll('#toc li')),
+      noHit=document.getElementById('noHit');
+  search.addEventListener('input',function(){
+    var q=search.value.trim().toLowerCase(),shown=0;
+    items.forEach(function(li){
+      var hit=!q||li.textContent.toLowerCase().indexOf(q)>-1;
+      li.classList.toggle('hide',!hit);
+      if(hit&&!li.parentElement.classList.contains('sub'))shown++;
+    });
+    noHit.style.display=shown?'none':'block';
+  });
+})();
+</script>
+</body>
+</html>

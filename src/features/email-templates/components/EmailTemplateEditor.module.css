@@ -1,0 +1,162 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  border-radius: var(--radius);
+  border: 1px solid hsl(var(--border));
+  padding: var(--space-4);
+}
+
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.label {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 700;
+  color: hsl(var(--foreground));
+}
+
+.description {
+  margin: var(--space-1) 0 0;
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  color: hsl(var(--muted-foreground));
+}
+
+/* «Editada» vs «Texto por defecto»: es la distinción que el admin necesita para
+   saber de un vistazo qué ha tocado. Los dos usan las variantes `*-on-tint`
+   porque el texto va sobre un tinte del color. */
+.badgeEdited,
+.badgeDefault {
+  flex: 0 0 auto;
+  border-radius: 999px;
+  padding: 0.125rem var(--space-2);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.badgeEdited {
+  background-color: hsl(var(--success) / 0.12);
+  color: hsl(var(--success-on-tint));
+}
+
+.badgeDefault {
+  background-color: hsl(var(--muted));
+  color: hsl(var(--muted-foreground));
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1_5);
+}
+
+.textarea {
+  width: 100%;
+  min-height: 8rem;
+  resize: vertical;
+  border-radius: var(--radius);
+  border: 1px solid hsl(var(--input));
+  background-color: hsl(var(--card));
+  padding: var(--space-2) var(--space-3);
+  /* Tipografía de PROSA, no de código: lo que se escribe aquí es el texto de un
+     correo. El monoespaciado anterior sugería que había que escribir HTML. */
+  font-size: 0.875rem;
+  line-height: 1.6;
+  color: hsl(var(--foreground));
+}
+
+.textarea:focus-visible {
+  outline: 2px solid hsl(var(--ring));
+  outline-offset: -1px;
+}
+
+.hint {
+  margin: 0;
+  font-size: 0.75rem;
+  line-height: 1.5;
+  color: hsl(var(--muted-foreground));
+}
+
+.placeholders {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1_5);
+}
+
+/* Botón, no `<code>`: ahora se pulsa para insertar el campo. Sin monoespaciado
+   —el admin ya no escribe código— y con la etiqueta legible en vez de la clave. */
+.chip {
+  cursor: pointer;
+  border-radius: 999px;
+  border: 1px solid hsl(var(--border));
+  background-color: hsl(var(--muted));
+  padding: 0.25rem var(--space-2);
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: hsl(var(--foreground));
+}
+
+.chip:hover {
+  border-color: hsl(var(--primary));
+  background-color: hsl(var(--primary) / 0.1);
+}
+
+.chip:focus-visible {
+  outline: 2px solid hsl(var(--ring));
+  outline-offset: 1px;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--space-2);
+}
+
+.error {
+  margin: 0;
+  font-size: 0.8125rem;
+  color: hsl(var(--destructive-on-tint));
+}
+
+.preview {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  border-top: 1px solid hsl(var(--border));
+  padding-top: var(--space-4);
+}
+
+.previewSubject {
+  margin: 0;
+  font-size: 0.875rem;
+  color: hsl(var(--foreground));
+}
+
+.previewLabel {
+  font-weight: 700;
+  color: hsl(var(--muted-foreground));
+}
+
+/* Altura fija con scroll interno: un correo largo no debe empujar el resto de la
+   pantalla hacia abajo mientras el admin edita. */
+.previewFrame {
+  width: 100%;
+  height: 26rem;
+  border: 1px solid hsl(var(--border));
+  border-radius: var(--radius);
+  background-color: #ffffff;
+}

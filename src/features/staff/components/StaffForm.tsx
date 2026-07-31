@@ -11,7 +11,10 @@ import { useRoles } from '@/features/roles/application/useRoles';
 import { cn } from '@/lib/utils';
 import { useCreateStaffMember } from '../application/useCreateStaffMember';
 import { useUpdateStaffMember } from '../application/useUpdateStaffMember';
+import { useStaffRoleHistory } from '../application/useStaffRoleHistory';
 import { CONTRACT_TYPE_OPTIONS } from '../domain/contractType';
+import { buildRoleChangeWarning } from '../domain/roleChangeWarning';
+import { RoleHistoryTimeline } from './RoleHistoryTimeline';
 import type { ContractType, EntityCode, StaffMember } from '../domain/models';
 import styles from './StaffForm.module.css';
 
@@ -90,6 +93,13 @@ export function StaffForm({ member, onSaved, onCancel }: StaffFormProps) {
   // reemplaza el mapa `ROLE_LABEL`/`ROLES` hardcodeado: sumar un rol nuevo
   // (pasó con `socio`, migración 024) ya no requiere tocar este componente.
   const { data: roles, isLoading: isLoadingRoles } = useRoles();
+  // Solo en edición: en el alta no hay historial que mostrar todavía, y el hook
+  // se salta la request con `userId = null`.
+  const {
+    data: roleHistory,
+    isLoading: isLoadingRoleHistory,
+    isError: isRoleHistoryError,
+  } = useStaffRoleHistory(member?.id ?? null);
 
   const [fullName, entityCode, isActive] = watch(['fullName', 'entityCode', 'isActive']);
   const error = createError ?? updateError;
@@ -105,6 +115,13 @@ export function StaffForm({ member, onSaved, onCancel }: StaffFormProps) {
       values.contractType === UNSPECIFIED_CONTRACT_TYPE ? null : values.contractType;
 
     if (member) {
+      // Un cambio de rol altera permisos y CIERRA la sesión de esa persona
+      // (el backend revoca sus sesiones para que el nuevo `role` aplique sin
+      // esperar los 15 min del access token). Se confirma antes: es la única
+      // acción de este formulario con efecto inmediato sobre otro usuario.
+      const warning = buildRoleChangeWarning(member.fullName, member.role, values.role);
+      if (warning && !window.confirm(warning)) return;
+
       // `PATCH /staff/{id}` no admite `full_name`/`email`/`hire_date` — el
       // backend no permite editarlos desde este endpoint.
       await updateMember({
@@ -277,6 +294,17 @@ export function StaffForm({ member, onSaved, onCancel }: StaffFormProps) {
             <p className={styles.statusHint}>Al desactivar, la persona pierde acceso a la intranet</p>
           </div>
           <Switch checked={isActive} onCheckedChange={(checked) => setValue('isActive', checked)} />
+        </div>
+      )}
+
+      {member && (
+        <div className={styles.historySection}>
+          <p className={styles.historyTitle}>Historial de roles</p>
+          <RoleHistoryTimeline
+            changes={roleHistory ?? []}
+            isLoading={isLoadingRoleHistory}
+            isError={isRoleHistoryError}
+          />
         </div>
       )}
 

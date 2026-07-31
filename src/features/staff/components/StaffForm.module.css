@@ -89,3 +89,20 @@
   justify-content: flex-end;
   gap: var(--space-3);
 }
+
+/* Historial de roles (migración backend 039) — solo en edición. Separado por
+   una línea para que no se lea como otro campo editable del formulario. */
+.historySection {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding-top: var(--space-4);
+  border-top: 1px solid hsl(var(--border));
+}
+
+.historyTitle {
+  margin: 0;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: hsl(var(--foreground));
+}

@@ -18,6 +18,13 @@ import type {
 // bloqueo especial) y `status` en 'not_started' (el estado más conservador:
 // no da por completado ni en curso a alguien que no lo está).
 const STEP_TYPES: OnboardingStepType[] = ['video', 'quiz', 'signature', 'manual', 'profile'];
+const STEP_PROGRESS_STATUSES = [
+  'locked',
+  'available',
+  'in_progress',
+  'completed',
+] as const;
+
 const PROGRESS_STATUSES: OnboardingProgressStatus[] = ['not_started', 'in_progress', 'completed'];
 
 export function adminStepFromDTO(dto: AdminOnboardingStepDTO): AdminOnboardingStep {
@@ -28,6 +35,16 @@ export function adminStepFromDTO(dto: AdminOnboardingStepDTO): AdminOnboardingSt
     title: dto.title,
     config: dto.config,
     isActive: dto.is_active,
+    documents: (dto.documents ?? []).map((document) => ({
+      id: document.id,
+      kind: document.kind,
+      title: document.title,
+      version: document.version,
+      url: document.url,
+      displayOrder: document.display_order,
+      acknowledged: document.acknowledged,
+      locked: document.locked,
+    })),
   };
 }
 
@@ -49,5 +66,10 @@ export function progressEmployeeFromDTO(dto: OnboardingProgressEmployeeDTO): Onb
     completedSteps: dto.completed_steps,
     totalSteps: dto.total_steps,
     currentStepTitle: dto.current_step_title,
+    steps: (dto.steps ?? []).map((step) => ({
+      stepOrder: step.step_order,
+      title: step.title,
+      status: parseEnum(step.status, STEP_PROGRESS_STATUSES, 'locked'),
+    })),
   };
 }

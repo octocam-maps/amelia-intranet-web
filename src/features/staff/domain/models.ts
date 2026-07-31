@@ -102,3 +102,25 @@ export interface StaffListResult {
   members: StaffMember[];
   total: number;
 }
+
+/**
+ * Una transición de rol registrada (`user_role_history`, migración backend 039).
+ *
+ * Contesta la pregunta que la ficha no podía: DESDE CUÁNDO alguien tiene el rol
+ * que tiene. Ojo con la distinción — la antigüedad LABORAL es `hireDate`, que es
+ * inmutable; esta es la antigüedad EN EL ROL.
+ */
+export interface RoleChange {
+  id: string;
+  /** `null` = alta inicial: no venía de ningún rol previo. Se pinta como
+   * «Alta», nunca como «de ??? a X». */
+  fromRole: UserRole | null;
+  toRole: UserRole;
+  /** `null` = «no consta»: filas reconstruidas por la migración para la
+   * plantilla que ya existía, o autor borrado. NO se sustituye por «Sistema» —
+   * una auditoría que miente es peor que un hueco honesto. */
+  changedById: string | null;
+  changedByName: string | null;
+  changedAt: string;
+  note: string | null;
+}
