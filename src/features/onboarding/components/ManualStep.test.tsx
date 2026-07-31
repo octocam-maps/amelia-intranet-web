@@ -49,6 +49,15 @@ function buildStep(overrides: Partial<OnboardingStep> = {}): OnboardingStep {
   };
 }
 
+/** Despliega un manual del acordeón por su título. El disparador es un botón
+ *  cuyo nombre accesible incluye el título del documento. */
+function expand(title: RegExp) {
+  fireEvent.click(screen.getByRole('button', { name: title }));
+}
+
+const CLICKUP_TITLE = /manual de uso de clickup/i;
+const HINCATOR_TITLE = /manual de usuario hincator/i;
+
 /** `variables` se tipa EXPLÍCITAMENTE por el mismo motivo que en
  * `EmailTemplateEditor.test.tsx`: `= undefined` sin tipo lo fija en `undefined`. */
 function mockHook({
@@ -157,9 +166,13 @@ describe('ManualStep — un solo manual', () => {
 
     // Solo el segundo manual está sin confirmar, así que solo él tiene botón.
     expect(screen.getByRole('button', { name: /he leído y confirmo/i })).toBeDisabled();
-    // Cada enlace se identifica por su documento (`aria-label`), no por posición.
+
+    // Se despliega y se abre el de ClickUp (ya confirmado), no el pendiente.
+    expand(CLICKUP_TITLE);
     fireEvent.click(screen.getByRole('link', { name: /leer el manual: manual de uso de clickup/i }));
-    // Se abrió el de ClickUp (ya confirmado), no el pendiente: sigue bloqueado.
+
+    // El del pendiente sigue bloqueado: el gate es por documento, no global.
+    expand(HINCATOR_TITLE);
     expect(screen.getByRole('button', { name: /he leído y confirmo/i })).toBeDisabled();
   });
 
@@ -269,8 +282,15 @@ describe('ManualStep — cascada de manuales (migración 040)', () => {
 
     expect(screen.getByText(/lectura de todos los manuales confirmada/i)).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: /he leído y confirmo/i })).not.toBeInTheDocument();
-    // Siguen consultables después.
-    expect(screen.getAllByRole('link', { name: /leer el manual/i })).toHaveLength(2);
+
+    // Sin nada pendiente el acordeón arranca cerrado: no hay ningún manual que
+    // "toque leer" al que abrirle el panel.
+    expect(screen.queryByRole('link', { name: /leer el manual/i })).not.toBeInTheDocument();
+    // Pero siguen consultables desplegándolos.
+    expand(CLICKUP_TITLE);
+    expect(
+      screen.getByRole('link', { name: /leer el manual: manual de uso de clickup/i })
+    ).toBeInTheDocument();
   });
 
   it('un manual añadido tras cerrar el paso NO ofrece confirmar (el POST daría 422)', () => {
@@ -297,10 +317,14 @@ describe('ManualStep — cascada de manuales (migración 040)', () => {
       />
     );
 
+    // El manual nuevo es el único pendiente, así que el acordeón lo arranca
+    // desplegado: es justo el que esa persona no ha visto.
     expect(screen.queryByRole('button', { name: /he leído y confirmo/i })).not.toBeInTheDocument();
     expect(screen.getByText(/no tienes que confirmar nada/i)).toBeInTheDocument();
     // Se puede leer igualmente: es el objetivo de haberlo añadido.
-    expect(screen.getAllByRole('link', { name: /leer el manual/i })).toHaveLength(3);
+    expect(
+      screen.getByRole('link', { name: /leer el manual: manual de uso de la intranet/i })
+    ).toBeInTheDocument();
   });
 
   it('con un manual sin confirmar, el paso cerrado NO afirma que estén todos leídos', () => {
@@ -324,8 +348,90 @@ describe('ManualStep — cascada de manuales (migración 040)', () => {
     mockHook({ isPending: true, variables: { stepId: 'step-3', documentId: CLICKUP.id } });
     render(<ManualStep step={buildStep({ documents: [CLICKUP, buildDocument()] })} />);
 
+    // ClickUp es el pendiente, así que su panel está desplegado y es el que
+    // muestra el envío en curso.
     expect(screen.getByRole('button', { name: /confirmando…/i })).toBeInTheDocument();
+
     // El otro manual conserva su botón normal: no se queda todo el paso en vilo.
+    expand(HINCATOR_TITLE);
     expect(screen.getByRole('button', { name: /he leído y confirmo/i })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /confirmando…/i })).not.toBeInTheDocument();
+  });
+});
+
+describe('ManualStep — acordeón (un manual desplegado a la vez)', () => {
+  beforeEach(() => vi.clearAllMocks());
+
+  it('arranca desplegado el manual que TOCA leer, no el primero de la lista', () => {
+    // Con ClickUp ya confirmado, abrirle el panel otra vez no aporta nada: lo que
+    // esa persona necesita es el pendiente.
+    mockHook();
+    render(
+      <ManualStep
+        step={buildStep({
+          documents: [{ ...CLICKUP, acknowledged: true }, buildDocument()],
+        })}
+      />
+    );
+
+    expect(screen.getByRole('button', { name: HINCATOR_TITLE })).toHaveAttribute(
+      'aria-expanded',
+      'true'
+    );
+    expect(screen.getByRole('button', { name: CLICKUP_TITLE })).toHaveAttribute(
+      'aria-expanded',
+      'false'
+    );
+  });
+
+  it('desplegar uno cierra el que estuviera abierto', () => {
+    // Es el punto del acordeón: con los tres abiertos había tres pares de
+    // «Leer el manual»/«Descargar PDF» repetidos y no se veía cuál tocaba.
+    mockHook();
+    render(<ManualStep step={buildStep({ documents: [CLICKUP, buildDocument({ locked: true })] })} />);
+
+    expect(screen.getByRole('button', { name: CLICKUP_TITLE })).toHaveAttribute(
+      'aria-expanded',
+      'true'
+    );
+
+    expand(HINCATOR_TITLE);
+
+    expect(screen.getByRole('button', { name: CLICKUP_TITLE })).toHaveAttribute(
+      'aria-expanded',
+      'false'
+    );
+    // Y solo queda un par de acciones en pantalla, el del manual desplegado.
+    expect(screen.queryAllByRole('link', { name: /leer el manual/i })).toHaveLength(0);
+    expect(screen.getByText(/se desbloquea al confirmar el manual anterior/i)).toBeVisible();
+  });
+
+  it('se puede cerrar el desplegado y NO se vuelve a abrir solo', () => {
+    // `undefined` (sin tocar) y `null` (cerrado a propósito) son estados
+    // distintos; si no se distinguieran, cerrarlo lo reabriría en el mismo render.
+    mockHook();
+    render(<ManualStep step={buildStep()} />);
+
+    const toggle = screen.getByRole('button', { name: HINCATOR_TITLE });
+    expect(toggle).toHaveAttribute('aria-expanded', 'true');
+
+    fireEvent.click(toggle);
+
+    expect(toggle).toHaveAttribute('aria-expanded', 'false');
+    expect(screen.queryByRole('link', { name: /leer el manual/i })).not.toBeInTheDocument();
+  });
+
+  it('el disparador controla el panel que dice controlar', () => {
+    // `aria-controls` roto deja al lector de pantalla sin saber qué despliega el
+    // botón, y el patrón de acordeón pierde el sentido.
+    mockHook();
+    render(<ManualStep step={buildStep()} />);
+
+    const toggle = screen.getByRole('button', { name: HINCATOR_TITLE });
+    const panelId = toggle.getAttribute('aria-controls');
+    expect(panelId).toBeTruthy();
+    expect(document.getElementById(panelId ?? '')).toContainElement(
+      screen.getByRole('link', { name: /leer el manual: manual de usuario hincator/i })
+    );
   });
 });

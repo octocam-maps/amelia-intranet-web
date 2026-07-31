@@ -15,16 +15,60 @@
   color: hsl(var(--muted-foreground));
 }
 
-/* Cabecera de cada fila: icono + nombre del documento + badge de confirmado.
-   Antes era `.manualHeader`, la cabecera en versalitas sobre fondo `muted` de una
-   tarjeta por manual. Con la lista en un solo contenedor ya no hace falta ese
-   fondo para delimitar nada: lo hace la línea que separa las filas. */
-.manualInfo {
+/* El encabezado no aporta estilo: existe para que el disparador del acordeón sea
+   un `h3` navegable por lectores de pantalla. */
+.manualHeading {
+  margin: 0;
+  font: inherit;
+}
+
+/* Disparador del acordeón: ocupa la fila entera para que el área de clic sea toda
+   la fila y no solo el texto del título. */
+.manualToggle {
   display: flex;
   align-items: center;
   gap: var(--space-2);
-  min-width: 0;
+  width: 100%;
+  padding: var(--space-3) var(--space-4);
+  border: 0;
+  background: none;
+  text-align: left;
+  cursor: pointer;
   color: hsl(var(--foreground));
+}
+
+.manualToggle:hover {
+  background-color: hsl(var(--accent));
+}
+
+.manualToggle:focus-visible {
+  outline: 2px solid hsl(var(--primary));
+  outline-offset: -2px;
+}
+
+.manualChevron {
+  /* `auto` empuja el chevron al extremo: es el indicador de plegado y se busca
+     siempre en el mismo sitio, no pegado a un título de ancho variable. */
+  margin-left: auto;
+  flex-shrink: 0;
+  height: 1rem;
+  width: 1rem;
+  color: hsl(var(--muted-foreground));
+  transition: transform 150ms ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .manualChevron {
+    transition: none;
+  }
+}
+
+.manualChevronOpen {
+  transform: rotate(180deg);
+}
+
+.manualPanel {
+  padding: 0 var(--space-4) var(--space-3);
 }
 
 .manualIcon {
@@ -38,14 +82,13 @@
   color: hsl(var(--muted-foreground));
 }
 
-/* Acciones de la fila: los dos enlaces y el botón de confirmar, en línea. Ya no
-   llevan fondo ni padding propios — los da la fila. */
+/* Acciones del manual desplegado: los dos enlaces y el botón de confirmar, en
+   línea. El fondo y el padding los da el panel. */
 .manualActions {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: var(--space-2);
-  margin-left: auto;
 }
 
 .manualAction {
@@ -90,10 +133,9 @@
   color: hsl(var(--muted-foreground));
 }
 
-/* Aviso DENTRO de una fila (bloqueado, sin publicar, añadido tras cerrar el
-   paso): ocupa el lugar de las acciones, así que no lleva caja propia. */
+/* Aviso DENTRO del panel (bloqueado, sin publicar, añadido tras cerrar el paso):
+   ocupa el lugar de las acciones, así que no lleva caja propia. */
 .manualNote {
-  margin-left: auto;
   font-size: 0.8125rem;
   line-height: 1.4;
   color: hsl(var(--muted-foreground));
@@ -149,12 +191,10 @@
   overflow: hidden;
 }
 
+/* La fila no lleva padding propio: lo ponen el disparador y el panel, para que el
+   área de clic del disparador llegue de borde a borde. */
 .manualRow {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: var(--space-2) var(--space-3);
-  padding: var(--space-3) var(--space-4);
+  display: block;
 }
 
 /* La línea separadora va entre filas, nunca arriba de la primera ni debajo de la
