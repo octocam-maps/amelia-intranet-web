@@ -9,7 +9,7 @@ import {
 import { UsersIcon } from '@/components/icons';
 import { Link } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/Card';
-import { isExternalGuest } from '@/features/auth/domain/models';
+import { isAdmin, isExternalGuest } from '@/features/auth/domain/models';
 import { useStore } from '@/store';
 import { NAV_BY_ROLE } from '@/layouts/AppLayout/nav-config';
 import { useMyOnboarding } from '../application/useMyOnboarding';
@@ -50,6 +50,16 @@ export function OnboardingPage() {
   const currentUser = useStore((s) => s.user);
   const [selectedStepId, setSelectedStepId] = useState<string | null>(null);
 
+  // El administrador entra aquí a REVISAR, no a cumplir: el backend le manda
+  // todos los pasos abiertos (`is_exempt_from_sequential_gating`) y esta pantalla
+  // deja de hablarle como a un recién llegado. Sin esto seguía viendo "Te damos
+  // la bienvenida" y una barra de progreso al 0% que no tiene que subir nunca.
+  //
+  // Es SOLO copy y presentación. Quien decide qué pasos están abiertos es el
+  // backend — si esto se leyera como el permiso, escribir la URL a mano seguiría
+  // siendo la vía de escape que la regla del proyecto prohíbe.
+  const reviewMode = isAdmin(currentUser?.role);
+
   const activeStep = useMemo(
     () => steps.find((s) => s.status === 'available' || s.status === 'in_progress') ?? null,
     [steps]
@@ -86,7 +96,11 @@ export function OnboardingPage() {
     return <p className={styles.loading}>No tienes pasos de onboarding pendientes.</p>;
   }
 
-  if (allCompleted) {
+  // El hero de "¡Onboarding completado!" es la recompensa de quien lo ha
+  // recorrido. Para el administrador sería una pantalla sin salida: sustituye al
+  // riel de pasos, así que si algún día completa los cinco perdería el acceso a
+  // revisarlos, que es justo para lo que entra.
+  if (allCompleted && !reviewMode) {
     const role = currentUser?.role;
     const externalGuest = isExternalGuest(role);
     // Las tarjetas de "esto puedes hacer ahora" se filtran con el MISMO mapa de
@@ -147,28 +161,47 @@ export function OnboardingPage() {
 
   return (
     <div className={styles.root}>
+      {/* El aviso de la vista de revisión va DENTRO del encabezado, como una
+          línea de texto más. Antes era una tarjeta con borde de color y fondo
+          teñido: media pantalla de peso visual para decir una frase, y ese
+          recuadro de aviso no lo usa ninguna otra pantalla de la intranet. */}
       <div className={styles.header}>
-        <p className={styles.eyebrow}>Tu onboarding</p>
+        <p className={styles.eyebrow}>{reviewMode ? 'Vista de administración' : 'Tu onboarding'}</p>
         <h2 className={styles.title}>
-          Te damos la bienvenida a Amelia{currentUser?.fullName ? `, ${currentUser.fullName.split(' ')[0]}` : ''}
+          {reviewMode
+            ? 'Los pasos del onboarding'
+            : `Te damos la bienvenida a Amelia${currentUser?.fullName ? `, ${currentUser.fullName.split(' ')[0]}` : ''}`}
         </h2>
+        {reviewMode && (
+          <p className={styles.headerNote}>
+            Esto es lo que ve la plantilla. No tienes que completarlo: puedes abrir
+            cualquier paso sin haber terminado el anterior. Para revisarlo sin dejar
+            rastro en tu progreso, usa{' '}
+            <Link to="/administracion/onboarding" className={styles.headerNoteLink}>
+              Administración › Onboarding
+            </Link>
+            .
+          </p>
+        )}
       </div>
 
-      <Card>
-        <CardContent className={styles.progressCard}>
-          <div className={styles.progressRow}>
-            <span className={styles.progressLabel}>Tu progreso</span>
-            <span className={styles.progressPct}>{progressPct}%</span>
-          </div>
-          <div className={styles.progressTrack}>
-            <div className={styles.progressFill} style={{ width: `${progressPct}%` }} />
-          </div>
-          <p className={styles.progressHint}>
-            <CalendarIcon className={styles.progressHintIcon} />
-            {completedCount} de {steps.length} pasos completados
-          </p>
-        </CardContent>
-      </Card>
+      {!reviewMode && (
+        <Card>
+          <CardContent className={styles.progressCard}>
+            <div className={styles.progressRow}>
+              <span className={styles.progressLabel}>Tu progreso</span>
+              <span className={styles.progressPct}>{progressPct}%</span>
+            </div>
+            <div className={styles.progressTrack}>
+              <div className={styles.progressFill} style={{ width: `${progressPct}%` }} />
+            </div>
+            <p className={styles.progressHint}>
+              <CalendarIcon className={styles.progressHintIcon} />
+              {completedCount} de {steps.length} pasos completados
+            </p>
+          </CardContent>
+        </Card>
+      )}
 
       <Card>
         <CardContent className={styles.stepperCard}>

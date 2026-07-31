@@ -204,12 +204,29 @@ export function EmailTemplateEditor({ template, availablePlaceholders }: EmailTe
               <html> con estilos inline, e inyectarlo en la página rompería los
               estilos de la intranet. Un iframe con `srcDoc` no necesita tocar la
               CSP (`frame-src` no aplica a documentos sin origen) y además aísla
-              el HTML del admin del resto de la pantalla. */}
+              el HTML del admin del resto de la pantalla.
+
+              `sandbox="allow-same-origin"` y no `sandbox=""`: con la caja vacía
+              el documento queda con ORIGEN OPACO (`origin: null`), y Chrome
+              rechaza que un origen así pida recursos del espacio `loopback` —
+              "Permission was denied for this request to access the `loopback`
+              address space". El logo del correo (`/brand/logo-amelia-blanco.png`)
+              se sirve del propio frontend, así que en desarrollo (localhost) la
+              previsualización salía SIN logo. En producción el frontend es una
+              dirección pública y no se daba, pero un editor que en local no
+              muestra la cabecera del correo no sirve para revisarla.
+
+              SIGUE SIENDO SEGURO porque NO se concede `allow-scripts`: sin
+              scripts no hay nada que pueda aprovechar el mismo origen. La
+              combinación peligrosa es `allow-scripts allow-same-origin` juntas
+              —permiten al propio marco quitarse el sandbox—, y aquí solo está
+              la segunda. Formularios, popups, navegación del top y plugins
+              siguen prohibidos. */}
           <iframe
             className={styles.previewFrame}
             title={`Previsualización de ${template.label}`}
             srcDoc={previewResult.html}
-            sandbox=""
+            sandbox="allow-same-origin"
           />
           <p className={styles.hint}>
             Previsualización con datos de ejemplo. No se ha enviado ningún correo.
