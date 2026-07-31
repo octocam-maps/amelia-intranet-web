@@ -109,6 +109,7 @@ export function AbsenceApprovalList({ requests, filterable = false }: AbsenceApp
                 <Button
                   variant="outline"
                   size="icon"
+                  className={styles.action}
                   // Inline en vez de clase: `variantOutline` de Button.module.css
                   // también fija `color`, y dos clases con la misma especificidad
                   // dependen del orden de carga del CSS — el inline siempre gana.
@@ -119,8 +120,13 @@ export function AbsenceApprovalList({ requests, filterable = false }: AbsenceApp
                 >
                   <Cross2Icon />
                 </Button>
+                {/* El check va BLANCO sobre el verde: lo hereda por
+                    `currentColor` del `color` de `variantDefault`, que es
+                    `--primary-foreground`. No fijarlo aquí a mano — si mañana
+                    se revisa la decisión de contraste, se cambia en el token. */}
                 <Button
                   size="icon"
+                  className={styles.action}
                   disabled={isPending}
                   onClick={() => review({ requestId: request.id, input: { decision: 'approved' } })}
                   aria-label="Aprobar"

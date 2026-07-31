@@ -45,10 +45,14 @@
   padding: var(--space-3) 0;
 }
 
+/* Ver nota en `GeneralAbsenceCalendar.module.css`: el offset de la cabecera
+   es 9.5rem (`.employeeLabel`) + el `gap` de `.employeeRow`, no solo 9.5rem.
+   Sin el gap, las columnas de la cabecera son más anchas que las del track y
+   el desfase se acumula hacia el final del mes. */
 .headerDays {
   display: grid;
   gap: 2px;
-  padding-left: 9.5rem;
+  padding-left: calc(9.5rem + var(--space-3));
   margin-bottom: var(--space-2);
   min-width: 40rem;
 }
