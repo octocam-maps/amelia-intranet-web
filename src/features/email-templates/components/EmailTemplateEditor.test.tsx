@@ -152,7 +152,21 @@ describe('EmailTemplateEditor', () => {
 
     const frame = screen.getByTitle(/previsualización de/i);
     expect(frame.tagName).toBe('IFRAME');
-    expect(frame).toHaveAttribute('sandbox', '');
+    // `allow-same-origin` para que el logo del correo cargue en desarrollo (con
+    // origen opaco, Chrome bloquea las peticiones al espacio `loopback`).
+    expect(frame).toHaveAttribute('sandbox', 'allow-same-origin');
+  });
+
+  it('la previsualización NUNCA permite scripts', () => {
+    // Es lo que hace segura la concesión de `allow-same-origin`: sin scripts no
+    // hay nada que pueda aprovechar el mismo origen. Las dos JUNTAS permitirían
+    // al propio marco quitarse el sandbox, así que este test es el que impide
+    // que alguien añada `allow-scripts` "para que funcione algo".
+    mockHooks({ previewResult: { subject: 'x', html: '<html><body>ok</body></html>' } });
+    render(<EmailTemplateEditor template={buildTemplate()} availablePlaceholders={PLACEHOLDERS} />);
+
+    const sandbox = screen.getByTitle(/previsualización de/i).getAttribute('sandbox') ?? '';
+    expect(sandbox.split(' ')).not.toContain('allow-scripts');
   });
 
   it('pide confirmación antes de restaurar, y aclara que no se pierde el texto', () => {

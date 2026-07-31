@@ -35,6 +35,31 @@
   gap: var(--space-2_5);
 }
 
+/* Aclaración de la vista de administración. Texto secundario bajo el título, con
+   el mismo tratamiento que cualquier subtítulo de la intranet — sin recuadro, sin
+   borde de color y sin fondo teñido. `--muted-foreground` sobre el fondo de la
+   página cumple AA de sobra. */
+.headerNote {
+  max-width: 46rem;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: hsl(var(--muted-foreground));
+}
+
+/* Navy subrayado, NO el verde de marca. Medido sobre el fondo de página
+   (`#F9FAFB`): el verde `#00D170` como TEXTO da 1,94:1 y AA pide 4,5:1 — la
+   excepción que documenta `src/lib/a11y/palette.test.ts` es para texto blanco
+   SOBRE una superficie verde, y ese mismo test dice que la vía para recuperar AA
+   es la superficie, no el color del texto. Navy da 17,10:1.
+   Queda además más oscuro que el `--muted-foreground` del párrafo que lo rodea
+   (4,63:1), así que el enlace destaca por contraste con su propio contexto en vez
+   de por color. El subrayado hace el trabajo de señalarlo (WCAG 1.4.1). */
+.headerNoteLink {
+  color: hsl(var(--foreground));
+  font-weight: 600;
+  text-decoration: underline;
+}
+
 .progressRow {
   display: flex;
   align-items: center;
