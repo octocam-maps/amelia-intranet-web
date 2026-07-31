@@ -13,6 +13,7 @@ const QUIZ_STEP: AdminOnboardingStep = {
   title: 'Cuestionario',
   config: {},
   isActive: true,
+    documents: [],
 };
 
 beforeEach(() => {
@@ -29,7 +30,7 @@ beforeEach(() => {
 // el que RRHH lee para explicar la regla.
 describe('OnboardingStepsList — el techo de intentos que lee el admin', () => {
   it('anuncia 2 intentos en el paso de cuestionario, no uno', () => {
-    render(<OnboardingStepsList steps={[QUIZ_STEP]} isLoading={false} onEdit={vi.fn()} />);
+    render(<OnboardingStepsList steps={[QUIZ_STEP]} isLoading={false} onEdit={vi.fn()} onPreview={vi.fn()} />);
 
     expect(screen.getByText(/cuestionario de 2 intentos/i)).toBeInTheDocument();
     expect(screen.queryByText(/cuestionario de 1 intento/i)).not.toBeInTheDocument();

@@ -49,7 +49,15 @@ function buildStep(overrides: Partial<OnboardingStep> = {}): OnboardingStep {
   };
 }
 
-function mockHook({ isPending = false, variables = undefined } = {}) {
+/** `variables` se tipa EXPLÍCITAMENTE por el mismo motivo que en
+ * `EmailTemplateEditor.test.tsx`: `= undefined` sin tipo lo fija en `undefined`. */
+function mockHook({
+  isPending = false,
+  variables,
+}: {
+  isPending?: boolean;
+  variables?: { stepId: string; documentId: string };
+} = {}) {
   const mutate = vi.fn();
   vi.mocked(useAcknowledgeManual).mockReturnValue({
     mutate,

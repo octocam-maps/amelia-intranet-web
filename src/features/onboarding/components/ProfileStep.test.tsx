@@ -21,7 +21,7 @@ function buildStep(overrides: Partial<OnboardingStep> = {}): OnboardingStep {
     data: null,
     startedAt: null,
     completedAt: null,
-    document: null,
+    documents: [],
     ...overrides,
   };
 }
