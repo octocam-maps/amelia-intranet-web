@@ -9,6 +9,13 @@ export interface OnboardingStepDocumentDTO {
   title: string;
   version: number;
   url: string | null;
+  /** Orden de lectura dentro del paso (migración backend 040). */
+  display_order: number;
+  acknowledged: boolean;
+  /** `true` = queda un manual anterior sin confirmar. Lo calcula el BACKEND con
+   * la misma regla que valida el POST, así que el candado que se pinta y el 422
+   * que devolvería no pueden discrepar — NO recalcular aquí. */
+  locked: boolean;
 }
 
 export interface OnboardingStepDTO {
@@ -22,6 +29,11 @@ export interface OnboardingStepDTO {
   data: Record<string, unknown> | null;
   started_at: string | null;
   completed_at: string | null;
+  /** Documentos del paso en orden de lectura. LISTA desde la migración backend
+   * 040: el paso `manual` admite varios en cascada. */
+  documents: OnboardingStepDocumentDTO[];
+  /** DEPRECADO — primer elemento de `documents`. El backend lo mantiene por
+   * compatibilidad con clientes anteriores a la 040; aquí ya no se lee. */
   document: OnboardingStepDocumentDTO | null;
 }
 

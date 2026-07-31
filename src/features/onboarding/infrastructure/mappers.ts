@@ -29,15 +29,19 @@ export function stepFromDTO(dto: OnboardingStepDTO): OnboardingStep {
     data: dto.data,
     startedAt: dto.started_at,
     completedAt: dto.completed_at,
-    document: dto.document
-      ? {
-          id: dto.document.id,
-          kind: dto.document.kind,
-          title: dto.document.title,
-          version: dto.document.version,
-          url: dto.document.url,
-        }
-      : null,
+    // Se lee `documents` (plural) y NO el `document` deprecado: con dos manuales,
+    // el singular solo trae el primero y el paso 3 quedaría a medias. `?? []`
+    // cubre una respuesta de backend anterior a la 040.
+    documents: (dto.documents ?? []).map((document) => ({
+      id: document.id,
+      kind: document.kind,
+      title: document.title,
+      version: document.version,
+      url: document.url,
+      displayOrder: document.display_order,
+      acknowledged: document.acknowledged,
+      locked: document.locked,
+    })),
   };
 }
 

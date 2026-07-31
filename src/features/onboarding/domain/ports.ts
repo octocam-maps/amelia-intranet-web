@@ -15,6 +15,6 @@ export interface OnboardingRepository {
   reportVideoProgress(stepId: string, input: ReportVideoProgressInput): Promise<VideoProgressResult>;
   submitQuiz(stepId: string, input: SubmitQuizInput): Promise<QuizResult>;
   uploadSignedDocument(stepId: string, file: File): Promise<UploadSignedDocumentResult>;
-  acknowledgeManual(stepId: string): Promise<AcknowledgeManualResult>;
+  acknowledgeManual(stepId: string, documentId: string): Promise<AcknowledgeManualResult>;
   completeProfile(stepId: string, input: CompleteProfileInput): Promise<CompleteProfileResult>;
 }

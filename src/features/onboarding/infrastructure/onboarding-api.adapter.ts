@@ -97,9 +97,12 @@ export const onboardingApiAdapter: OnboardingRepository = {
     return uploadSignedDocumentFromDTO(dto);
   },
 
-  async acknowledgeManual(stepId: string): Promise<AcknowledgeManualResult> {
+  async acknowledgeManual(stepId: string, documentId: string): Promise<AcknowledgeManualResult> {
+    // `document_id` desde la migración backend 040: se confirma UN manual, no
+    // "el manual". El backend rechaza con 422 si se salta uno de la cascada.
     const dto = await apiClient<AcknowledgeManualDTO>(`/onboarding/steps/${stepId}/acknowledge`, {
       method: 'POST',
+      body: JSON.stringify({ document_id: documentId }),
     });
     return acknowledgeManualFromDTO(dto);
   },
