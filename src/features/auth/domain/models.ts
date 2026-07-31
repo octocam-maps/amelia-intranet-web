@@ -44,10 +44,17 @@ export const USER_ROLES: readonly UserRole[] = [
  * llamar a un endpoint admin-only solo para etiquetar su propio badge. */
 export const USER_ROLE_LABEL: Record<UserRole, string> = {
   administrador: 'Administrador',
-  // RRHH lo llama "Trabajador"; el `code` del backend sigue siendo `empleado`
-  // y NO se toca — renombrarlo obligaría a una migración de datos y a tocar los
-  // 41 guards que lo nombran, para no ganar nada funcional.
-  empleado: 'Trabajador',
+  // "Empleado", igual que `roles.name` en la BD (decisión del team-lead,
+  // 2026-07-31). Antes decía "Trabajador" y eso dejaba DOS nombres para el mismo
+  // rol conviviendo en la aplicación: el selector de rol de Administración >
+  // Plantilla pinta `role.name` tal como llega de `GET /roles`, o sea "Empleado",
+  // mientras estos badges decían "Trabajador". Y el móvil ya usaba "Empleado" en
+  // su puerto de este mapa, así que la divergencia era también entre plataformas.
+  //
+  // El `code` del backend sigue siendo `empleado` y no se toca: renombrarlo
+  // obligaría a una migración de datos y a tocar los 41 guards que lo nombran,
+  // para no ganar nada funcional.
+  empleado: 'Empleado',
   externo_invitado: 'Externo-invitado',
   socio: 'Socio',
   becario: 'Becario',
@@ -60,7 +67,7 @@ export const isAdmin = (role?: UserRole | null): boolean => role === 'administra
 export const isExternalGuest = (role?: UserRole | null): boolean => role === 'externo_invitado';
 
 /** `becario` [migración backend `038_becario_role.sql`, RF-A10]: accede a todo
- * lo que ve un trabajador SALVO el control horario. Es el único módulo que se
+ * lo que ve un empleado SALVO el control horario. Es el único módulo que se
  * le niega, así que este helper solo se usa para eso — no para ramificar
  * permisos en general, donde el becario se comporta como un empleado.
  *

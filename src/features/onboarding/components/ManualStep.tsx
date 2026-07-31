@@ -29,6 +29,15 @@ interface ManualStepProps {
  * sitio y el rechazo de otro, acabarían discrepando y el trabajador vería un
  * botón habilitado que devuelve 422.
  *
+ * Con una excepción que `locked`/`acknowledged` no cubren y que sí hay que mirar
+ * aquí: un manual AÑADIDO A LA CASCADA DESPUÉS de que alguien cerrase el paso
+ * (pasó con el manual de uso de la intranet, migración 045). Para esa persona el
+ * documento llega sin confirmar y sin bloquear —la cascada no tiene nada
+ * anterior pendiente— pero el paso ya está `completed`, y el POST responde 422
+ * ("Este paso ya está completado", `ensure_step_operable`). Ofrecer el botón ahí
+ * es exactamente el 422 que este componente promete no provocar, así que el
+ * estado del PASO también decide si se puede confirmar.
+ *
  * Las `url` son `onboarding_documents.storage_ref` — no se hardcodean: si RRHH
  * publica otra versión de un manual, cambia una fila y esta pantalla la sigue.
  */
@@ -79,7 +88,7 @@ export function ManualStep({ step }: ManualStepProps) {
               <li key={document.id}>
                 <ManualCard
                   document={document}
-                  stepId={step.id}
+                  stepCompleted={isCompleted}
                   isConfirming={isPending && variables?.documentId === document.id}
                   onConfirm={() => mutate({ stepId: step.id, documentId: document.id })}
                 />
@@ -97,10 +106,15 @@ export function ManualStep({ step }: ManualStepProps) {
         </>
       )}
 
+      {/* "Todos" solo si de verdad son todos: con un manual incorporado después
+          de cerrar el paso, el texto anterior afirmaba una lectura que no
+          consta. */}
       {isCompleted && (
         <div className={styles.confirmedBanner}>
           <CheckCircledIcon className={styles.confirmedIcon} />
-          Lectura de todos los manuales confirmada
+          {documents.length > 0 && acknowledgedCount === documents.length
+            ? 'Lectura de todos los manuales confirmada'
+            : 'Paso completado'}
         </div>
       )}
 
@@ -115,13 +129,16 @@ export function ManualStep({ step }: ManualStepProps) {
 
 interface ManualCardProps {
   document: OnboardingStepDocument;
-  stepId: string;
+  /** El paso ya está cerrado: no admite más confirmaciones (el POST daría 422). */
+  stepCompleted: boolean;
   isConfirming: boolean;
   onConfirm: () => void;
 }
 
-function ManualCard({ document, isConfirming, onConfirm }: ManualCardProps) {
+function ManualCard({ document, stepCompleted, isConfirming, onConfirm }: ManualCardProps) {
   const { acknowledged, locked, url } = document;
+  // Manual incorporado a la cascada después de que esta persona cerrara el paso.
+  const addedAfterCompletion = stepCompleted && !acknowledged;
 
   return (
     <div className={locked ? `${styles.manualCard} ${styles.manualCardLocked}` : styles.manualCard}>
@@ -153,12 +170,19 @@ function ManualCard({ document, isConfirming, onConfirm }: ManualCardProps) {
               Descargar PDF
             </a>
           </div>
-          {!acknowledged && (
-            <div className={styles.footer}>
-              <Button variant="dark" disabled={isConfirming} onClick={onConfirm}>
-                {isConfirming ? 'Confirmando…' : 'He leído y confirmo'}
-              </Button>
-            </div>
+          {addedAfterCompletion ? (
+            <p className={styles.manualPending}>
+              Se añadió después de que completaras este paso, así que no tienes que confirmar
+              nada. Queda disponible aquí y en Ayuda para cuando lo necesites.
+            </p>
+          ) : (
+            !acknowledged && (
+              <div className={styles.footer}>
+                <Button variant="dark" disabled={isConfirming} onClick={onConfirm}>
+                  {isConfirming ? 'Confirmando…' : 'He leído y confirmo'}
+                </Button>
+              </div>
+            )
           )}
         </>
       ) : (

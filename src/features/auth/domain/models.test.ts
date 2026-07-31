@@ -14,11 +14,14 @@ describe('USER_ROLES / USER_ROLE_LABEL', () => {
     }
   });
 
-  it('muestra "Trabajador" para el code `empleado`', () => {
-    // RRHH lo llama Trabajador; el `code` del backend sigue siendo `empleado`.
-    // Este test es el que avisa si alguien "arregla" la etiqueta renombrando el
-    // code, que rompería los guards del backend y la tabla `roles`.
-    expect(USER_ROLE_LABEL.empleado).toBe('Trabajador');
+  it('muestra "Empleado" para el code `empleado`, igual que `roles.name`', () => {
+    // La etiqueta coincide a propósito con `roles.name` de la BD: el selector de
+    // rol de Administración > Plantilla pinta lo que llega de `GET /roles`, y
+    // cuando aquí decía "Trabajador" convivían dos nombres para el mismo rol
+    // según la pantalla. El móvil ya usaba "Empleado".
+    expect(USER_ROLE_LABEL.empleado).toBe('Empleado');
+    // El `code` NO se renombra: los 41 guards del backend y la tabla `roles`
+    // dependen de `empleado`. Este test avisa si alguien lo "arregla" al revés.
     expect(USER_ROLES).toContain('empleado');
     expect(USER_ROLES).not.toContain('trabajador');
   });
@@ -30,7 +33,7 @@ describe('USER_ROLES / USER_ROLE_LABEL', () => {
 });
 
 describe('canUseTimeClock', () => {
-  it('deja fichar a administrador, trabajador y socio', () => {
+  it('deja fichar a administrador, empleado y socio', () => {
     expect(canUseTimeClock('administrador')).toBe(true);
     expect(canUseTimeClock('empleado')).toBe(true);
     expect(canUseTimeClock('socio')).toBe(true);

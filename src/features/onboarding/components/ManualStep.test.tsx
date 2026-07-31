@@ -216,6 +216,53 @@ describe('ManualStep — cascada de manuales (migración 040)', () => {
     expect(screen.getAllByRole('link', { name: /leer el manual/i })).toHaveLength(2);
   });
 
+  it('un manual añadido tras cerrar el paso NO ofrece confirmar (el POST daría 422)', () => {
+    // Migración 045: el manual de uso de la intranet pasó a la cascada cuando ya
+    // había gente con el paso 3 cerrado. Para esa persona el documento llega sin
+    // confirmar y sin candado (no hay nada anterior pendiente), pero
+    // `ensure_step_operable` rechaza el POST con "Este paso ya está completado".
+    mockHook();
+    render(
+      <ManualStep
+        step={buildStep({
+          status: 'completed',
+          documents: [
+            { ...CLICKUP, acknowledged: true },
+            buildDocument({ acknowledged: true }),
+            buildDocument({
+              id: 'doc-manual-intranet',
+              title: 'Manual de uso de la intranet',
+              url: '/manuales/manual-de-uso-intranet.pdf',
+              displayOrder: 3,
+            }),
+          ],
+        })}
+      />
+    );
+
+    expect(screen.queryByRole('button', { name: /he leído y confirmo/i })).not.toBeInTheDocument();
+    expect(screen.getByText(/no tienes que confirmar nada/i)).toBeInTheDocument();
+    // Se puede leer igualmente: es el objetivo de haberlo añadido.
+    expect(screen.getAllByRole('link', { name: /leer el manual/i })).toHaveLength(3);
+  });
+
+  it('con un manual sin confirmar, el paso cerrado NO afirma que estén todos leídos', () => {
+    // "Lectura de todos los manuales confirmada" sería una afirmación falsa: de
+    // ese tercer manual no consta ninguna lectura.
+    mockHook();
+    render(
+      <ManualStep
+        step={buildStep({
+          status: 'completed',
+          documents: [{ ...CLICKUP, acknowledged: true }, buildDocument({ displayOrder: 3 })],
+        })}
+      />
+    );
+
+    expect(screen.queryByText(/lectura de todos los manuales confirmada/i)).not.toBeInTheDocument();
+    expect(screen.getByText('Paso completado')).toBeInTheDocument();
+  });
+
   it('solo marca como "Confirmando…" el manual que se está enviando', () => {
     mockHook({ isPending: true, variables: { stepId: 'step-3', documentId: CLICKUP.id } });
     render(<ManualStep step={buildStep({ documents: [CLICKUP, buildDocument()] })} />);
