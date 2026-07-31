@@ -26,7 +26,7 @@ export const emailTemplatesApiAdapter: EmailTemplateRepository = {
   async update(templateKey, input: UpdateEmailTemplateInput): Promise<EmailTemplate> {
     const dto = await apiClient<EmailTemplateDTO>(`/email-templates/${templateKey}`, {
       method: 'PATCH',
-      body: JSON.stringify({ subject: input.subject, body_html: input.bodyHtml }),
+      body: JSON.stringify({ subject: input.subject, body: input.body }),
     });
     return emailTemplateFromDTO(dto);
   },
@@ -49,7 +49,7 @@ export const emailTemplatesApiAdapter: EmailTemplateRepository = {
         method: 'POST',
         body: JSON.stringify({
           subject: draft.subject ?? null,
-          body_html: draft.bodyHtml ?? null,
+          body: draft.body ?? null,
         }),
       }
     );

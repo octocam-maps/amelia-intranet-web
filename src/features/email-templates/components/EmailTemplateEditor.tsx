@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Label } from '@/components/ui/Label';
@@ -7,6 +7,19 @@ import { useRestoreEmailTemplate } from '../application/useRestoreEmailTemplate'
 import { useUpdateEmailTemplate } from '../application/useUpdateEmailTemplate';
 import type { EmailTemplate } from '../domain/models';
 import styles from './EmailTemplateEditor.module.css';
+
+/** Nombre legible de cada campo. `{{entity_name}}` no le dice nada a quien no
+ * programa; «Sociedad» sí. La clave técnica sigue siendo la que se inserta en el
+ * texto — esto es solo la etiqueta del botón. Un campo que el backend añada y no
+ * esté aquí se muestra con su clave, así que no se rompe nada. */
+const PLACEHOLDER_LABEL: Record<string, string> = {
+  full_name: 'Nombre de la persona',
+  job_title: 'Puesto',
+  entity_name: 'Sociedad',
+  title: 'Título del aviso',
+  body: 'Texto del aviso',
+  url: 'Enlace a la intranet',
+};
 
 interface EmailTemplateEditorProps {
   template: EmailTemplate;
@@ -29,15 +42,47 @@ interface EmailTemplateEditorProps {
  */
 export function EmailTemplateEditor({ template, availablePlaceholders }: EmailTemplateEditorProps) {
   const [subject, setSubject] = useState(template.subject);
-  const [bodyHtml, setBodyHtml] = useState(template.bodyHtml);
+  const [body, setBody] = useState(template.body);
+  const bodyRef = useRef<HTMLTextAreaElement>(null);
+
+  /** Inserta el campo donde está el cursor. Los chips eran solo informativos y
+   * eso obligaba a copiarlos a mano con las llaves exactas — el error más
+   * probable de todos (`{full_name}` con una llave, o mal escrito) y el que deja
+   * el placeholder literal en el correo.
+   *
+   * SOLO usa la posición del cursor si el textarea tiene el FOCO. Sin esa
+   * comprobación, un textarea sin tocar reporta `selectionStart = 0` y el campo
+   * se colaba al PRINCIPIO del texto: pulsar «Nombre de la persona» sobre
+   * "Hola " daba "{{full_name}}Hola ". Lo cazó un test, y pasa en el uso más
+   * normal de todos — abrir la plantilla y pulsar un chip sin haber escrito. */
+  function insertPlaceholder(placeholder: string) {
+    const token = `{{${placeholder}}}`;
+    const el = bodyRef.current;
+    const hasCursor = el !== null && document.activeElement === el;
+
+    if (!hasCursor) {
+      // Sin cursor, al final: es donde el admin espera que aparezca.
+      setBody((current) => `${current}${token}`);
+      return;
+    }
+
+    const start = el.selectionStart ?? body.length;
+    const end = el.selectionEnd ?? body.length;
+    setBody(`${body.slice(0, start)}${token}${body.slice(end)}`);
+    // Deja el cursor detrás de lo insertado, para poder seguir escribiendo.
+    requestAnimationFrame(() => {
+      el.focus();
+      el.setSelectionRange(start + token.length, start + token.length);
+    });
+  }
 
   const { mutate: save, isPending: isSaving, error: saveError } = useUpdateEmailTemplate();
   const { mutate: restore, isPending: isRestoring } = useRestoreEmailTemplate();
   const { mutate: preview, data: previewResult, isPending: isPreviewing } =
     usePreviewEmailTemplate();
 
-  const isDirty = subject !== template.subject || bodyHtml !== template.bodyHtml;
-  const canSave = subject.trim().length > 0 && bodyHtml.trim().length > 0 && isDirty;
+  const isDirty = subject !== template.subject || body !== template.body;
+  const canSave = subject.trim().length > 0 && body.trim().length > 0 && isDirty;
 
   return (
     <div className={styles.root}>
@@ -64,24 +109,37 @@ export function EmailTemplateEditor({ template, availablePlaceholders }: EmailTe
         <Label htmlFor={`body-${template.templateKey}`}>Cuerpo del mensaje</Label>
         <textarea
           id={`body-${template.templateKey}`}
+          ref={bodyRef}
           className={styles.textarea}
-          rows={7}
-          value={bodyHtml}
-          onChange={(event) => setBodyHtml(event.target.value)}
+          rows={8}
+          value={body}
+          onChange={(event) => setBody(event.target.value)}
         />
         <p className={styles.hint}>
-          Admite HTML sencillo (<code>&lt;p&gt;</code>, <code>&lt;strong&gt;</code>,{' '}
-          <code>&lt;a&gt;</code>). El logo, el botón y el pie del correo los pone la intranet.
+          Escribe el texto tal cual, sin etiquetas. Deja una <strong>línea en blanco</strong> para
+          empezar un párrafo nuevo y escribe <code>**así**</code> lo que quieras en negrita. Las
+          direcciones web y los correos se convierten en enlaces solos. El logo, el botón y el pie
+          los pone la intranet.
         </p>
       </div>
 
       <div className={styles.placeholders}>
-        <p className={styles.hint}>Puedes usar estos campos, y se sustituyen al enviar:</p>
+        <p className={styles.hint}>
+          Pulsa un campo para insertarlo. Al enviar se sustituye por el dato real:
+        </p>
         <div className={styles.chips}>
           {/* La lista la manda el BACKEND: es la misma lista blanca que aplica al
               renderizar, así que la ayuda no puede quedarse desincronizada. */}
           {availablePlaceholders.map((placeholder) => (
-            <code key={placeholder} className={styles.chip}>{`{{${placeholder}}}`}</code>
+            <button
+              key={placeholder}
+              type="button"
+              className={styles.chip}
+              onClick={() => insertPlaceholder(placeholder)}
+              title={`Insertar ${PLACEHOLDER_LABEL[placeholder] ?? placeholder}`}
+            >
+              {PLACEHOLDER_LABEL[placeholder] ?? placeholder}
+            </button>
           ))}
         </div>
       </div>
@@ -96,7 +154,7 @@ export function EmailTemplateEditor({ template, availablePlaceholders }: EmailTe
         <Button
           variant="outline"
           disabled={isPreviewing}
-          onClick={() => preview({ templateKey: template.templateKey, draft: { subject, bodyHtml } })}
+          onClick={() => preview({ templateKey: template.templateKey, draft: { subject, body } })}
         >
           {isPreviewing ? 'Generando…' : 'Previsualizar'}
         </Button>
@@ -121,7 +179,7 @@ export function EmailTemplateEditor({ template, availablePlaceholders }: EmailTe
         <Button
           variant="dark"
           disabled={!canSave || isSaving}
-          onClick={() => save({ templateKey: template.templateKey, input: { subject, bodyHtml } })}
+          onClick={() => save({ templateKey: template.templateKey, input: { subject, body } })}
         >
           {isSaving ? 'Guardando…' : 'Guardar'}
         </Button>

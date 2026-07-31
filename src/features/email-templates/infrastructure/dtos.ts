@@ -6,7 +6,7 @@ export interface EmailTemplateDTO {
   label: string;
   description: string;
   subject: string;
-  body_html: string;
+  body: string;
   is_active: boolean;
   updated_by: string | null;
   updated_at: string | null;

@@ -18,7 +18,7 @@ function buildTemplate(overrides: Partial<EmailTemplate> = {}): EmailTemplate {
     label: 'Bienvenida al dar de alta',
     description: 'Se envía a la persona recién dada de alta.',
     subject: 'Te damos la bienvenida a la intranet de Amelia',
-    bodyHtml: '<p>Hola {{full_name}},</p>',
+    body: 'Hola {{full_name}},',
     isActive: true,
     updatedBy: null,
     updatedAt: null,
@@ -78,13 +78,13 @@ describe('EmailTemplateEditor', () => {
     expect(screen.getByText('Texto por defecto')).toBeInTheDocument();
   });
 
-  it('muestra los placeholders que manda el backend, no una lista propia', () => {
+  it('muestra los campos con nombre legible, no con su clave técnica', () => {
     // La lista blanca real vive en `render_placeholders`; duplicarla aquí la
     // habría desincronizado en el primer placeholder que se añadiera.
     render(<EmailTemplateEditor template={buildTemplate()} availablePlaceholders={PLACEHOLDERS} />);
 
-    expect(screen.getByText('{{full_name}}')).toBeInTheDocument();
-    expect(screen.getByText('{{job_title}}')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Nombre de la persona/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /^Puesto$/i })).toBeInTheDocument();
   });
 
   it('no deja guardar si no se ha cambiado nada', () => {
@@ -111,7 +111,7 @@ describe('EmailTemplateEditor', () => {
 
     expect(save).toHaveBeenCalledWith({
       templateKey: 'staff_invited',
-      input: { subject: 'Nuevo asunto', bodyHtml: '<p>Hola {{full_name}},</p>' },
+      input: { subject: 'Nuevo asunto', body: 'Hola {{full_name}},' },
     });
   });
 
@@ -125,7 +125,7 @@ describe('EmailTemplateEditor', () => {
 
     expect(preview).toHaveBeenCalledWith({
       templateKey: 'staff_invited',
-      draft: { subject: 'Borrador', bodyHtml: '<p>Hola {{full_name}},</p>' },
+      draft: { subject: 'Borrador', body: 'Hola {{full_name}},' },
     });
   });
 
@@ -183,5 +183,80 @@ describe('EmailTemplateEditor', () => {
     expect(
       screen.queryByRole('button', { name: /restaurar por defecto/i })
     ).not.toBeInTheDocument();
+  });
+});
+
+describe('EmailTemplateEditor — el admin no escribe HTML (migración 044)', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    mockHooks();
+  });
+
+  it('explica cómo se separan los párrafos, sin mencionar etiquetas', () => {
+    // El texto de ayuda anterior decía "admite HTML sencillo (<p>, <strong>)".
+    // Una persona de RRHH no tiene por qué saber cerrar una etiqueta, y una mal
+    // escrita rompía el correo de toda la plantilla.
+    render(<EmailTemplateEditor template={buildTemplate()} availablePlaceholders={PLACEHOLDERS} />);
+
+    expect(screen.getByText(/línea en blanco/i)).toBeInTheDocument();
+    expect(screen.queryByText(/HTML/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/<p>/)).not.toBeInTheDocument();
+  });
+
+  it('sin haber tocado el cuerpo, inserta el campo AL FINAL', () => {
+    // El caso más normal: abrir la plantilla y pulsar un chip sin escribir nada.
+    // Antes se colaba al PRINCIPIO ("{{full_name}}Hola ") porque un textarea sin
+    // foco reporta `selectionStart = 0`. Lo cazó este test.
+    render(
+      <EmailTemplateEditor
+        template={buildTemplate({ body: 'Hola ' })}
+        availablePlaceholders={PLACEHOLDERS}
+      />
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: /Nombre de la persona/i }));
+
+    expect(screen.getByLabelText('Cuerpo del mensaje')).toHaveValue('Hola {{full_name}}');
+  });
+
+  it('con el cursor dentro, inserta el campo en esa posición', () => {
+    render(
+      <EmailTemplateEditor
+        template={buildTemplate({ body: 'Hola , buenos días' })}
+        availablePlaceholders={PLACEHOLDERS}
+      />
+    );
+    const textarea = screen.getByLabelText('Cuerpo del mensaje') as HTMLTextAreaElement;
+    textarea.focus();
+    textarea.setSelectionRange(5, 5);  // justo antes de la coma
+
+    fireEvent.click(screen.getByRole('button', { name: /Nombre de la persona/i }));
+
+    expect(textarea).toHaveValue('Hola {{full_name}}, buenos días');
+  });
+
+  it('un campo que el backend añada y no tenga etiqueta se muestra con su clave', () => {
+    // No se rompe la pantalla por un placeholder nuevo: se degrada a su nombre
+    // técnico, que sigue siendo utilizable.
+    render(
+      <EmailTemplateEditor
+        template={buildTemplate()}
+        availablePlaceholders={['campo_nuevo']}
+      />
+    );
+
+    expect(screen.getByRole('button', { name: 'campo_nuevo' })).toBeInTheDocument();
+  });
+
+  it('guarda el texto tal cual, sin envolverlo en etiquetas', () => {
+    render(<EmailTemplateEditor template={buildTemplate()} availablePlaceholders={PLACEHOLDERS} />);
+
+    fireEvent.change(screen.getByLabelText('Cuerpo del mensaje'), {
+      target: { value: 'Primer párrafo.\n\nSegundo párrafo.' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'Guardar' }));
+
+    expect(save.mock.calls[0]![0].input.body).toBe('Primer párrafo.\n\nSegundo párrafo.');
+    expect(save.mock.calls[0]![0].input.body).not.toContain('<p>');
   });
 });

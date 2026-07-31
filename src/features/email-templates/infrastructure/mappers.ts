@@ -11,7 +11,7 @@ export function emailTemplateFromDTO(dto: EmailTemplateDTO): EmailTemplate {
     label: dto.label,
     description: dto.description,
     subject: dto.subject,
-    bodyHtml: dto.body_html,
+    body: dto.body,
     isActive: dto.is_active,
     updatedBy: dto.updated_by,
     updatedAt: dto.updated_at,

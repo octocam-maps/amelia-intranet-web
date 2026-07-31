@@ -13,7 +13,11 @@ export interface EmailTemplate {
    * dispara `clock_out_missing`. */
   description: string;
   subject: string;
-  bodyHtml: string;
+  /** Cuerpo en TEXTO PLANO. El admin NO escribe HTML: una línea en blanco
+   * separa párrafos, `**texto**` es negrita y las URLs se enlazan solas. El HTML
+   * lo genera el backend (`plain_text_to_html`), que además escapa esto — así una
+   * etiqueta mal escrita no puede romper el correo de toda la plantilla. */
+  body: string;
   /** `false` = está usando el texto por defecto del código. Se pinta como «Por
    * defecto» frente a «Editada»: es la distinción que el admin necesita para
    * saber qué ha tocado. */
@@ -32,7 +36,8 @@ export interface EmailTemplateList {
 
 export interface UpdateEmailTemplateInput {
   subject: string;
-  bodyHtml: string;
+  /** Texto plano, sin etiquetas. */
+  body: string;
 }
 
 /** Resultado de la previsualización: el correo COMPLETO con su marco (logo, botón
