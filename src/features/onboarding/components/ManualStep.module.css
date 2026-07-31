@@ -15,23 +15,15 @@
   color: hsl(var(--muted-foreground));
 }
 
-.manualCard {
-  border-radius: var(--radius);
-  border: 1px solid hsl(var(--border));
-  overflow: hidden;
-}
-
-.manualHeader {
+/* Cabecera de cada fila: icono + nombre del documento + badge de confirmado.
+   Antes era `.manualHeader`, la cabecera en versalitas sobre fondo `muted` de una
+   tarjeta por manual. Con la lista en un solo contenedor ya no hace falta ese
+   fondo para delimitar nada: lo hace la línea que separa las filas. */
+.manualInfo {
   display: flex;
   align-items: center;
   gap: var(--space-2);
-  border-bottom: 1px solid hsl(var(--border));
-  background-color: hsl(var(--muted));
-  padding: var(--space-3) var(--space-4);
-  font-size: 0.8125rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.02em;
+  min-width: 0;
   color: hsl(var(--foreground));
 }
 
@@ -46,21 +38,24 @@
   color: hsl(var(--muted-foreground));
 }
 
-/* Sustituye a `.manualBody`, que envolvía el texto de relleno sobre ClickUp
-   que este paso mostraba antes de tener el manual real. */
+/* Acciones de la fila: los dos enlaces y el botón de confirmar, en línea. Ya no
+   llevan fondo ni padding propios — los da la fila. */
 .manualActions {
   display: flex;
   flex-wrap: wrap;
+  align-items: center;
   gap: var(--space-2);
-  background-color: hsl(var(--card));
-  padding: var(--space-4);
+  margin-left: auto;
 }
 
 .manualAction {
   display: inline-flex;
   align-items: center;
-  gap: var(--space-2);
-  padding: var(--space-2) var(--space-3);
+  gap: var(--space-1_5);
+  /* Alto alineado con el `size="sm"` del Button (2,25rem) para que los tres
+     controles de la fila queden a la misma altura. */
+  height: 2.25rem;
+  padding: 0 var(--space-3);
   border: 1px solid hsl(var(--border));
   border-radius: var(--radius);
   font-size: 0.875rem;
@@ -84,11 +79,30 @@
   color: hsl(var(--muted-foreground));
 }
 
+/* Aviso a nivel de paso (sin manuales publicados): va suelto, con su propia caja. */
 .manualPending {
+  border-radius: var(--radius);
+  border: 1px solid hsl(var(--border));
   background-color: hsl(var(--card));
   padding: var(--space-4);
   font-size: 0.875rem;
   line-height: 1.5;
+  color: hsl(var(--muted-foreground));
+}
+
+/* Aviso DENTRO de una fila (bloqueado, sin publicar, añadido tras cerrar el
+   paso): ocupa el lugar de las acciones, así que no lleva caja propia. */
+.manualNote {
+  margin-left: auto;
+  font-size: 0.8125rem;
+  line-height: 1.4;
+  color: hsl(var(--muted-foreground));
+}
+
+/* Por qué el botón de confirmar está deshabilitado. Va junto a él, no en un
+   tooltip. */
+.manualHint {
+  font-size: 0.75rem;
   color: hsl(var(--muted-foreground));
 }
 
@@ -118,20 +132,35 @@
   color: hsl(var(--destructive));
 }
 
-.footer {
-  display: flex;
-  justify-content: flex-end;
-}
-
 /* ── Cascada de manuales (migración backend 040) ─────────────────────────── */
 
+/* UN solo contenedor para todos los manuales. Antes cada manual era una tarjeta
+   con borde y cabecera propios, separadas por un hueco: con tres manuales eran
+   tres cajas apiladas que pesaban más que su contenido y hacían leer el paso
+   como si fuesen tres pasos. Ahora el borde y el radio son de la lista, y cada
+   manual es una fila separada por una línea. */
 .manualList {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-3);
   margin: 0;
   padding: 0;
   list-style: none;
+  border-radius: var(--radius);
+  border: 1px solid hsl(var(--border));
+  background-color: hsl(var(--card));
+  overflow: hidden;
+}
+
+.manualRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2) var(--space-3);
+  padding: var(--space-3) var(--space-4);
+}
+
+/* La línea separadora va entre filas, nunca arriba de la primera ni debajo de la
+   última: ahí ya está el borde del contenedor y se vería doble. */
+.manualRow + .manualRow {
+  border-top: 1px solid hsl(var(--border));
 }
 
 .progress {
@@ -143,18 +172,15 @@
 /* Un manual bloqueado se atenúa, pero NO con `opacity` sobre todo el bloque:
    eso rebaja también el contraste del texto y lo deja por debajo de AA. Se
    cambia el fondo y se deja el texto intacto. */
-.manualCardLocked {
+.manualRowLocked {
   background-color: hsl(var(--muted) / 0.4);
-  border-style: dashed;
 }
 
 .manualTitle {
-  /* El título del manual no va en mayúsculas como el resto de la cabecera: es
-     un nombre propio de documento («Manual de uso de ClickUp»), y en versalitas
-     se lee peor y pierde la marca. */
-  text-transform: none;
   font-size: 0.9375rem;
-  letter-spacing: 0;
+  font-weight: 600;
+  /* Un nombre de documento largo no debe empujar las acciones fuera de la fila. */
+  overflow-wrap: anywhere;
 }
 
 .manualIconDone {
@@ -163,15 +189,15 @@
   color: hsl(var(--success-on-tint));
 }
 
+/* Sin `margin-left: auto` ni las anulaciones de `text-transform`/`letter-spacing`
+   que hacían falta cuando esto vivía dentro de una cabecera en versalitas que
+   empujaba el badge al extremo de su tarjeta. Ahora va pegado al título. */
 .manualBadge {
-  margin-left: auto;
   border-radius: 999px;
   background-color: hsl(var(--success) / 0.12);
   padding: 0.125rem var(--space-2);
   font-size: 0.6875rem;
   font-weight: 700;
-  text-transform: none;
-  letter-spacing: 0;
   color: hsl(var(--success-on-tint));
 }
 

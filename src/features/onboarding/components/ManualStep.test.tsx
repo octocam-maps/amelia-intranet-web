@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { useAcknowledgeManual } from '../application/useAcknowledgeManual';
 import type { OnboardingStep, OnboardingStepDocument } from '../domain/models';
@@ -101,9 +101,66 @@ describe('ManualStep — un solo manual', () => {
     const step = buildStep();
     render(<ManualStep step={step} />);
 
-    screen.getByRole('button', { name: /he leído y confirmo/i }).click();
+    // Hay que abrirlo antes: confirmar sin haberlo abierto ya no se puede.
+    fireEvent.click(screen.getByRole('link', { name: /leer el manual/i }));
+    fireEvent.click(screen.getByRole('button', { name: /he leído y confirmo/i }));
 
     expect(mutate).toHaveBeenCalledWith({ stepId: step.id, documentId: 'doc-manual' });
+  });
+
+  it('no deja confirmar un manual que no se ha abierto, y dice por qué', () => {
+    // Con el botón habilitado de entrada, confirmar la lectura era un clic sin
+    // haber visto el documento.
+    const mutate = mockHook();
+    render(<ManualStep step={buildStep()} />);
+
+    const confirm = screen.getByRole('button', { name: /he leído y confirmo/i });
+    expect(confirm).toBeDisabled();
+    // El motivo va en texto visible y asociado al botón, no en un `title`.
+    const hint = screen.getByText(/ábrelo para poder confirmar/i);
+    expect(confirm).toHaveAttribute('aria-describedby', hint.id);
+
+    fireEvent.click(confirm);
+    expect(mutate).not.toHaveBeenCalled();
+  });
+
+  it('abrir el manual habilita el botón y retira el aviso', () => {
+    mockHook();
+    render(<ManualStep step={buildStep()} />);
+
+    fireEvent.click(screen.getByRole('link', { name: /leer el manual/i }));
+
+    expect(screen.getByRole('button', { name: /he leído y confirmo/i })).toBeEnabled();
+    expect(screen.queryByText(/ábrelo para poder confirmar/i)).not.toBeInTheDocument();
+  });
+
+  it('descargar el PDF también cuenta como haberlo abierto', () => {
+    // Descargar es acceder al documento: exigir además el otro enlace sería una
+    // traba sin sentido.
+    mockHook();
+    render(<ManualStep step={buildStep()} />);
+
+    fireEvent.click(screen.getByRole('link', { name: /descargar pdf/i }));
+
+    expect(screen.getByRole('button', { name: /he leído y confirmo/i })).toBeEnabled();
+  });
+
+  it('el gate es por manual: abrir uno no habilita el otro', () => {
+    mockHook();
+    render(
+      <ManualStep
+        step={buildStep({
+          documents: [{ ...CLICKUP, acknowledged: true }, buildDocument({ locked: false })],
+        })}
+      />
+    );
+
+    // Solo el segundo manual está sin confirmar, así que solo él tiene botón.
+    expect(screen.getByRole('button', { name: /he leído y confirmo/i })).toBeDisabled();
+    // Cada enlace se identifica por su documento (`aria-label`), no por posición.
+    fireEvent.click(screen.getByRole('link', { name: /leer el manual: manual de uso de clickup/i }));
+    // Se abrió el de ClickUp (ya confirmado), no el pendiente: sigue bloqueado.
+    expect(screen.getByRole('button', { name: /he leído y confirmo/i })).toBeDisabled();
   });
 
   it('sin manuales configurados no ofrece confirmar nada', () => {
