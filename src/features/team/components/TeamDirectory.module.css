@@ -115,7 +115,9 @@
 
 .contactRow {
   display: flex;
-  align-items: center;
+  /* `flex-start`, no `center`: cuando el correo ocupa dos líneas, centrarlo deja
+     el icono flotando entre ambas en vez de junto a la primera. */
+  align-items: flex-start;
   gap: var(--space-2);
   font-size: 0.8125rem;
   color: hsl(var(--muted-foreground));
@@ -125,4 +127,19 @@
   height: 0.875rem;
   width: 0.875rem;
   flex-shrink: 0;
+  /* Centra el icono en la ALTURA DE LÍNEA del texto (0,8125rem × 1,4 ≈ 1,14rem):
+     (1,14 - 0,875) / 2 ≈ 0,13rem. Sin esto queda pegado al borde superior. */
+  margin-top: 0.13rem;
+}
+
+/* Un correo largo no tiene espacios donde partirse, así que su ancho mínimo es
+   el del texto completo: 34 caracteres se van a ~243px con el icono, y la
+   columna más estrecha de la rejilla (260px) solo deja ~220px de contenido.
+   `anywhere` permite partirlo y además REDUCE el min-content del item, que es lo
+   que evita el desborde; `min-width: 0` va por si el cálculo cambia.
+   Se parte en dos líneas en vez de truncarse con puntos suspensivos: un correo
+   hay que poder leerlo y copiarlo entero, y ocultar la mitad no es arreglarlo. */
+.contactValue {
+  min-width: 0;
+  overflow-wrap: anywhere;
 }

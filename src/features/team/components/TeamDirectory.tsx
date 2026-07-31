@@ -137,16 +137,21 @@ export function TeamDirectory({ members, isLoading }: TeamDirectoryProps) {
                   <p className={styles.jobTitle}>{member.jobTitle ?? '—'}</p>
                 </div>
 
+                {/* El teléfono y el email van envueltos en su propio `span` y no
+                    como texto suelto: el texto suelto dentro de un flex es un
+                    item anónimo al que no se le puede dar `min-width: 0`, así que
+                    no encogía y un correo largo
+                    (`raimonda.murauskaite@ameliahub.com`) se salía de la tarjeta. */}
                 <div className={styles.contact}>
                   {member.phone && (
                     <span className={styles.contactRow}>
                       <PhoneIcon />
-                      {member.phone}
+                      <span className={styles.contactValue}>{member.phone}</span>
                     </span>
                   )}
                   <span className={styles.contactRow}>
                     <EnvelopeClosedIcon />
-                    {member.email}
+                    <span className={styles.contactValue}>{member.email}</span>
                   </span>
                 </div>
               </CardContent>
