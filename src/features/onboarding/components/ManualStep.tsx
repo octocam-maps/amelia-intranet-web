@@ -1,11 +1,14 @@
 import {
   CheckCircledIcon,
+  ChevronDownIcon,
   DownloadIcon,
   ExternalLinkIcon,
   LockClosedIcon,
   ReaderIcon,
 } from '@radix-ui/react-icons';
 import { Button } from '@/components/ui/Button';
+import { useState } from 'react';
+import { cn } from '@/lib/utils';
 import { useAcknowledgeManual } from '../application/useAcknowledgeManual';
 import type { OnboardingStep, OnboardingStepDocument } from '../domain/models';
 import styles from './ManualStep.module.css';
@@ -43,6 +46,27 @@ interface ManualStepProps {
  */
 export function ManualStep({ step }: ManualStepProps) {
   const { mutate, isPending, variables, error } = useAcknowledgeManual();
+  // Manuales que esta persona ha ABIERTO en esta sesión (leer o descargar). No
+  // se puede confirmar la lectura de un documento sin haberlo abierto siquiera:
+  // el botón salía habilitado nada más llegar al paso, y confirmar sin abrir era
+  // un clic.
+  //
+  // Vive SOLO en el cliente y a propósito: es una ayuda para que el trámite no
+  // se haga en automático, no una garantía —nadie puede verificar que se ha
+  // leído— y el backend NO lo valida. Por eso se pierde al recargar la página,
+  // que es el coste aceptado de no fingir una comprobación que no existe.
+  const [openedIds, setOpenedIds] = useState<ReadonlySet<string>>(() => new Set());
+  const markOpened = (documentId: string) =>
+    setOpenedIds((previous) => new Set(previous).add(documentId));
+
+  // Acordeón: UN manual desplegado a la vez. Con tres manuales abiertos había
+  // tres pares de «Leer el manual»/«Descargar PDF» idénticos en pantalla y no se
+  // veía cuál tocaba.
+  //
+  // `undefined` = nadie ha tocado nada todavía, así que manda el valor por
+  // defecto (el manual que toca leer). `null` = se cerró a propósito. Sin esa
+  // distinción, cerrar el desplegado lo volvería a abrir en el mismo render.
+  const [expanded, setExpanded] = useState<string | null | undefined>(undefined);
 
   const isLocked = step.status === 'locked';
   const isCompleted = step.status === 'completed';
@@ -59,6 +83,11 @@ export function ManualStep({ step }: ManualStepProps) {
   const acknowledgedCount = documents.filter((document) => document.acknowledged).length;
   // El primero pendiente y no bloqueado: el único que se puede confirmar ahora.
   const nextPending = documents.find((document) => !document.acknowledged && !document.locked);
+  // Arranca desplegado el que toca leer, no el primero de la lista: si ya
+  // confirmaste ClickUp, abrir ClickUp otra vez no te sirve de nada.
+  const expandedId = expanded === undefined ? nextPending?.id ?? null : expanded;
+  const toggleExpanded = (documentId: string) =>
+    setExpanded(expandedId === documentId ? null : documentId);
 
   return (
     <div className={styles.root}>
@@ -83,12 +112,23 @@ export function ManualStep({ step }: ManualStepProps) {
             </p>
           )}
 
+          {/* UN solo contenedor y UN manual desplegado a la vez: cada uno es una
+              fila separada por una línea, no una tarjeta con su propia cabecera.
+              Con tres manuales, tres cajas con sus acciones repetidas pesaban más
+              que su contenido y el paso se leía como si fuesen tres pasos. */}
           <ol className={styles.manualList}>
             {documents.map((document) => (
-              <li key={document.id}>
-                <ManualCard
+              <li
+                key={document.id}
+                className={cn(styles.manualRow, document.locked && styles.manualRowLocked)}
+              >
+                <ManualRow
                   document={document}
                   stepCompleted={isCompleted}
+                  isExpanded={expandedId === document.id}
+                  onToggle={() => toggleExpanded(document.id)}
+                  isOpened={openedIds.has(document.id)}
+                  onOpen={() => markOpened(document.id)}
                   isConfirming={isPending && variables?.documentId === document.id}
                   onConfirm={() => mutate({ stepId: step.id, documentId: document.id })}
                 />
@@ -127,71 +167,143 @@ export function ManualStep({ step }: ManualStepProps) {
   );
 }
 
-interface ManualCardProps {
+interface ManualRowProps {
   document: OnboardingStepDocument;
   /** El paso ya está cerrado: no admite más confirmaciones (el POST daría 422). */
   stepCompleted: boolean;
+  /** Este es el manual desplegado del acordeón. */
+  isExpanded: boolean;
+  onToggle: () => void;
+  /** Se ha abierto (leído o descargado) en esta sesión. */
+  isOpened: boolean;
+  onOpen: () => void;
   isConfirming: boolean;
   onConfirm: () => void;
 }
 
-function ManualCard({ document, stepCompleted, isConfirming, onConfirm }: ManualCardProps) {
+function ManualRow({
+  document,
+  stepCompleted,
+  isExpanded,
+  onToggle,
+  isOpened,
+  onOpen,
+  isConfirming,
+  onConfirm,
+}: ManualRowProps) {
   const { acknowledged, locked, url } = document;
   // Manual incorporado a la cascada después de que esta persona cerrara el paso.
   const addedAfterCompletion = stepCompleted && !acknowledged;
+  const canConfirm = isOpened && !isConfirming;
+  const panelId = `${document.id}-panel`;
 
   return (
-    <div className={locked ? `${styles.manualCard} ${styles.manualCardLocked}` : styles.manualCard}>
-      <div className={styles.manualHeader}>
-        {locked ? (
-          <LockClosedIcon className={styles.manualIcon} aria-label="Bloqueado" />
-        ) : acknowledged ? (
-          <CheckCircledIcon className={styles.manualIconDone} aria-label="Confirmado" />
-        ) : (
-          <ReaderIcon className={styles.manualIcon} />
-        )}
-        <span className={styles.manualTitle}>{document.title}</span>
-        {acknowledged && <span className={styles.manualBadge}>Confirmado</span>}
-      </div>
+    <>
+      {/* El disparador del acordeón va dentro de un encabezado y controla su
+          panel por `aria-controls`/`aria-expanded` (patrón ARIA de acordeón): así
+          un lector de pantalla puede recorrer los manuales como lista de
+          encabezados y sabe cuál está desplegado. El paso ya usa `h2`. */}
+      <h3 className={styles.manualHeading}>
+        <button
+          type="button"
+          className={styles.manualToggle}
+          aria-expanded={isExpanded}
+          aria-controls={panelId}
+          onClick={onToggle}
+        >
+          {locked ? (
+            <LockClosedIcon className={styles.manualIcon} aria-label="Bloqueado" />
+          ) : acknowledged ? (
+            <CheckCircledIcon className={styles.manualIconDone} aria-label="Confirmado" />
+          ) : (
+            <ReaderIcon className={styles.manualIcon} />
+          )}
+          <span className={styles.manualTitle}>{document.title}</span>
+          {acknowledged && <span className={styles.manualBadge}>Confirmado</span>}
+          <ChevronDownIcon
+            className={cn(styles.manualChevron, isExpanded && styles.manualChevronOpen)}
+            aria-hidden
+          />
+        </button>
+      </h3>
 
-      {/* Un manual bloqueado no ofrece enlaces: si se pudiera abrir y leer, el
-          candado solo estorbaría sin proteger nada. */}
-      {locked ? (
-        <p className={styles.manualPending}>Se desbloquea al confirmar el manual anterior.</p>
-      ) : url ? (
-        <>
+      {/* `hidden` en vez de no renderizar: `aria-controls` tiene que apuntar a un
+          elemento que exista, y así el navegador puede encontrar texto dentro de
+          un panel cerrado con su propia búsqueda. */}
+      <div className={styles.manualPanel} id={panelId} hidden={!isExpanded}>
+        {/* Un manual bloqueado no ofrece enlaces: si se pudiera abrir y leer, el
+            candado solo estorbaría sin proteger nada. */}
+        {locked ? (
+          <p className={styles.manualNote}>Se desbloquea al confirmar el manual anterior.</p>
+        ) : url ? (
           <div className={styles.manualActions}>
-            <a className={styles.manualAction} href={url} target="_blank" rel="noreferrer">
-              <ExternalLinkIcon className={styles.manualActionIcon} />
-              Leer el manual
-            </a>
-            <a className={styles.manualAction} href={url} download>
-              <DownloadIcon className={styles.manualActionIcon} />
-              Descargar PDF
-            </a>
-          </div>
+          {/* `onOpen` en los DOS: descargar el PDF también es acceder al
+              documento, así que ninguno de los dos caminos deja el botón de
+              confirmar bloqueado. */}
+          {/* El `aria-label` nombra el documento porque el texto visible no puede:
+              con tres manuales había tres enlaces «Leer el manual» y tres
+              «Descargar PDF» indistinguibles al navegarlos en lista con un lector
+              de pantalla (WCAG 2.4.4, el propósito del enlace debe entenderse). */}
+          <a
+            className={styles.manualAction}
+            href={url}
+            target="_blank"
+            rel="noreferrer"
+            onClick={onOpen}
+            aria-label={`Leer el manual: ${document.title}`}
+          >
+            <ExternalLinkIcon className={styles.manualActionIcon} />
+            Leer el manual
+          </a>
+          <a
+            className={styles.manualAction}
+            href={url}
+            download
+            onClick={onOpen}
+            aria-label={`Descargar PDF: ${document.title}`}
+          >
+            <DownloadIcon className={styles.manualActionIcon} />
+            Descargar PDF
+          </a>
+
           {addedAfterCompletion ? (
-            <p className={styles.manualPending}>
+            <p className={styles.manualNote}>
               Se añadió después de que completaras este paso, así que no tienes que confirmar
-              nada. Queda disponible aquí y en Ayuda para cuando lo necesites.
+              nada.
             </p>
           ) : (
             !acknowledged && (
-              <div className={styles.footer}>
-                <Button variant="dark" disabled={isConfirming} onClick={onConfirm}>
+              <>
+                <Button
+                  variant="dark"
+                  size="sm"
+                  disabled={!canConfirm}
+                  onClick={onConfirm}
+                  // Un `disabled` sin motivo es una puerta cerrada sin cartel.
+                  // El aviso va en texto visible y asociado por `aria-describedby`,
+                  // no en un `title`: el tooltip no existe en táctil y los
+                  // lectores de pantalla no lo anuncian de forma fiable.
+                  aria-describedby={isOpened ? undefined : `${document.id}-hint`}
+                >
                   {isConfirming ? 'Confirmando…' : 'He leído y confirmo'}
                 </Button>
-              </div>
+                {!isOpened && (
+                  <span className={styles.manualHint} id={`${document.id}-hint`}>
+                    Ábrelo para poder confirmar
+                  </span>
+                )}
+              </>
             )
           )}
-        </>
-      ) : (
-        // Sin `storage_ref` no hay nada que leer. Se dice, en vez de pedir que
-        // confirme la lectura de un documento inexistente.
-        <p className={styles.manualPending}>
-          RRHH todavía no ha publicado este manual. Avísales antes de confirmar la lectura.
-        </p>
-      )}
-    </div>
+          </div>
+        ) : (
+          // Sin `storage_ref` no hay nada que leer. Se dice, en vez de pedir que
+          // confirme la lectura de un documento inexistente.
+          <p className={styles.manualNote}>
+            RRHH todavía no ha publicado este manual. Avísales antes de confirmar la lectura.
+          </p>
+        )}
+      </div>
+    </>
   );
 }
