@@ -4,13 +4,36 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/Avatar';
 import { Button } from '@/components/ui/Button';
 import { cn } from '@/lib/utils';
 import { useResetQuizAttempt } from '../application/useResetQuizAttempt';
-import type { OnboardingProgressEmployee, OnboardingProgressStatus } from '../domain/models';
+import type {
+  EmployeeStepProgress,
+  OnboardingProgressEmployee,
+  OnboardingProgressStatus,
+} from '../domain/models';
 import styles from './OnboardingProgressTable.module.css';
 
 const STATUS_LABEL: Record<OnboardingProgressStatus, string> = {
   not_started: 'Sin empezar',
   in_progress: 'En curso',
   completed: 'Completado',
+};
+
+/** Etiqueta de cada estado de paso, para el `title` y el texto accesible. Los
+ * chips muestran solo el número, así que sin esto un lector de pantalla leería
+ * "1 2 3 4 5" sin ninguna información. */
+const STEP_STATUS_LABEL: Record<EmployeeStepProgress['status'], string> = {
+  locked: 'bloqueado',
+  available: 'disponible',
+  in_progress: 'en curso',
+  completed: 'completado',
+};
+
+/* El estado se distingue por color Y por el `title`/texto accesible — el color
+   solo no basta para quien no distingue verdes (WCAG 1.4.1). */
+const STEP_CHIP_CLASS: Record<EmployeeStepProgress['status'], string | undefined> = {
+  locked: undefined,
+  available: styles.stepChipAvailable,
+  in_progress: styles.stepChipInProgress,
+  completed: styles.stepChipCompleted,
 };
 
 const STATUS_CLASS: Record<OnboardingProgressStatus, string | undefined> = {
@@ -136,6 +159,29 @@ export function OnboardingProgressTable({ employees, isLoading, quizStepId }: On
                     >
                       <div className={styles.progressFill} style={{ width: `${progressPct}%` }} />
                     </div>
+                    {/* Desglose paso a paso: «3 de 5» no dice DÓNDE se atascó
+                        alguien, que es la pregunta que hace RRHH. Va aquí y no en
+                        un desplegable para que se vea de un barrido, sin un clic
+                        por persona. */}
+                    {employee.steps.length > 0 && (
+                      <ol className={styles.stepChips}>
+                        {employee.steps.map((step) => (
+                          <li
+                            key={step.stepOrder}
+                            className={cn(styles.stepChip, STEP_CHIP_CLASS[step.status])}
+                            // El título lleva el nombre del paso y su estado: los
+                            // chips son números, y sin esto un lector de pantalla
+                            // solo diría "1 2 3 4 5".
+                            title={`Paso ${step.stepOrder}: ${step.title} — ${STEP_STATUS_LABEL[step.status]}`}
+                          >
+                            <span className={styles.srOnly}>
+                              {`Paso ${step.stepOrder}, ${step.title}: ${STEP_STATUS_LABEL[step.status]}`}
+                            </span>
+                            <span aria-hidden="true">{step.stepOrder}</span>
+                          </li>
+                        ))}
+                      </ol>
+                    )}
                   </div>
                 </td>
                 <td className={styles.currentStep}>{employee.currentStepTitle ?? '—'}</td>

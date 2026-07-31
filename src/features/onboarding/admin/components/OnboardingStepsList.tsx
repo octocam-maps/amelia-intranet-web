@@ -1,4 +1,4 @@
-import { BookmarkIcon, Pencil2Icon, PlayIcon, ReaderIcon } from '@radix-ui/react-icons';
+import { BookmarkIcon, EyeOpenIcon, Pencil2Icon, PlayIcon, ReaderIcon } from '@radix-ui/react-icons';
 import { FileSignatureIcon, type IconComponent, UserCheckIcon } from '@/components/icons';
 import { Badge } from '@/components/ui/Badge';
 import { Switch } from '@/components/ui/Switch';
@@ -37,6 +37,10 @@ interface OnboardingStepsListProps {
   steps: AdminOnboardingStep[];
   isLoading: boolean;
   onEdit: (step: AdminOnboardingStep) => void;
+  /** Abre la vista de revisión del contenido del paso. Separado de `onEdit`
+   * porque son dos intenciones distintas: revisar qué verá la plantilla y
+   * cambiarlo. */
+  onPreview: (step: AdminOnboardingStep) => void;
 }
 
 /** deck-fase6/16-onboarding-config.png — lista de los 5 pasos fijos del
@@ -44,7 +48,12 @@ interface OnboardingStepsListProps {
  * "Añadir paso"; el contrato de backend consumido aquí no expone ni
  * reordenar ni crear/eliminar pasos (son 5 fijos, solo editables vía
  * `PATCH .../steps/{id}`), así que esta pantalla no los ofrece. */
-export function OnboardingStepsList({ steps, isLoading, onEdit }: OnboardingStepsListProps) {
+export function OnboardingStepsList({
+  steps,
+  isLoading,
+  onEdit,
+  onPreview,
+}: OnboardingStepsListProps) {
   const { mutate: updateStep } = useUpdateOnboardingStep();
 
   if (isLoading) {
@@ -80,6 +89,14 @@ export function OnboardingStepsList({ steps, isLoading, onEdit }: OnboardingStep
                 aria-label={`${step.isActive ? 'Desactivar' : 'Activar'} paso ${step.stepOrder}`}
               />
             </span>
+            <button
+              type="button"
+              className={styles.iconButton}
+              onClick={() => onPreview(step)}
+              aria-label={`Previsualizar paso ${step.stepOrder}: ${step.title}`}
+            >
+              <EyeOpenIcon />
+            </button>
             <button
               type="button"
               className={styles.iconButton}

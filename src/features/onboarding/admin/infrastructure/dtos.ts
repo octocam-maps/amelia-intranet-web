@@ -1,3 +1,5 @@
+import type { OnboardingStepDocumentDTO } from '../../infrastructure/dtos';
+
 /** Formas snake_case tal cual las devuelve el backend (Pydantic). */
 
 export interface AdminOnboardingStepDTO {
@@ -6,6 +8,7 @@ export interface AdminOnboardingStepDTO {
   type: string;
   title: string;
   config: unknown;
+  documents: OnboardingStepDocumentDTO[];
   is_active: boolean;
 }
 
@@ -27,6 +30,7 @@ export interface OnboardingProgressEmployeeDTO {
   status: string;
   completed_steps: number;
   total_steps: number;
+  steps: EmployeeStepProgressDTO[];
   current_step_title: string | null;
 }
 
@@ -36,4 +40,11 @@ export interface OnboardingProgressDTO {
 
 export interface ResetQuizAttemptDTO {
   user_id: string;
+}
+
+/** Un paso concreto de una persona (desglose de la bandeja de administración). */
+export interface EmployeeStepProgressDTO {
+  step_order: number;
+  title: string;
+  status: string;
 }

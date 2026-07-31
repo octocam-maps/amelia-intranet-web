@@ -1,4 +1,4 @@
-import type { OnboardingStepType } from '../../domain/models';
+import type { OnboardingStepDocument, OnboardingStepType } from '../../domain/models';
 
 /** `config.video` — mismo shape que el consumido por el empleado
  * (`VideoStepConfig` en `onboarding/domain/models`), pero aquí SÍ es
@@ -42,6 +42,10 @@ export interface AdminOnboardingStep {
   title: string;
   config: unknown;
   isActive: boolean;
+  /** Documentos del paso, para la previsualización. Llegan sin estado de cascada
+   * (`acknowledged`/`locked` a `false`): eso es el progreso de UN trabajador, y en
+   * una previsualización no hay trabajador. */
+  documents: OnboardingStepDocument[];
 }
 
 /**
@@ -56,6 +60,13 @@ export interface UpdateOnboardingStepInput {
 
 export type OnboardingProgressStatus = 'not_started' | 'in_progress' | 'completed';
 
+/** Un paso concreto de una persona, para el desglose de la bandeja. */
+export interface EmployeeStepProgress {
+  stepOrder: number;
+  title: string;
+  status: 'locked' | 'available' | 'in_progress' | 'completed';
+}
+
 export interface OnboardingProgressEmployee {
   userId: string;
   fullName: string;
@@ -65,6 +76,10 @@ export interface OnboardingProgressEmployee {
   completedSteps: number;
   totalSteps: number;
   currentStepTitle: string | null;
+  /** Desglose paso a paso: permite ver DÓNDE está atascada una persona, no solo
+   * «3 de 5». Vacío si nunca visitó su onboarding — distinto de tener los 5 pasos
+   * bloqueados. */
+  steps: EmployeeStepProgress[];
 }
 
 export interface ResetQuizAttemptInput {
