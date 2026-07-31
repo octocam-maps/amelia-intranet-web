@@ -122,6 +122,15 @@ export const NAV_BY_ROLE: Record<UserRole, NavItem[]> = {
     perfil,
     calendarioGeneral,
   ],
+  // `becario` (migración 038, RF-A10): el navbar de `empleado` MENOS "Control
+  // horario". Es la única diferencia — todo lo demás (ausencias, nóminas,
+  // documentos, equipo, buzón, onboarding completo) lo ve igual que un
+  // trabajador, y en el backend lo hereda por estar en `INTERNAL_ROLES`.
+  //
+  // "Ocultar ≠ proteger": los 13 endpoints de `/time-clock` usan
+  // `TIME_CLOCK_ROLES`, que no lo incluye — escribir `/control-horario` a mano
+  // da 403, no la pantalla.
+  becario: [inicio, onboarding, ausencias, nominas, documentos, equipo, buzonAnonimo, perfil],
 };
 
 /**

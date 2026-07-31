@@ -16,9 +16,14 @@
  * que ya conocen el rol de antemano (JWT decodificado, badges de solo
  * lectura).
  */
-export type UserRole = 'administrador' | 'empleado' | 'externo_invitado' | 'socio';
+export type UserRole =
+  | 'administrador'
+  | 'empleado'
+  | 'externo_invitado'
+  | 'socio'
+  | 'becario';
 
-/** Mismos 4 valores de `UserRole`, como array — única lista permitida para
+/** Mismos 5 valores de `UserRole`, como array — única lista permitida para
  * `parseEnum`/`parseEnumNullable` en los mappers que validan el `role`/
  * `role_code` que manda el backend (antes duplicada como `PROFILE_ROLES` en
  * `profile/infrastructure/mappers.ts` y `STAFF_ROLES` en
@@ -28,6 +33,7 @@ export const USER_ROLES: readonly UserRole[] = [
   'empleado',
   'externo_invitado',
   'socio',
+  'becario',
 ];
 
 /** Etiqueta legible de cada rol — para los lugares que solo necesitan
@@ -38,9 +44,13 @@ export const USER_ROLES: readonly UserRole[] = [
  * llamar a un endpoint admin-only solo para etiquetar su propio badge. */
 export const USER_ROLE_LABEL: Record<UserRole, string> = {
   administrador: 'Administrador',
-  empleado: 'Empleado',
+  // RRHH lo llama "Trabajador"; el `code` del backend sigue siendo `empleado`
+  // y NO se toca — renombrarlo obligaría a una migración de datos y a tocar los
+  // 41 guards que lo nombran, para no ganar nada funcional.
+  empleado: 'Trabajador',
   externo_invitado: 'Externo-invitado',
   socio: 'Socio',
+  becario: 'Becario',
 };
 
 /** Helpers de rol — evitan repetir el literal `'administrador'`/
@@ -48,6 +58,17 @@ export const USER_ROLE_LABEL: Record<UserRole, string> = {
  * (Sidebar, Dashboard, Ausencias, Control horario, Onboarding). */
 export const isAdmin = (role?: UserRole | null): boolean => role === 'administrador';
 export const isExternalGuest = (role?: UserRole | null): boolean => role === 'externo_invitado';
+
+/** `becario` [migración backend `038_becario_role.sql`, RF-A10]: accede a todo
+ * lo que ve un trabajador SALVO el control horario. Es el único módulo que se
+ * le niega, así que este helper solo se usa para eso — no para ramificar
+ * permisos en general, donde el becario se comporta como un empleado.
+ *
+ * Ocultar ≠ proteger: esto solo evita ofrecerle una pantalla que el backend le
+ * va a negar con un 403 (`TIME_CLOCK_ROLES` en `src/shared/auth/roles.py`). La
+ * autorización real vive allí. */
+export const canUseTimeClock = (role?: UserRole | null): boolean =>
+  role != null && role !== 'externo_invitado' && role !== 'becario';
 
 export interface AmeliaUser {
   id: string;
