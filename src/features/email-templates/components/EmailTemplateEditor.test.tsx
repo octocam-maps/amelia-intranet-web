@@ -111,7 +111,7 @@ describe('EmailTemplateEditor', () => {
 
     expect(save).toHaveBeenCalledWith({
       templateKey: 'staff_invited',
-      input: { subject: 'Nuevo asunto', body: 'Hola {{full_name}},' },
+      input: { subject: 'Nuevo asunto', body: 'Hola {{full_name}},' },  // se GUARDA traducido
     });
   });
 
@@ -125,7 +125,7 @@ describe('EmailTemplateEditor', () => {
 
     expect(preview).toHaveBeenCalledWith({
       templateKey: 'staff_invited',
-      draft: { subject: 'Borrador', body: 'Hola {{full_name}},' },
+      draft: { subject: 'Borrador', body: 'Hola {{full_name}},' },  // se ENVÍA traducido
     });
   });
 
@@ -216,7 +216,9 @@ describe('EmailTemplateEditor — el admin no escribe HTML (migración 044)', ()
 
     fireEvent.click(screen.getByRole('button', { name: /Nombre de la persona/i }));
 
-    expect(screen.getByLabelText('Cuerpo del mensaje')).toHaveValue('Hola {{full_name}}');
+    expect(screen.getByLabelText('Cuerpo del mensaje')).toHaveValue(
+      'Hola [Nombre de la persona]'
+    );
   });
 
   it('con el cursor dentro, inserta el campo en esa posición', () => {
@@ -232,7 +234,7 @@ describe('EmailTemplateEditor — el admin no escribe HTML (migración 044)', ()
 
     fireEvent.click(screen.getByRole('button', { name: /Nombre de la persona/i }));
 
-    expect(textarea).toHaveValue('Hola {{full_name}}, buenos días');
+    expect(textarea).toHaveValue('Hola [Nombre de la persona], buenos días');
   });
 
   it('un campo que el backend añada y no tenga etiqueta se muestra con su clave', () => {
@@ -258,5 +260,76 @@ describe('EmailTemplateEditor — el admin no escribe HTML (migración 044)', ()
 
     expect(save.mock.calls[0]![0].input.body).toBe('Primer párrafo.\n\nSegundo párrafo.');
     expect(save.mock.calls[0]![0].input.body).not.toContain('<p>');
+  });
+});
+
+describe('EmailTemplateEditor — los campos no se ven como código (2026-07-31)', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    mockHooks();
+  });
+
+  it('el textarea NUNCA muestra la sintaxis {{...}}', () => {
+    // `{{full_name}}` es código: dobles llaves, guion bajo y el campo en inglés.
+    // Una persona de RRHH no tiene por qué saber que las llaves van dobles, y con
+    // una sola el correo sale con el placeholder literal.
+    render(
+      <EmailTemplateEditor
+        template={buildTemplate({ body: 'Hola {{full_name}}, eres {{job_title}}' })}
+        availablePlaceholders={PLACEHOLDERS}
+      />
+    );
+
+    const textarea = screen.getByLabelText('Cuerpo del mensaje') as HTMLTextAreaElement;
+    expect(textarea.value).not.toContain('{{');
+    expect(textarea.value).toBe('Hola [Nombre de la persona], eres [Puesto]');
+  });
+
+  it('el asunto también se muestra traducido', () => {
+    render(
+      <EmailTemplateEditor
+        template={buildTemplate({ subject: 'Bienvenida, {{full_name}}' })}
+        availablePlaceholders={PLACEHOLDERS}
+      />
+    );
+
+    expect(screen.getByLabelText('Asunto')).toHaveValue('Bienvenida, [Nombre de la persona]');
+  });
+
+  it('lo que se GUARDA sí lleva la sintaxis del backend', () => {
+    // La traducción es solo de presentación: el backend sustituye `{{campo}}`, y su
+    // lista blanca es la fuente de verdad.
+    render(<EmailTemplateEditor template={buildTemplate()} availablePlaceholders={PLACEHOLDERS} />);
+
+    fireEvent.change(screen.getByLabelText('Cuerpo del mensaje'), {
+      target: { value: 'Hola [Nombre de la persona], eres [Puesto]' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'Guardar' }));
+
+    expect(save.mock.calls[0]![0].input.body).toBe('Hola {{full_name}}, eres {{job_title}}');
+  });
+
+  it('abrir una plantilla y no tocar nada NO la marca como modificada', () => {
+    // Si `isDirty` comparara lo mostrado contra lo guardado, toda plantilla con un
+    // campo saldría como editada solo por la traducción.
+    render(
+      <EmailTemplateEditor
+        template={buildTemplate({ body: 'Hola {{full_name}}' })}
+        availablePlaceholders={PLACEHOLDERS}
+      />
+    );
+
+    expect(screen.getByRole('button', { name: 'Guardar' })).toBeDisabled();
+  });
+
+  it('un corchete que el admin escriba en su texto se respeta', () => {
+    render(<EmailTemplateEditor template={buildTemplate()} availablePlaceholders={PLACEHOLDERS} />);
+
+    fireEvent.change(screen.getByLabelText('Cuerpo del mensaje'), {
+      target: { value: 'Estado: [pendiente de firma]' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'Guardar' }));
+
+    expect(save.mock.calls[0]![0].input.body).toBe('Estado: [pendiente de firma]');
   });
 });

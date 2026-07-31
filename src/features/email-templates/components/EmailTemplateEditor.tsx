@@ -6,20 +6,13 @@ import { usePreviewEmailTemplate } from '../application/usePreviewEmailTemplate'
 import { useRestoreEmailTemplate } from '../application/useRestoreEmailTemplate';
 import { useUpdateEmailTemplate } from '../application/useUpdateEmailTemplate';
 import type { EmailTemplate } from '../domain/models';
+import {
+  PLACEHOLDER_LABEL,
+  placeholderToken,
+  toDisplay,
+  toStorage,
+} from '../domain/placeholders';
 import styles from './EmailTemplateEditor.module.css';
-
-/** Nombre legible de cada campo. `{{entity_name}}` no le dice nada a quien no
- * programa; «Sociedad» sí. La clave técnica sigue siendo la que se inserta en el
- * texto — esto es solo la etiqueta del botón. Un campo que el backend añada y no
- * esté aquí se muestra con su clave, así que no se rompe nada. */
-const PLACEHOLDER_LABEL: Record<string, string> = {
-  full_name: 'Nombre de la persona',
-  job_title: 'Puesto',
-  entity_name: 'Sociedad',
-  title: 'Título del aviso',
-  body: 'Texto del aviso',
-  url: 'Enlace a la intranet',
-};
 
 interface EmailTemplateEditorProps {
   template: EmailTemplate;
@@ -41,8 +34,11 @@ interface EmailTemplateEditorProps {
  * sincronizar a mano.
  */
 export function EmailTemplateEditor({ template, availablePlaceholders }: EmailTemplateEditorProps) {
-  const [subject, setSubject] = useState(template.subject);
-  const [body, setBody] = useState(template.body);
+  // El estado guarda lo que el admin VE (`[Nombre de la persona]`), y se traduce a
+  // la sintaxis del backend (`{{full_name}}`) justo al guardar o previsualizar. La
+  // sintaxis técnica no sale nunca del navegador.
+  const [subject, setSubject] = useState(() => toDisplay(template.subject));
+  const [body, setBody] = useState(() => toDisplay(template.body));
   const bodyRef = useRef<HTMLTextAreaElement>(null);
 
   /** Inserta el campo donde está el cursor. Los chips eran solo informativos y
@@ -56,7 +52,7 @@ export function EmailTemplateEditor({ template, availablePlaceholders }: EmailTe
    * "Hola " daba "{{full_name}}Hola ". Lo cazó un test, y pasa en el uso más
    * normal de todos — abrir la plantilla y pulsar un chip sin haber escrito. */
   function insertPlaceholder(placeholder: string) {
-    const token = `{{${placeholder}}}`;
+    const token = placeholderToken(placeholder);
     const el = bodyRef.current;
     const hasCursor = el !== null && document.activeElement === el;
 
@@ -81,7 +77,10 @@ export function EmailTemplateEditor({ template, availablePlaceholders }: EmailTe
   const { mutate: preview, data: previewResult, isPending: isPreviewing } =
     usePreviewEmailTemplate();
 
-  const isDirty = subject !== template.subject || body !== template.body;
+  // Se compara en el mismo espacio (lo mostrado), o una plantilla recién abierta
+  // saldría como "modificada" solo por la traducción de los campos.
+  const isDirty =
+    subject !== toDisplay(template.subject) || body !== toDisplay(template.body);
   const canSave = subject.trim().length > 0 && body.trim().length > 0 && isDirty;
 
   return (
@@ -125,7 +124,8 @@ export function EmailTemplateEditor({ template, availablePlaceholders }: EmailTe
 
       <div className={styles.placeholders}>
         <p className={styles.hint}>
-          Pulsa un campo para insertarlo. Al enviar se sustituye por el dato real:
+          Pulsa un campo para insertarlo. Aparecerá <strong>entre corchetes</strong> y al enviar
+          se sustituye por el dato real de cada persona:
         </p>
         <div className={styles.chips}>
           {/* La lista la manda el BACKEND: es la misma lista blanca que aplica al
@@ -154,7 +154,12 @@ export function EmailTemplateEditor({ template, availablePlaceholders }: EmailTe
         <Button
           variant="outline"
           disabled={isPreviewing}
-          onClick={() => preview({ templateKey: template.templateKey, draft: { subject, body } })}
+          onClick={() =>
+            preview({
+              templateKey: template.templateKey,
+              draft: { subject: toStorage(subject), body: toStorage(body) },
+            })
+          }
         >
           {isPreviewing ? 'Generando…' : 'Previsualizar'}
         </Button>
@@ -179,7 +184,12 @@ export function EmailTemplateEditor({ template, availablePlaceholders }: EmailTe
         <Button
           variant="dark"
           disabled={!canSave || isSaving}
-          onClick={() => save({ templateKey: template.templateKey, input: { subject, body } })}
+          onClick={() =>
+            save({
+              templateKey: template.templateKey,
+              input: { subject: toStorage(subject), body: toStorage(body) },
+            })
+          }
         >
           {isSaving ? 'Guardando…' : 'Guardar'}
         </Button>
