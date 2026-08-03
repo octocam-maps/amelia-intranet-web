@@ -28,7 +28,8 @@ export function LoginBrandPanel() {
       <div className={styles.body}>
         <h1 className={styles.title}>Bienvenido a tu espacio de trabajo.</h1>
         <p className={styles.subtitle}>
-          Onboarding, vacaciones, fichajes, nóminas y tu equipo. Todo lo de RRHH, en un solo sitio.
+          Onboarding, vacaciones, fichajes, nóminas y tu equipo. Todo lo que necesitas de RRHH, en
+          un solo lugar.
         </p>
 
         <ul className={styles.bullets}>
