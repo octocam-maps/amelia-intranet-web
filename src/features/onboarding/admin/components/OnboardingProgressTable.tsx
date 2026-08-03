@@ -99,14 +99,24 @@ export function OnboardingProgressTable({ employees, isLoading, quizStepId }: On
   }
 
   return (
-    <div>
+    <div className={styles.root}>
       {feedback && (
         <p className={cn(styles.banner, feedback.ok ? styles.bannerSuccess : styles.bannerError)}>
           {feedback.message}
         </p>
       )}
 
-      <table className={styles.table}>
+      {/* `tabIndex={0}` + `role="region"`: un contenedor con scroll que no es
+          alcanzable con el tabulador deja sin acceso al contenido a quien no usa
+          ratón (axe: `scrollable-region-focusable`). El `aria-label` es lo que
+          se anuncia al entrar en la región. */}
+      <div
+        className={styles.scroller}
+        tabIndex={0}
+        role="region"
+        aria-label="Progreso de onboarding de la plantilla"
+      >
+        <table className={styles.table}>
         <thead>
           <tr>
             <th>Persona</th>
@@ -206,7 +216,8 @@ export function OnboardingProgressTable({ employees, isLoading, quizStepId }: On
             );
           })}
         </tbody>
-      </table>
+        </table>
+      </div>
     </div>
   );
 }

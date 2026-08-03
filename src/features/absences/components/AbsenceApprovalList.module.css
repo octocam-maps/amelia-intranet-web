@@ -23,9 +23,13 @@
 }
 
 .filterPillActive {
+  /* El borde y el fondo se quedan con el verde de marca: no son texto y son
+     lo que hace visible cuál es el filtro activo. Solo cambia el TEXTO, que
+     sobre ese tinte daba 1,90:1 con `--primary` y da 5,08:1 con el token
+     medido. */
   border-color: hsl(var(--primary));
   background-color: hsl(var(--primary) / 0.08);
-  color: hsl(var(--primary));
+  color: hsl(var(--success-on-tint));
 }
 
 .empty {

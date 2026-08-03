@@ -72,7 +72,9 @@
 .link {
   font-size: 0.8125rem;
   font-weight: 600;
-  color: hsl(var(--primary));
+  /* `--success-on-tint`: el verde de marca como texto sobre blanco da 2,03:1.
+     Ver la nota en `RecentAbsenceRequestsCard.module.css`. */
+  color: hsl(var(--success-on-tint));
   text-decoration: none;
   align-self: flex-start;
 }

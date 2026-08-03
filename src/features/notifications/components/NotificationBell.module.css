@@ -5,6 +5,11 @@
   justify-content: center;
   height: var(--space-10);
   width: var(--space-10);
+  /* `flex-shrink: 0`: en el Topbar de tablet y móvil el flex encogía la campana
+     por debajo de su ancho declarado (23,5px medidos frente a los 40 de
+     `--space-10`), dejándola por debajo del mínimo de WCAG 2.5.8 en las 12
+     pantallas que muestran el Topbar. */
+  flex-shrink: 0;
   border: none;
   border-radius: calc(var(--radius) - 2px);
   background: transparent;

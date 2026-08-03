@@ -106,7 +106,15 @@ export function GeneralAbsenceCalendar({
         </div>
       </CardHeader>
       <CardContent>
-        <div className={styles.scrollArea}>
+        {/* `tabIndex={0}` + `role="region"`: la rejilla desplaza en horizontal y
+            sin foco el contenido de la derecha era inalcanzable sin ratón
+            (axe: `scrollable-region-focusable`). */}
+        <div
+          className={styles.scrollArea}
+          tabIndex={0}
+          role="region"
+          aria-label="Calendario general de ausencias"
+        >
           <div className={styles.headerDays} style={gridStyle}>
             {days.map((day) => (
               <span

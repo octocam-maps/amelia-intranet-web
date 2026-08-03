@@ -28,7 +28,14 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-4);
-  overflow-x: auto;
+  /* `min-width: 0` para que la tarjeta pueda encogerse por debajo del ancho de
+     su contenido: es hija de un flex en columna y por defecto `min-width: auto`
+     la ensancharía hasta el contenido más ancho, empujando el documento.
+     Sustituye a un `overflow-x: auto` que estaba aquí y no servía de nada
+     justamente por eso — el scroll ahora lo hace la tabla en su propio
+     contenedor (`.scroller` de `OnboardingProgressTable`), que es lo correcto:
+     la cabecera y el resto de la tarjeta no deben desplazarse con ella. */
+  min-width: 0;
 }
 
 .cardHeader {

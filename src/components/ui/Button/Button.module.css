@@ -117,6 +117,12 @@
 .sizeIcon {
   height: var(--space-10);
   width: var(--space-10);
+  /* `flex-shrink: 0`: el ancho de 40px es un mínimo, no una sugerencia. Dentro
+     de una fila de flex sin sitio, el valor por defecto (`1`) encogía estos
+     botones hasta 16-18px de ancho en móvil — cuadrados de 40px de alto y 16 de
+     ancho, con el icono deformado. Medido por la auditoría E2E del 2026-08-03 en
+     `/ausencias` y `/administracion/buzon`. */
+  flex-shrink: 0;
   padding: 0;
 }
 

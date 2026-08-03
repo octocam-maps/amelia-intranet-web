@@ -56,15 +56,18 @@
   flex-shrink: 0;
 }
 
+/* El PUNTO conserva el color puro (decoración) y el TEXTO usa `-on-tint`: el
+   verde de marca sobre blanco da 2,03:1 y el ámbar 2,13:1, con AA en 4,5:1.
+   Mismo patrón que `OnboardingProgressTable.module.css`. */
 .statusActive {
-  color: hsl(var(--success));
+  color: hsl(var(--success-on-tint));
 }
 .statusActive .statusDot {
   background-color: hsl(var(--success));
 }
 
 .statusInvited {
-  color: hsl(var(--warning));
+  color: hsl(var(--warning-on-tint));
 }
 .statusInvited .statusDot {
   background-color: hsl(var(--warning));

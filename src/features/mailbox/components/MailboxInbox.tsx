@@ -162,7 +162,10 @@ function MailboxDetail({ message, onResolve, isResolving }: MailboxDetailProps) 
         )}
       </div>
 
-      <div className={styles.detailBody}>
+      {/* `tabIndex={0}` + `role="region"`: el cuerpo del mensaje desplaza en
+          vertical cuando el texto es largo, y sin foco no había forma de leerlo
+          entero sin ratón (axe: `scrollable-region-focusable`). */}
+      <div className={styles.detailBody} tabIndex={0} role="region" aria-label="Mensaje recibido">
         <p className={styles.messageBubble}>{message.body}</p>
 
         {message.reply && (

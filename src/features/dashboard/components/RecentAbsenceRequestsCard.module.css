@@ -7,7 +7,11 @@
 .link {
   font-size: 0.8125rem;
   font-weight: 600;
-  color: hsl(var(--primary));
+  /* `--success-on-tint` (#007A42) y NO `--primary`: el verde de marca #00D170
+     como texto sobre blanco da 2,03:1 y AA pide 4,5:1. Mismo criterio que
+     `HelpPage.module.css` — el token es el mismo verde con la luminosidad
+     medida para leerse sobre fondo claro (5,44:1). */
+  color: hsl(var(--success-on-tint));
   text-decoration: none;
 }
 

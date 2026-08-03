@@ -62,6 +62,11 @@
   display: flex;
   align-items: center;
   gap: var(--space-2);
+  /* El objetivo táctil de la casilla es esta fila entera (pulsar el texto la
+     marca), y medía 18px de alto: por debajo de los 24 de WCAG 2.5.8. La
+     casilla en sí se queda en su tamaño nativo — lo que crece es el área
+     pulsable, que es de lo que habla la norma. */
+  min-height: 1.5rem;
   font-size: 0.8125rem;
   color: hsl(var(--foreground));
   cursor: pointer;

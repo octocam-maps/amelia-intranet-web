@@ -55,19 +55,17 @@ export function AnnouncementsList({ announcements, isLoading, selectedId, onSele
 
   return (
     <div className={styles.list}>
+      <h2 className={styles.heading}>Anuncios publicados</h2>
       {announcements.map((announcement) => (
+        /* Sin `role="button"` ni `tabIndex`: la tarjeta contiene el menú de
+           acciones y los enlaces del cuerpo del anuncio, y anunciarse ella misma
+           como botón dejaba esos controles fuera del alcance del tabulador
+           (axe: `nested-interactive`). El `onClick` se queda como atajo de
+           ratón; el control accesible es el botón del título. */
         <article
           key={announcement.id}
-          role="button"
-          tabIndex={0}
           className={cn(styles.card, selectedId === announcement.id && styles.cardActive)}
           onClick={() => onSelect(announcement)}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter' || e.key === ' ') {
-              e.preventDefault();
-              onSelect(announcement);
-            }
-          }}
         >
           <div className={styles.cardHeader}>
             <div className={styles.badges}>
@@ -106,7 +104,21 @@ export function AnnouncementsList({ announcements, isLoading, selectedId, onSele
             </DropdownMenu>
           </div>
 
-          <h3 className={styles.cardTitle}>{announcement.title}</h3>
+          <h3 className={styles.cardTitle}>
+            <button
+              type="button"
+              className={styles.titleButton}
+              onClick={(e) => {
+                /* El `<article>` de fuera tiene el mismo `onClick`. Sin frenar
+                   la propagación, seleccionar con el teclado disparaba también
+                   el manejador del contenedor. */
+                e.stopPropagation();
+                onSelect(announcement);
+              }}
+            >
+              {announcement.title}
+            </button>
+          </h3>
           <div className={styles.cardBody}>
             <AnnouncementBody body={announcement.body} />
           </div>

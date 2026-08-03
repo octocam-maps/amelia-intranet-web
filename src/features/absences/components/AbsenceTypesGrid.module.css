@@ -42,10 +42,30 @@
   flex: 1;
 }
 
+/* El nombre es el control REAL de la tarjeta: es lo que recibe el tabulador.
+ * La tarjeta era un `div role="button"` que contenía el `Switch` de Radix (que
+ * a su vez es un `<button>`), así que el interruptor quedaba inalcanzable con
+ * el teclado — axe lo marcaba en los 12 tipos (`nested-interactive`). Evitar el
+ * `<button>` dentro de `<button>` con un `role` no arregla el problema: lo
+ * mueve del validador de HTML al árbol de accesibilidad. */
 .cardName {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: none;
+  background: none;
   font-size: 0.9375rem;
   font-weight: 700;
+  font-family: inherit;
   color: hsl(var(--foreground));
+  text-align: left;
+  cursor: pointer;
+}
+
+.cardName:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px hsl(var(--ring));
+  border-radius: calc(var(--radius) - 4px);
 }
 
 .cardDescription {

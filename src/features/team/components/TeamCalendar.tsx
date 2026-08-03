@@ -121,7 +121,16 @@ export function TeamCalendar() {
           el motivo.
         </p>
 
-        <div className={styles.scrollArea}>
+        {/* `tabIndex={0}` + `role="region"`: mismo patrón que
+            `TeamAbsenceGantt` y `GeneralAbsenceCalendar`. La auditoría no lo
+            marcó aquí porque en la ejecución la rejilla cabía sin desplazarse,
+            pero el defecto latente es el mismo. */}
+        <div
+          className={styles.scrollArea}
+          tabIndex={0}
+          role="region"
+          aria-label="Calendario del equipo"
+        >
           <div className={styles.headerDays} style={gridStyle}>
             {days.map((day) => (
               <span

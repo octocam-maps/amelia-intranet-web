@@ -32,7 +32,10 @@
 }
 
 .required {
-  color: hsl(var(--destructive));
+  /* `--destructive-on-tint` (#CA1111): el rojo puro sobre blanco da 3,78:1 y
+     AA pide 4,5:1. El asterisco de campo obligatorio es información, no
+     decoración — si no se lee, el formulario no se entiende. Queda en 5,83:1. */
+  color: hsl(var(--destructive-on-tint));
 }
 
 .categoryGroup {

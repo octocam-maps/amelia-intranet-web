@@ -20,7 +20,9 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  color: hsl(var(--primary));
+  /* `--success-on-tint`: 12px en mayúsculas es el peor caso de legibilidad de
+     la pantalla, y con `--primary` daba 1,94:1 sobre `#F9FAFB`. */
+  color: hsl(var(--success-on-tint));
 }
 
 .title {
@@ -75,7 +77,10 @@
 .progressPct {
   font-size: 0.9375rem;
   font-weight: 700;
-  color: hsl(var(--primary));
+  /* `--success-on-tint`: el verde de marca como texto sobre blanco da 2,03:1 y
+     AA pide 4,5:1. El porcentaje de avance es el dato que más se mira de esta
+     pantalla; dejarlo ilegible era lo más caro del hallazgo. */
+  color: hsl(var(--success-on-tint));
 }
 
 .progressTrack {

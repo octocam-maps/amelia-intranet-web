@@ -27,7 +27,10 @@ export function RegisterWorkdayCard() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Registrar jornada</CardTitle>
+        {/* `as="h2"`: esta tarjeta cuelga directamente del `<h1>` del Topbar
+            ("Control horario") y no hay ninguna sección intermedia, así que un
+            `h3` dejaba un hueco en la navegación por encabezados. */}
+        <CardTitle as="h2">Registrar jornada</CardTitle>
       </CardHeader>
       <CardContent>
         <Tabs defaultValue="single">

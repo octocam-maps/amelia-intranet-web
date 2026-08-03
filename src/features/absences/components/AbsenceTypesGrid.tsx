@@ -39,25 +39,25 @@ export function AbsenceTypesGrid({ types, isLoading, onEdit, onAdd }: AbsenceTyp
   return (
     <div className={styles.grid}>
       {types.map((type) => (
-        // Radix `Switch` renderiza un <button> — no puede vivir dentro de otro
-        // <button> (HTML inválido: rompe el foco por teclado y la semántica
-        // para lectores de pantalla). La tarjeta es un `div` con rol de botón.
-        <div
-          key={type.id}
-          role="button"
-          tabIndex={0}
-          className={styles.card}
-          onClick={() => onEdit(type)}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter' || e.key === ' ') {
-              e.preventDefault();
-              onEdit(type);
-            }
-          }}
-        >
+        // Radix `Switch` renderiza un <button>, así que no puede vivir dentro de
+        // otro <button>. La solución anterior era un `div role="button"`: eso
+        // arreglaba el HTML pero dejaba el interruptor inalcanzable por teclado
+        // (axe: `nested-interactive`). Ahora la tarjeta NO es interactiva —
+        // conserva el `onClick` como atajo de ratón— y el control accesible es
+        // el botón del nombre, hermano del `Switch` y no su contenedor.
+        <div key={type.id} className={styles.card} onClick={() => onEdit(type)}>
           <span className={styles.colorBar} style={{ backgroundColor: type.color ?? undefined }} />
           <span className={styles.cardBody}>
-            <span className={styles.cardName}>{type.name}</span>
+            <button
+              type="button"
+              className={styles.cardName}
+              onClick={(e) => {
+                e.stopPropagation();
+                onEdit(type);
+              }}
+            >
+              {type.name}
+            </button>
             <span className={styles.cardDescription}>{describe(type)}</span>
           </span>
           <span

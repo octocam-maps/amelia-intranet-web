@@ -37,7 +37,21 @@
   --secondary-foreground: 222 47% 11%;
 
   --muted: 220 14% 96%; /* #F3F4F6 */
-  --muted-foreground: 220 9% 46%; /* #6B7280 */
+  /* Era `220 9% 46%` (#6B7280) y FALLABA AA por 0,11 en el caso que más se
+     repite: texto secundario sobre la superficie `--muted`, que es el mismo
+     gris de las tarjetas de estadística y de los avisos. Medido con la fórmula
+     de `lib/a11y/contrast.ts`:
+       - #6B7280 sobre #F3F4F6 (--muted):  4,39:1  ✗  (AA pide 4,5:1)
+       - #6B7280 sobre #FFFFFF:            4,83:1  ✓
+     Fallar solo sobre uno de los dos fondos es la peor variante posible: pasa
+     desapercibido en la mayoría de pantallas y reaparece en las que tintan el
+     fondo. Se oscurece el token 3 puntos de luminosidad, lo que arregla los dos
+     casos a la vez y no obliga a un token aparte:
+       - #62677A sobre #F3F4F6:            5,10:1  ✓
+       - #62677A sobre #FFFFFF:            5,61:1  ✓
+     Detectado por la suite de Playwright (`e2e/support/ui-audit.ts`) en
+     `/administracion/buzon`, `/administracion/onboarding` y `/`. */
+  --muted-foreground: 226 11% 43%; /* #62677A */
 
   --accent: 220 14% 96%;
   --accent-foreground: 222 47% 11%;

@@ -95,7 +95,15 @@ export function TeamAbsenceGantt({ requests, types }: TeamAbsenceGanttProps) {
         </div>
       </CardHeader>
       <CardContent>
-        <div className={styles.scrollArea}>
+        {/* `tabIndex={0}` + `role="region"`: esta rejilla desplaza en horizontal
+            y sin foco quien no usa ratón no podía llegar al contenido de la
+            derecha (axe: `scrollable-region-focusable`). */}
+        <div
+          className={styles.scrollArea}
+          tabIndex={0}
+          role="region"
+          aria-label="Ausencias del equipo por día"
+        >
           <div className={styles.headerDays} style={gridStyle}>
             {days.map((day) => (
               <span

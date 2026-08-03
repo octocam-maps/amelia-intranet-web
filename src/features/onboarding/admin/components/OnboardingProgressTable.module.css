@@ -1,5 +1,40 @@
+/* La tabla desplaza HORIZONTALMENTE DENTRO DE ESTE CONTENEDOR, y nunca la
+   página. Sin esto el documento medía 583px en un viewport de 390px y toda la
+   pantalla se arrastraba en horizontal (hallazgo de la auditoría E2E del
+   2026-08-03, el peor de maquetación).
+
+   `min-width: 0` no es opcional: este contenedor es hijo de un flex en columna
+   (`.card` de `OnboardingAdminPage`), y un ítem de flex tiene `min-width: auto`,
+   así que se ENSANCHA hasta el contenido en vez de recortarlo. Ése era el motivo
+   de que el `overflow-x: auto` que ya existía en `.card` no hiciera nada. */
+/* El `min-width: 0` hay que repetirlo en TODA la cadena de ítems de flex que va
+   desde `.card` hasta el `.scroller`. Basta con que UNO de los eslabones se
+   quede en el `min-width: auto` por defecto para que se ensanche hasta el
+   contenido y el scroll no llegue a activarse nunca: fue lo que pasó al primer
+   intento, donde este `.root` sin clase era el eslabón que faltaba y la tabla
+   seguía midiendo 583px en un viewport de 390. */
+.root {
+  min-width: 0;
+}
+
+.scroller {
+  min-width: 0;
+  overflow-x: auto;
+  /* `position: relative` NO es decorativo, es lo que hace que el recorte
+     funcione. Los `.srOnly` de los chips de paso son `position: absolute`, y un
+     `overflow` solo recorta a un descendiente absoluto si el contenedor es su
+     BLOQUE CONTENEDOR. Sin esta línea, esos cinco spans de 1px se escapaban del
+     scroller hasta `left: 582` y ensanchaban el DOCUMENTO a 583px en un viewport
+     de 390 — la tabla ya estaba contenida y lo que desplazaba la página era el
+     texto para lectores de pantalla. */
+  position: relative;
+}
+
 .table {
   width: 100%;
+  /* Por debajo de esto las cinco columnas se aplastan y el nombre se parte en
+     una letra por línea. Es el ancho que activa el scroll del contenedor. */
+  min-width: 40rem;
   border-collapse: collapse;
   font-size: 0.875rem;
 }
@@ -60,15 +95,19 @@
   background-color: hsl(var(--muted-foreground));
 }
 
+/* El PUNTO se queda con el color puro (es decoración, no texto: no le aplica el
+   mínimo de contraste) y el TEXTO usa la variante `-on-tint`. Mismo criterio
+   que los `.stepChip*` de más abajo en este fichero, que ya lo hacían: la
+   convención existía y a estos estados no se les había aplicado. */
 .statusInProgress {
-  color: hsl(var(--warning));
+  color: hsl(var(--warning-on-tint)); /* el ámbar puro sobre blanco: 2,13:1 */
 }
 .statusInProgress .statusDot {
   background-color: hsl(var(--warning));
 }
 
 .statusCompleted {
-  color: hsl(var(--success));
+  color: hsl(var(--success-on-tint)); /* el verde puro sobre blanco: 2,03:1 */
 }
 .statusCompleted .statusDot {
   background-color: hsl(var(--success));

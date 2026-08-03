@@ -196,7 +196,12 @@ export function AnnouncementFormPanel({ announcement, onSaved }: AnnouncementFor
       <div className={styles.field}>
         <Label>Destinatarios</Label>
         <Select value={target} onValueChange={(value) => setValue('target', value as AudienceTarget, { shouldDirty: true })}>
-          <SelectTrigger>
+          {/* `aria-label` explícito: el `<Label>` de arriba no está asociado a
+              este control (no hay `htmlFor`/`id`), así que cuando `SelectValue`
+              se pinta vacío —al abrir el panel sin anuncio seleccionado— el
+              botón se quedaba sin nombre accesible y se anunciaba solo como
+              "botón". Es el hallazgo `button-name` de la auditoría E2E. */}
+          <SelectTrigger aria-label="Destinatarios">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>

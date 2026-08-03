@@ -1,0 +1,35 @@
+/* Copia deliberada del aspecto de `ui/Tabs/Tabs.module.css` (pestañas
+ * subrayadas de deck-fase6/14-festivos.png), pero con el estado activo colgado
+ * de `aria-current="page"` en vez de `data-state="active"`: aquí los ítems son
+ * ENLACES de navegación, no pestañas de un panel. Ver la nota de
+ * `ConfigTabsNav.tsx` sobre por qué dejó de usar el primitivo `Tabs`. */
+.nav {
+  display: flex;
+  gap: var(--space-6);
+  border-bottom: 1px solid hsl(var(--border));
+}
+
+.link {
+  display: inline-block;
+  padding: var(--space-3) var(--space-0_5);
+  margin-bottom: -1px;
+  border-bottom: 2px solid transparent;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: hsl(var(--muted-foreground));
+  text-decoration: none;
+}
+
+.link:hover {
+  color: hsl(var(--foreground));
+}
+
+.link[aria-current='page'] {
+  color: hsl(var(--foreground));
+  border-bottom-color: hsl(var(--primary));
+}
+
+.link:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px hsl(var(--ring));
+}

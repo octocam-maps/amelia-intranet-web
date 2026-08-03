@@ -151,7 +151,8 @@
   flex-shrink: 0;
   min-width: 4.5rem;
   font-weight: 700;
-  color: hsl(var(--primary));
+  /* `--success-on-tint`: el verde de marca como texto sobre blanco da 2,03:1. */
+  color: hsl(var(--success-on-tint));
   text-transform: capitalize;
 }
 

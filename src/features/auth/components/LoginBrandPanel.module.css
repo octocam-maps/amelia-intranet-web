@@ -93,7 +93,11 @@
   position: relative;
   display: none;
   font-size: 0.75rem;
-  color: hsl(var(--header-foreground) / 0.4);
+  /* Alpha 0,50 y no 0,40: al 40% el blanco sobre el navy `#0F1729` se resuelve
+     en `#6F747F` y da 3,81:1, por debajo del 4,5:1 de AA. Al 50% queda en
+     5,24:1 sin dejar de leerse como texto secundario. La palanca aquí es la
+     opacidad, no el color: el fondo es fijo. */
+  color: hsl(var(--header-foreground) / 0.5);
 }
 
 @media (min-width: 768px) {
