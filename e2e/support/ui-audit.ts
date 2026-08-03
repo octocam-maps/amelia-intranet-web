@@ -76,6 +76,11 @@ const CONTRAST_EXCEPTIONS: ReadonlyArray<{
 /** WCAG 2.5.8 (AA): objetivo mínimo de 24×24 px CSS. */
 const MIN_TARGET_PX = 24;
 
+/** Píxeles con un decimal solo si lo tiene: "40px", "23,5px". */
+function fmtPx(value: number): string {
+  return Number.isInteger(value) ? String(value) : value.toFixed(1).replace('.', ',');
+}
+
 /* ── Snapshot recogido en el navegador ─────────────────────────────────────── */
 
 interface Rect {
@@ -321,9 +326,22 @@ async function collectSnapshot(page: Page): Promise<PageSnapshot> {
                 style.backgroundColor === 'transparent') &&
               Math.abs(rect.height - parseFloat(style.lineHeight || '0')) < 4;
 
+            /* El área CLICABLE de un control envuelto en su `<label>` es la del
+               label entero, no la de la casilla: pulsar el texto activa el
+               control. Medir solo el `<input>` marcaba como defecto una casilla
+               de 16×16 que en realidad tiene un objetivo de varios cientos de
+               píxeles. WCAG 2.5.8 habla del objetivo, no del dibujo. */
+            const label = el.closest('label');
+            const targetRect = label && label !== el ? label.getBoundingClientRect() : rect;
+
             interactive.push({
               element: describe(el),
-              rect: { x: rect.x, y: rect.y, width: rect.width, height: rect.height },
+              rect: {
+                x: targetRect.x,
+                y: targetRect.y,
+                width: targetRect.width,
+                height: targetRect.height,
+              },
               accessibleName:
                 el.getAttribute('aria-label') ??
                 (el.textContent ?? '').trim().replace(/\s+/g, ' ').slice(0, 40),
@@ -335,9 +353,45 @@ async function collectSnapshot(page: Page): Promise<PageSnapshot> {
 
         /* Overflow horizontal: se busca al CULPABLE, no solo el síntoma.
            `scrollWidth > innerWidth` dice que la página se desplaza de lado;
-           esto dice qué elemento lo provoca. Se ignoran los fijos/absolutos
-           colocados fuera a propósito (menús cerrados, carruseles). */
-        if (style.position !== 'fixed' && style.position !== 'absolute') {
+           esto dice qué elemento lo provoca.
+
+           Lo que NO puede hacerse es acusar a todo lo que sobresale del
+           viewport: una tabla ancha dentro de un contenedor con `overflow-x:
+           auto` sobresale en su rect y NO ensancha el documento, porque el
+           contenedor la recorta. Culparla manda a arreglar algo que ya está
+           bien — costó tres intentos en `/administracion/onboarding`, donde el
+           culpable real eran unos `.srOnly` absolutos que se escapaban del
+           scroller. Así que hay que subir por los ancestros y comprobar si
+           alguno recorta.
+
+           Y el matiz que hace falta para no equivocarse en el otro sentido: a un
+           `absolute`/`fixed` solo lo recorta un ancestro que sea su BLOQUE
+           CONTENEDOR. Un `overflow: hidden` sin `position` no lo contiene, así
+           que esos elementos se comprueban aparte. */
+        const clippedByAncestor = (() => {
+          if (style.position === 'fixed') return false;
+          let parent = el.parentElement;
+          while (parent) {
+            const parentStyle = getComputedStyle(parent);
+            const clips =
+              parentStyle.overflowX === 'hidden' ||
+              parentStyle.overflowX === 'auto' ||
+              parentStyle.overflowX === 'scroll' ||
+              parentStyle.overflowX === 'clip';
+            if (clips) {
+              /* Para un absoluto, solo cuenta si además es su bloque
+                 contenedor (`position` distinto de `static`, o transform). */
+              if (style.position !== 'absolute') return true;
+              if (parentStyle.position !== 'static' || parentStyle.transform !== 'none') {
+                return true;
+              }
+            }
+            parent = parent.parentElement;
+          }
+          return false;
+        })();
+
+        if (!clippedByAncestor) {
           const overflowPx = Math.round(rect.right - viewportWidth);
           if (overflowPx > 1) {
             horizontalOffenders.push({ element: describe(el), overflowPx });
@@ -470,7 +524,11 @@ export function checkTargetSize(snapshot: PageSnapshot): UiFinding[] {
       severity: 'medium',
       element: target.element,
       detail:
-        `Área táctil de ${Math.round(width)}×${Math.round(height)}px; ` +
+        /* Un decimal y NO `Math.round`: con el redondeo, un ancho real de
+           23,5px se imprimía como "24×40px", que es exactamente el mínimo y
+           hacía parecer que la regla se equivocaba. El umbral se compara con el
+           valor sin redondear, así que el informe tiene que enseñarlo igual. */
+        `Área táctil de ${fmtPx(width)}×${fmtPx(height)}px; ` +
         `WCAG 2.5.8 (AA) pide ${MIN_TARGET_PX}×${MIN_TARGET_PX}px. ` +
         `Nombre accesible: "${target.accessibleName || '(ninguno)'}"`,
     });

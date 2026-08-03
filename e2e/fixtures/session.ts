@@ -66,9 +66,23 @@ const sessionCache = new Map<string, Promise<E2ESession>>();
  * ninguna rotación ni detección de reuso.
  */
 const SESSION_DIR = 'e2e/.auth';
-/* Margen de 3 minutos: un token que caduca a mitad de un test produce un 401
-   desconcertante en medio de una aserción de UI. */
-const TOKEN_SAFETY_MARGIN_MS = 3 * 60 * 1000;
+/* El margen tiene que cubrir la EJECUCIÓN COMPLETA, no un test.
+
+   La caché se valida una sola vez, cuando el worker arranca y lee el fichero.
+   A partir de ahí `applySession` sirve ese mismo access token a todos los tests
+   de ese worker. Con un margen de 3 minutos, un token que al leerse tenía 4 de
+   vida estaba muerto en el minuto 5 de una ejecución que dura 8: los tests
+   siguientes cargaban el shell de la app con `/auth/me` en 401 —usuario "??" y
+   sin `<h1>`— y fallaban con un mensaje que apuntaba a "la ruta redirigió",
+   cuando en realidad era el token. Un diagnóstico caro por tres minutos mal
+   puestos.
+
+   El access token vive 15 minutos, así que con 10 de margen la caché solo se
+   reutiliza durante los 5 primeros. Es suficiente: lo que la caché evita es el
+   límite de 10 logins/minuto del backend ENTRE LOS WORKERS de una misma
+   ejecución (Playwright arranca un proceso por proyecto), no entre ejecuciones
+   separadas. */
+const TOKEN_SAFETY_MARGIN_MS = 10 * 60 * 1000;
 
 function cachePath(role: E2ERole): string {
   return path.resolve(process.cwd(), SESSION_DIR, `session-${role}.json`);

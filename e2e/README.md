@@ -41,6 +41,43 @@ Sin el paso 2, la suite **no falla**: ejecuta los tests que no necesitan
 sesión y salta los demás explicando por qué. El diagnóstico lo imprime
 `global-setup.ts` al arrancar.
 
+### Si sirves el front en un puerto que no es el 5173, añádelo a `CORS_ORIGINS`
+
+El valor por defecto de `CORS_ORIGINS` en el backend es **solo**
+`http://localhost:5173`. Si arrancas el front en otro puerto —típico cuando
+levantas un backend efímero para no tocar tu `.env`— el navegador bloquea
+`/auth/me` y **todos** los tests con sesión fallan con "no aparece el `<h1>`".
+
+El síntoma que lo delata: el Topbar se pinta pero el avatar del usuario pone
+`??`. Ahí el login sí funcionó y lo que falló fue la petición siguiente.
+
+Y la trampa: **comprobar el login con `curl` NO descarta CORS.** El login
+devuelve 200 desde la terminal porque CORS lo aplica el navegador, no el
+servidor. Cuesta una hora de diagnóstico en la dirección equivocada.
+
+```bash
+# Montaje efímero completo, sin tocar el .env del backend
+cd ../amelia-intranet-back
+DATABASE_URL="postgresql://postgres:postgres@localhost:5436/postgres" \
+CORS_ORIGINS="http://localhost:5174,http://localhost:5173" \
+GOOGLE_OIDC_PROVIDER=fake REFRESH_TOKEN_COOKIE_SECURE=false ENVIRONMENT=local \
+  .venv/bin/python -m uvicorn main:app --host 127.0.0.1 --port 8011
+
+cd ../amelia-intranet-web
+VITE_API_BASE_URL=http://localhost:8011 pnpm vite --port 5174 --strictPort
+E2E_WEB_BASE_URL=http://localhost:5174 E2E_API_BASE_URL=http://localhost:8011 \
+  pnpm exec playwright test e2e/ui
+```
+
+`DATABASE_URL` se pasa a mano porque el `.env` apunta al host interno de Docker,
+que desde el host no resuelve.
+
+### Ejecuta `e2e/ui` aparte cuando estés iterando
+
+`pnpm e2e` lanza también la capa visual: 81 tests más y unos 7 minutos. Mientras
+arreglas defectos, `pnpm exec playwright test e2e/ui` tarda menos de 2 minutos y
+es lo único que mide hallazgos.
+
 ## Comandos
 
 | Comando | Para qué |

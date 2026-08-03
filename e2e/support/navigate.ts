@@ -27,8 +27,15 @@ export async function gotoScreen(page: Page, screen: Screen): Promise<void> {
      deliberado de la app. */
   await expect(
     page.getByRole('heading', { level: 1, name: screen.title }),
-    `Se esperaba el <h1> "${screen.title}" en ${screen.path}. Si no aparece, la ` +
-      'ruta redirigió a otra vista (sesión no aplicada, o rol sin acceso).',
+    `Se esperaba el <h1> "${screen.title}" en ${screen.path}.\n` +
+      'Causas por orden de probabilidad:\n' +
+      ' 1. El navegador no puede hablar con la API. Si el avatar del Topbar pone ' +
+      '"??", `/auth/me` falló: casi siempre es CORS — el origen desde el que ' +
+      'sirves el front debe estar en `CORS_ORIGINS` del backend, y el valor por ' +
+      'defecto es solo `http://localhost:5173`. Un login que funciona por curl NO ' +
+      'descarta esto: CORS lo aplica el navegador, no el servidor.\n' +
+      ' 2. La sesión no se aplicó, o el token caducó a mitad de la ejecución.\n' +
+      ' 3. El rol no tiene acceso y la ruta redirigió a otra vista.',
   ).toBeAttached();
 
   /* Los estados de carga de la app son textuales ("Cargando…"). Mientras haya
