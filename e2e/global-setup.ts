@@ -1,6 +1,7 @@
 import { request } from '@playwright/test';
 import { API_BASE_URL } from '../playwright.config';
 import { buildFakeIdToken, E2E_USERS } from './fixtures/users';
+import { resetFindingsLog } from './support/findings-log';
 
 /**
  * Diagnostica el entorno ANTES de ejecutar tests y publica el resultado en
@@ -28,6 +29,10 @@ Para habilitar los tests con sesión:
 `;
 
 export default async function globalSetup(): Promise<void> {
+  /* La bitácora es de ESTA ejecución: si se acumulara, el resumen mezclaría
+     hallazgos ya arreglados con los actuales. */
+  resetFindingsLog();
+
   const api = await request.newContext({ baseURL: API_BASE_URL });
   let blockedReason: string | null = null;
 

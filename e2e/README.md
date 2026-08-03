@@ -50,7 +50,13 @@ sesión y salta los demás explicando por qué. El diagnóstico lo imprime
 | `pnpm e2e:ui` | Modo interactivo de Playwright |
 | `pnpm e2e:update` | Reescribe los baselines visuales — **mira las imágenes antes** |
 | `pnpm e2e:report` | Abre el último informe HTML |
+| `pnpm e2e:hallazgos` | Resume la última auditoría agrupada **por causa** |
 | `pnpm e2e:session <rol>` | Graba una sesión para el agente auditor |
+
+`e2e:hallazgos` es el que se usa a diario: agrupa por causa en vez de por
+pantalla, que es la diferencia entre leer un informe de 21 fallos y ver que en
+realidad son dos arreglos. El mismo par de colores mal medido aparece en veinte
+pantallas y se corrige en un sitio.
 
 ## Por qué el login va con un verificador falso
 
@@ -95,6 +101,18 @@ Bearer real.
 El agente auditor sí usa `storageState`, y es correcto: abre un único
 navegador, así que la cookie rota en su propio tarro y nadie la reutiliza.
 
+### El access token se cachea en disco, y hace falta
+
+`/auth/login` está limitado a 10 peticiones por minuto y por IP. Playwright
+arranca un proceso worker nuevo por proyecto, así que una caché solo en memoria
+se pierde tres veces: medido, **30 logins y 29 respuestas 429** en una ejecución
+de 5 roles × 3 anchos × 2 workers, con esperas de un minuto en mitad de la
+suite.
+
+`e2e/.auth/session-<rol>.json` guarda el access token (un JWT sin estado, no la
+cookie rotatoria) y lo comparten todos los workers. Baja a 5 logins por
+ejecución. Está gitignorado: son credenciales vivas.
+
 ## Umbrales y excepciones
 
 `support/ui-audit.ts` mide contraste con la MISMA función que la app
@@ -122,3 +140,64 @@ ahí la suite defiende el bug.
 
 Los baselines se generan en macOS y llevan el sufijo de plataforma en el
 nombre. En Linux hay que regenerarlos: el renderizado de fuentes no coincide.
+
+## Qué implica esto para producción
+
+Los E2E no se ejecutan en producción, pero el trabajo toca dos repos y conviene
+tener claro qué llega al servidor y qué no.
+
+### El frontend servido NO cambia
+
+`e2e/` no está en el grafo de importación de `main.tsx`, así que no entra en el
+bundle. La imagen final es `nginx:alpine` con solo `dist/` copiado del stage de
+build (ver `Dockerfile.prod`): nada de Playwright llega al servidor.
+
+Dos efectos reales en el BUILD, no en el runtime:
+
+- `Dockerfile.prod` hace `pnpm install --frozen-lockfile` (con
+  devDependencies), así que el stage de build descarga ~21 MB más
+  (`playwright-core` 13 MB, `playwright` 5 MB, `axe-core` 2,9 MB). Los
+  navegadores (~150 MB) NO se descargan: `playwright install` es un paso manual,
+  no un `postinstall`.
+- `pnpm build` es `tsc -b`, y ahora `tsconfig.json` referencia también
+  `tsconfig.e2e.json`. Es decir: **un error de tipos en un test E2E rompe el
+  build de producción.** Es deseable —no se despliega con la suite podrida— pero
+  hay que saberlo. Implica además que el Dockerfile NO puede pasar a
+  `pnpm install --prod`: sin los tipos de Playwright, `tsc -b` fallaría.
+
+### El backend sí cambia, y su default es seguro
+
+`GOOGLE_OIDC_PROVIDER` por defecto es `google`, que es el comportamiento
+actual. **No hay que tocar el `.env` de producción**: no añadir la variable deja
+el verificador real exactamente como está hoy.
+
+No hay migraciones SQL en este cambio, así que no aplica el aviso de
+`deploy.yml` sobre migraciones manuales.
+
+### Verificación después de desplegar
+
+```bash
+# 1. El login real sigue funcionando (lo más importante).
+#    Entrar con una cuenta de Workspace en people.amelia.am.
+
+# 2. El verificador falso NO está activo: un token sintético debe dar 401.
+curl -s -o /dev/null -w '%{http_code}\n' -X POST \
+     https://people.amelia.am/api/auth/login \
+     -H 'Content-Type: application/json' \
+     -d '{"id_token":"fake-google-id-token.e30"}'
+# Esperado: 401. Un 200 aquí es un incidente de seguridad.
+
+# 3. En los logs del contenedor no debe aparecer nunca:
+#    "FAKE Google OIDC verifier en uso"
+```
+
+### Riesgo residual
+
+El guard que aborta el arranque por `ENVIRONMENT` solo salta con
+`prod`/`production`/`stage`/`staging`. Si el servidor no exporta `ENVIRONMENT`,
+el default es `dev` y ese guard no actúa — por eso hay un segundo guard,
+independiente del entorno, que aborta si la cookie de refresh es `Secure`
+(producción sirve por HTTPS, así que lo es). Aun así, conviene confirmar que el
+`.env` del servidor tiene `ENVIRONMENT=prod`: es la defensa de primera línea y
+también gobierna Swagger y el resto de comprobaciones de
+`_enforce_secure_defaults`.

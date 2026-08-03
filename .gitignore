@@ -24,3 +24,6 @@ playwright/.cache/
 # Sesiones grabadas para el agente auditor: contienen una cookie de refresh
 # real y viva. Son credenciales, no configuración.
 e2e/.auth/
+
+# Bitacora e informe agregado de la ultima ejecucion de la auditoria.
+e2e-report/

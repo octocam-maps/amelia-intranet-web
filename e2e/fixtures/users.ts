@@ -1,19 +1,29 @@
 /**
  * Catálogo de identidades E2E, una por rol del producto
- * (`amelia-intranet/docs/permisos-roles.md`).
+ * (`amelia-intranet/docs/permisos-roles.md` + migraciones 024 y 038).
+ *
+ * Los identificadores son los MISMOS que `UserRole` del backend
+ * (`externo_invitado`, no `externo`) para que el catálogo de pantallas y el
+ * test de sincronización puedan compararse con `NAV_BY_ROLE` sin traducir
+ * nombres por el camino.
  *
  * El id_token es sintético y solo lo acepta el backend con
  * `GOOGLE_OIDC_PROVIDER=fake`. El formato lo define
  * `amelia-intranet-back/src/shared/google_oidc/fake_verifier.py` — si cambia
  * allí, cambia aquí.
  *
- * `hostedDomain` es lo que decide el alta: con un dominio del Workspace
+ * `hostedDomain` decide el alta: con un dominio del Workspace
  * (`GOOGLE_WORKSPACE_HOSTED_DOMAINS`) el backend auto-provisiona como
  * `empleado`; sin él hace falta una invitación pendiente. De ahí que
- * `empleado` no necesite semilla y `externo` sí.
+ * `empleado` no necesite semilla y los demás sí.
  */
 
-export type E2ERole = 'administrador' | 'empleado' | 'socio' | 'externo';
+export type E2ERole =
+  | 'administrador'
+  | 'empleado'
+  | 'socio'
+  | 'becario'
+  | 'externo_invitado';
 
 export interface E2EUser {
   role: E2ERole;
@@ -48,8 +58,8 @@ export const E2E_USERS: Record<E2ERole, E2EUser> = {
     provisioning: 'auto',
   },
 
-  /* El rol `socio` no se auto-asigna nunca (un email @ameliahub.com sin
-     semilla entraría como `empleado`). Requiere `e2e/seed/e2e-users.sql`. */
+  /* Ni `socio` ni `becario` se auto-asignan nunca: un email del Workspace sin
+     fila previa entraría como `empleado`. Requieren la semilla. */
   socio: {
     role: 'socio',
     sub: 'e2e-socio',
@@ -59,16 +69,27 @@ export const E2E_USERS: Record<E2ERole, E2EUser> = {
     provisioning: 'seed',
   },
 
+  becario: {
+    role: 'becario',
+    sub: 'e2e-becario',
+    email: 'e2e.becario@ameliahub.com',
+    fullName: 'Bruno Becario',
+    hostedDomain: 'ameliahub.com',
+    provisioning: 'seed',
+  },
+
   /* Sin `hostedDomain` a propósito: simula el Gmail personal de un
      externo-invitado, que solo entra con invitación pendiente. */
-  externo: {
-    role: 'externo',
+  externo_invitado: {
+    role: 'externo_invitado',
     sub: 'e2e-externo',
     email: 'e2e.externo@gmail.com',
     fullName: 'Extranjero Invitado',
     provisioning: 'seed',
   },
 };
+
+export const E2E_ROLES = Object.keys(E2E_USERS) as E2ERole[];
 
 /** Réplica en TS de `build_fake_id_token` del backend. */
 export function buildFakeIdToken(user: E2EUser): string {

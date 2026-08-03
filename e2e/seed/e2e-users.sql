@@ -30,6 +30,20 @@ SELECT
     FALSE
 ON CONFLICT (email) DO NOTHING;
 
+-- ── Becario ──────────────────────────────────────────────────────────────
+-- Migración 038 / RF-A10: navbar de empleado MENOS Control horario. El rol no
+-- se auto-asigna, así que sin esta fila entraría como `empleado` y los tests
+-- auditarían la pantalla equivocada con el test en verde.
+INSERT INTO users (email, full_name, role_id, entity_id, status, is_external)
+SELECT
+    'e2e.becario@ameliahub.com',
+    'Bruno Becario',
+    (SELECT id FROM roles WHERE code = 'becario'),
+    (SELECT id FROM entities WHERE code = 'hub'),
+    'active',
+    FALSE
+ON CONFLICT (email) DO NOTHING;
+
 -- ── Externo-invitado ─────────────────────────────────────────────────────
 -- Gmail personal: sin claim `hd` no hay auto-provisión posible, así que la vía
 -- es una invitación PENDIENTE que el caso de uso consume en el primer login

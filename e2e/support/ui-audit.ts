@@ -196,12 +196,21 @@ async function collectSnapshot(page: Page): Promise<PageSnapshot> {
         return toHex(r, g, b);
       };
 
+      /* Umbral de la técnica "sr-only": un texto pensado SOLO para lectores de
+         pantalla se oculta encogiéndolo a 1×1 px con overflow hidden (y a veces
+         clip). Visualmente no existe, así que auditarlo produce hallazgos
+         falsos y ruidosos — "esconde 273px de su propio texto" es exactamente
+         lo que ese patrón pretende. Nada que mida 2 px o menos es contenido
+         visual. */
+      const SR_ONLY_MAX_PX = 2;
+
       const isVisible = (el: Element): boolean => {
         const style = getComputedStyle(el);
         if (style.visibility === 'hidden' || style.display === 'none') return false;
         if (Number(style.opacity) === 0) return false;
         const rect = el.getBoundingClientRect();
-        return rect.width > 0 && rect.height > 0;
+        if (rect.width <= SR_ONLY_MAX_PX || rect.height <= SR_ONLY_MAX_PX) return false;
+        return true;
       };
 
       /** Solo elementos con texto PROPIO: si no, se contaría el mismo texto
@@ -291,13 +300,28 @@ async function collectSnapshot(page: Page): Promise<PageSnapshot> {
             (el as HTMLInputElement).type === 'hidden';
           if (!isHiddenInput) {
             const parentText = el.parentElement ? ownText(el.parentElement) : '';
+            /* WCAG 2.5.8 exceptúa el objetivo "cuyo tamaño lo determina el
+               line-height del texto que lo rodea". Eso cubre dos casos: el
+               enlace dentro de una frase, y el enlace de texto suelto ("Ver
+               todas") cuya altura ES su interlineado y que no se puede agrandar
+               sin convertirlo en un botón. Se distingue de un botón real por no
+               tener relleno ni fondo propios. */
+            const isTextLink =
+              el.tagName.toLowerCase() === 'a' &&
+              parseFloat(style.paddingTop) === 0 &&
+              parseFloat(style.paddingBottom) === 0 &&
+              (style.backgroundColor === 'rgba(0, 0, 0, 0)' ||
+                style.backgroundColor === 'transparent') &&
+              Math.abs(rect.height - parseFloat(style.lineHeight || '0')) < 4;
+
             interactive.push({
               element: describe(el),
               rect: { x: rect.x, y: rect.y, width: rect.width, height: rect.height },
               accessibleName:
                 el.getAttribute('aria-label') ??
                 (el.textContent ?? '').trim().replace(/\s+/g, ' ').slice(0, 40),
-              inlineInText: style.display === 'inline' && parentText.length > 0,
+              inlineInText:
+                (style.display === 'inline' && parentText.length > 0) || isTextLink,
             });
           }
         }

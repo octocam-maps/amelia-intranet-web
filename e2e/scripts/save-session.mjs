@@ -41,7 +41,13 @@ const ROLES = {
     name: 'Sergio Socio',
     hd: 'ameliahub.com',
   },
-  externo: {
+  becario: {
+    sub: 'e2e-becario',
+    email: 'e2e.becario@ameliahub.com',
+    name: 'Bruno Becario',
+    hd: 'ameliahub.com',
+  },
+  externo_invitado: {
     sub: 'e2e-externo',
     email: 'e2e.externo@gmail.com',
     name: 'Extranjero Invitado',
