@@ -122,8 +122,10 @@ export function StaffForm({ member, onSaved, onCancel }: StaffFormProps) {
       const warning = buildRoleChangeWarning(member.fullName, member.role, values.role);
       if (warning && !window.confirm(warning)) return;
 
-      // `PATCH /staff/{id}` no admite `full_name`/`email`/`hire_date` — el
-      // backend no permite editarlos desde este endpoint.
+      // `PATCH /staff/{id}` no admite `full_name`/`email` — el backend no
+      // permite editarlos desde este endpoint. La fecha de alta SÍ desde el
+      // 2026-08-03 (antes era inmutable), y solo se manda cuando trae valor:
+      // el backend lee `null` como "no tocar", nunca como "vaciar".
       await updateMember({
         id: member.id,
         input: {
@@ -132,6 +134,7 @@ export function StaffForm({ member, onSaved, onCancel }: StaffFormProps) {
           department: values.department || null,
           entityCode: values.entityCode,
           role: values.role,
+          hireDate: values.hireDate || null,
           vacationDaysOverride,
           isActive: values.isActive,
         },
@@ -255,10 +258,12 @@ export function StaffForm({ member, onSaved, onCancel }: StaffFormProps) {
       <div className={styles.row}>
         <div className={styles.field}>
           <Label htmlFor="hireDate">Fecha de alta</Label>
-          {/* `PATCH /staff/{id}` no admite `hire_date` — solo se puede fijar
-           * al crear la persona; en edición se muestra de solo lectura para
-           * no sugerir un cambio que el backend va a ignorar. */}
-          <Input id="hireDate" type="date" disabled={Boolean(member)} {...register('hireDate')} />
+          {/* Editable desde el 2026-08-03. Estuvo deshabilitada en edición
+           * mientras el backend no admitió el campo, y eso dejaba sin arreglo
+           * a quien se sembró por migración sin fecha: con `hire_date` vacía el
+           * saldo de vacaciones es 0 y no puede pedir ni un día. Cambiarla
+           * recalcula ese saldo. */}
+          <Input id="hireDate" type="date" {...register('hireDate')} />
         </div>
         <div className={styles.field}>
           <Label htmlFor="vacationDaysOverride">Días de vacaciones/año</Label>

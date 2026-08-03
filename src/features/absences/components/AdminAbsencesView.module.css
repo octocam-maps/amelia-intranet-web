@@ -4,6 +4,67 @@
   gap: var(--space-6);
 }
 
+/* El encabezado pasa a llevar acción a la derecha ("Solicitar ausencia"),
+   igual que el de la vista de empleado. */
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+}
+
+/* Copiados literalmente de `EmployeeAbsencesView.module.css`: es el mismo
+   bloque "Resumen de días" y tiene que verse idéntico en las dos vistas.
+   Ojo al color de los puntos, que es contraintuitivo — `--muted` para los
+   disponibles y `--primary` para los usados, no al revés. */
+.summaryRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-5);
+  margin-bottom: var(--space-4);
+}
+
+.summaryLegend {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.summaryItem {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: 0.8125rem;
+  color: hsl(var(--muted-foreground));
+}
+
+.summaryDotAvailable,
+.summaryDotUsed {
+  height: 0.625rem;
+  width: 0.625rem;
+  border-radius: 999px;
+  flex-shrink: 0;
+}
+
+.summaryDotAvailable {
+  background-color: hsl(var(--muted));
+}
+
+.summaryDotUsed {
+  background-color: hsl(var(--primary));
+}
+
+.summaryFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-top: 1px solid hsl(var(--border));
+  padding-top: var(--space-3);
+  font-size: 0.8125rem;
+  color: hsl(var(--muted-foreground));
+}
+
 .title {
   font-size: 1.25rem;
   font-weight: 600;
