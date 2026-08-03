@@ -231,6 +231,21 @@ async function collectSnapshot(page: Page): Promise<PageSnapshot> {
 
       const viewportWidth = document.documentElement.clientWidth;
 
+      /* Los encabezados se recogen APARTE y sin filtrar por visibilidad: la
+         jerarquía de encabezados es una propiedad del árbol de accesibilidad,
+         no del layout. Un `<h1>` en `sr-only` —como el del Topbar por debajo de
+         768 px— sigue anunciando de qué va la pantalla a un lector de pantalla,
+         que es exactamente lo que esta regla comprueba. Solo `display: none` lo
+         saca del árbol. */
+      for (const heading of Array.from(document.querySelectorAll('h1, h2, h3, h4, h5, h6'))) {
+        if (getComputedStyle(heading).display === 'none') continue;
+        headings.push({
+          level: Number(heading.tagName.slice(1)),
+          text: (heading.textContent ?? '').trim().replace(/\s+/g, ' ').slice(0, 60),
+          element: describe(heading),
+        });
+      }
+
       for (const el of Array.from(document.body.querySelectorAll('*'))) {
         if (!isVisible(el)) continue;
 
@@ -278,14 +293,6 @@ async function collectSnapshot(page: Page): Promise<PageSnapshot> {
           ) {
             clippedText.push({ element: describe(el), overflowPx: hiddenX });
           }
-        }
-
-        if (/^h[1-6]$/.test(el.tagName.toLowerCase())) {
-          headings.push({
-            level: Number(el.tagName.slice(1)),
-            text: (el.textContent ?? '').trim().replace(/\s+/g, ' ').slice(0, 60),
-            element: describe(el),
-          });
         }
 
         const interactiveTag = ['button', 'a', 'input', 'select', 'textarea'].includes(

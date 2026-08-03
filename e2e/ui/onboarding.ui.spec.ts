@@ -1,6 +1,8 @@
 import { expect, test } from '../fixtures';
-import { settleForScreenshot } from '../support/determinism';
-import { expectNoUiDefects } from '../support/expect-ui';
+import { SCREENS } from '../screens';
+import { gotoScreen } from '../support/navigate';
+
+const ONBOARDING = SCREENS.find((screen) => screen.id === 'onboarding')!;
 
 /**
  * El onboarding es la pantalla con MENOS referencias visuales del proyecto
@@ -15,15 +17,23 @@ import { expectNoUiDefects } from '../support/expect-ui';
 test.describe('Onboarding del empleado', () => {
   test.use({ role: 'empleado' });
 
-  test('no tiene defectos de UI bloqueantes', async ({ authedPage }, testInfo) => {
-    await authedPage.goto('/onboarding');
+  /* El barrido de `screens.ui.spec.ts` ya audita esta pantalla. Aquí quedan
+     solo las comprobaciones específicas del onboarding, que es la pantalla con
+     menos referencias visuales del proyecto (`brief-diseno.md §8`: "la Fase 2 va
+     a ciegas") y la primera que ve alguien que acaba de entrar en la empresa. */
 
+  test('el encabezado de la pantalla no compite con el del Topbar', async ({ authedPage }) => {
+    /* Se navega con `gotoScreen` y no con un `goto` suelto a propósito: espera
+       el <h1> del Topbar, que depende del rol y por tanto de que `/auth/me`
+       haya respondido. Sin esa espera, la auditoría puede capturar el instante
+       en que la vista existe pero el título aún no, y reportar "la pantalla no
+       tiene ningún h1" — un hallazgo que es de la sonda, no de la app. */
+    await gotoScreen(authedPage, ONBOARDING);
+
+    await expect(authedPage.locator('h1')).toHaveCount(1);
     const enCurso = authedPage.getByRole('heading', { name: /Te damos la bienvenida/i });
     const completado = authedPage.getByRole('heading', { name: /Onboarding completado/i });
     await expect(enCurso.or(completado)).toBeVisible();
-
-    await settleForScreenshot(authedPage);
-    await expectNoUiDefects(authedPage, testInfo);
   });
 
   test('no usa recuadros de aviso con borde y fondo teñido', async ({ authedPage }) => {
@@ -33,10 +43,7 @@ test.describe('Onboarding del empleado', () => {
        gasta media pantalla para decir una frase.
        Se comprueba sobre el DOM real: un bloque de aviso se delata por tener
        fondo teñido Y borde del mismo tono de color de estado. */
-    await authedPage.goto('/onboarding');
-    await expect(
-      authedPage.getByRole('heading', { level: 1 }),
-    ).toBeVisible();
+    await gotoScreen(authedPage, ONBOARDING);
 
     const calloutsSospechosos = await authedPage.evaluate(() => {
       const isTinted = (color: string): boolean => {
