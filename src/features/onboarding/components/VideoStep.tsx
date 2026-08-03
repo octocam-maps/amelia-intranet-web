@@ -22,10 +22,23 @@ const ENFORCED_PLAYBACK_RATE = 1;
 
 interface VideoStepProps {
   step: OnboardingStep;
+  /**
+   * Modo revisión del administrador: entra a comprobar QUÉ vídeo ve la
+   * plantilla, no a verlo. Devuelve los `controls` nativos (adelantar y
+   * rebobinar) y desactiva las redes de seguridad de abajo.
+   *
+   * NO es el permiso — el backend exime al mismo rol por su cuenta
+   * (`is_exempt_from_video_pacing`). Si esto se quedara solo en el cliente,
+   * cada seek acabaría en un 422; y al revés, ponerlo a `true` desde la
+   * consola no engaña a nadie: quien valida el progreso es el servidor.
+   */
+  reviewMode?: boolean;
 }
 
 /**
- * Vídeo no-skippable (Opción A del requerimiento, reforzada).
+ * Vídeo no-skippable (Opción A del requerimiento, reforzada) — salvo en
+ * `reviewMode`, donde vuelven los `controls` nativos y todo lo de abajo se
+ * desactiva (ver la prop).
  *
  * En vez de dejar los `controls` nativos y revertir el salto *después* en
  * `onSeeking` (que producía un glitch: el <video> ya había saltado y
@@ -50,7 +63,7 @@ interface VideoStepProps {
  * secas) para que nada haga bajar el `progress_pct` ya confirmado por el
  * backend.
  */
-export function VideoStep({ step }: VideoStepProps) {
+export function VideoStep({ step, reviewMode = false }: VideoStepProps) {
   const config = step.config as VideoStepConfig;
   const videoRef = useRef<HTMLVideoElement>(null);
   const maxWatchedRef = useRef(0);
@@ -80,7 +93,7 @@ export function VideoStep({ step }: VideoStepProps) {
 
     function handleLoadedMetadata(event: Event) {
       const el = event.currentTarget as HTMLVideoElement;
-      el.playbackRate = ENFORCED_PLAYBACK_RATE;
+      if (!reviewMode) el.playbackRate = ENFORCED_PLAYBACK_RATE;
       const duration = el.duration || config.duration || 0;
       // Retoma desde donde el backend dejó el progreso — el `maxWatched`
       // local arranca ahí, no en 0, para no permitir "retroceder el candado"
@@ -145,8 +158,14 @@ export function VideoStep({ step }: VideoStepProps) {
 
     videoEl.addEventListener('loadedmetadata', handleLoadedMetadata);
     videoEl.addEventListener('timeupdate', handleTimeUpdate);
-    videoEl.addEventListener('seeking', handleSeeking);
-    videoEl.addEventListener('ratechange', handleRateChange);
+    // Las dos redes de seguridad NO se registran en modo revisión: son
+    // exactamente lo que impide adelantar y acelerar. `maxWatchedRef` sigue
+    // siendo monotónico, así que el progreso reportado no baja al rebobinar
+    // (y el backend, además, persiste el máximo).
+    if (!reviewMode) {
+      videoEl.addEventListener('seeking', handleSeeking);
+      videoEl.addEventListener('ratechange', handleRateChange);
+    }
     videoEl.addEventListener('play', handlePlay);
     videoEl.addEventListener('pause', handlePause);
     videoEl.addEventListener('ended', handleEnded);
@@ -168,7 +187,7 @@ export function VideoStep({ step }: VideoStepProps) {
       videoEl.removeEventListener('ended', handleEnded);
       window.clearInterval(intervalId);
     };
-  }, [config.duration, isCompleted, isLocked, sendProgress, step.progressPct]);
+  }, [config.duration, isCompleted, isLocked, reviewMode, sendProgress, step.progressPct]);
 
   const togglePlay = useCallback(() => {
     const el = videoRef.current;
@@ -184,18 +203,25 @@ export function VideoStep({ step }: VideoStepProps) {
     <div className={styles.root}>
       <h2 className={styles.title}>{step.title}</h2>
       <p className={styles.subtitle}>
-        {isCompleted
-          ? 'Has visto el vídeo completo. Ya puedes pasar al siguiente paso.'
-          : 'Míralo entero para conocer quiénes somos. No se puede adelantar: reprodúcelo hasta el final.'}
+        {reviewMode
+          ? 'Este es el vídeo que ve la plantilla. Puedes adelantarlo y rebobinarlo: a ellos no les deja.'
+          : isCompleted
+            ? 'Has visto el vídeo completo. Ya puedes pasar al siguiente paso.'
+            : 'Míralo entero para conocer quiénes somos. No se puede adelantar: reprodúcelo hasta el final.'}
       </p>
 
       <div className={styles.playerWrapper}>
-        <span className={styles.lockBadge}>
-          <LockClosedIcon className={styles.lockIcon} />
-          No se puede adelantar
-        </span>
+        {/* El distintivo solo se pinta cuando es verdad. En modo revisión el
+            vídeo SÍ se puede adelantar, y una UI que afirma lo contrario es
+            peor que no decir nada. */}
+        {!reviewMode ? (
+          <span className={styles.lockBadge}>
+            <LockClosedIcon className={styles.lockIcon} />
+            No se puede adelantar
+          </span>
+        ) : null}
 
-        {isCompleted ? (
+        {isCompleted && !reviewMode ? (
           <div className={styles.completedOverlay}>
             <CheckCircledIcon className={styles.completedIcon} />
             <span className={styles.completedLabel}>Vídeo completado</span>
@@ -203,19 +229,22 @@ export function VideoStep({ step }: VideoStepProps) {
         ) : null}
 
         {/* Sin `controls`: no hay barra de scrubbing arrastrable, así que
-            adelantar es imposible. Play/pausa vía botón propio y click. */}
+            adelantar es imposible. Play/pausa vía botón propio y click.
+            En modo revisión se devuelven los controles nativos — y con ellos
+            el click propio sobra, o pausaría al ir a tocar la barra. */}
         <video
           ref={videoRef}
           className={styles.video}
           src={hincatorVideo}
           playsInline
-          onClick={isCompleted ? undefined : togglePlay}
+          controls={reviewMode}
+          onClick={isCompleted || reviewMode ? undefined : togglePlay}
         />
 
         {/* El botón solo aparece cuando el vídeo está pausado (o sin
             arrancar): invita a reproducir sin tapar la imagen mientras corre.
             Para pausar durante la reproducción, se hace clic sobre el vídeo. */}
-        {!isCompleted && !isPlaying ? (
+        {!isCompleted && !isPlaying && !reviewMode ? (
           <button
             type="button"
             className={styles.playButton}
@@ -227,21 +256,29 @@ export function VideoStep({ step }: VideoStepProps) {
         ) : null}
 
         {/* Barra de progreso de SOLO LECTURA — refleja lo visto, no acepta
-            clicks ni arrastre (a diferencia de la barra nativa). */}
-        <div
-          className={styles.progressTrack}
-          role="progressbar"
-          aria-valuemin={0}
-          aria-valuemax={100}
-          aria-valuenow={displayPct}
-          aria-label="Progreso del vídeo"
-        >
-          <div className={styles.progressFill} style={{ width: `${displayPct}%` }} />
-        </div>
+            clicks ni arrastre (a diferencia de la barra nativa). En modo
+            revisión se oculta: los `controls` ya traen la suya y quedarían dos
+            barras contando cosas distintas. */}
+        {!reviewMode ? (
+          <div
+            className={styles.progressTrack}
+            role="progressbar"
+            aria-valuemin={0}
+            aria-valuemax={100}
+            aria-valuenow={displayPct}
+            aria-label="Progreso del vídeo"
+          >
+            <div className={styles.progressFill} style={{ width: `${displayPct}%` }} />
+          </div>
+        ) : null}
       </div>
 
       <div className={styles.footer}>
-        {isCompleted ? (
+        {reviewMode ? (
+          <span className={styles.footerHint}>
+            Vista de revisión · puedes adelantar y rebobinar
+          </span>
+        ) : isCompleted ? (
           <span className={styles.footerHint}>
             <CheckCircledIcon className={styles.footerHintIcon} />
             ¡Buen comienzo! Paso 1 completado

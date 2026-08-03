@@ -22,10 +22,10 @@ import { VideoStep } from '../components/VideoStep';
 import type { OnboardingStep } from '../domain/models';
 import styles from './OnboardingPage.module.css';
 
-function StepPanel({ step }: { step: OnboardingStep }) {
+function StepPanel({ step, reviewMode }: { step: OnboardingStep; reviewMode: boolean }) {
   switch (step.type) {
     case 'video':
-      return <VideoStep step={step} />;
+      return <VideoStep step={step} reviewMode={reviewMode} />;
     case 'quiz':
       return <QuizStep step={step} />;
     case 'signature':
@@ -55,9 +55,14 @@ export function OnboardingPage() {
   // deja de hablarle como a un recién llegado. Sin esto seguía viendo "Te damos
   // la bienvenida" y una barra de progreso al 0% que no tiene que subir nunca.
   //
-  // Es SOLO copy y presentación. Quien decide qué pasos están abiertos es el
-  // backend — si esto se leyera como el permiso, escribir la URL a mano seguiría
-  // siendo la vía de escape que la regla del proyecto prohíbe.
+  // Es copy, presentación y —desde el 2026-08-03— los controles del vídeo del
+  // paso 1, que en modo revisión se pueden adelantar y rebobinar.
+  //
+  // Sigue sin ser EL PERMISO: quien decide qué pasos están abiertos y qué
+  // progreso se acepta es el backend (`is_exempt_from_sequential_gating` e
+  // `is_exempt_from_video_pacing`). Si esto se leyera como el permiso, escribir
+  // la URL a mano sería la vía de escape que la regla del proyecto prohíbe;
+  // aquí solo se deja de estorbar a quien el backend ya ha eximido.
   const reviewMode = isAdmin(currentUser?.role);
 
   const activeStep = useMemo(
@@ -216,7 +221,7 @@ export function OnboardingPage() {
       {selectedStep && (
         <Card>
           <CardContent className={styles.stepCard}>
-            <StepPanel step={selectedStep} />
+            <StepPanel step={selectedStep} reviewMode={reviewMode} />
             {showContinue && nextStep && (
               <div className={styles.continueRow}>
                 <button
