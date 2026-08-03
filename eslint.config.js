@@ -21,5 +21,14 @@ export default tseslint.config(
       'react-refresh/only-export-components': ['warn', { allowConstantExport: true }],
       '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
     },
+  },
+  {
+    // Los fixtures de Playwright reciben una función `use(valor)` que el plugin
+    // de React confunde con el hook `use` de React 19 y marca como violación de
+    // las reglas de hooks. No hay React en `e2e/`: aquí esa regla no aplica.
+    files: ['e2e/**/*.{ts,mjs}', 'playwright.config.ts'],
+    rules: {
+      'react-hooks/rules-of-hooks': 'off',
+    },
   }
 );

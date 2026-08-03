@@ -1,0 +1,22 @@
+{
+  "mcpServers": {
+    "playwright": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@playwright/mcp@latest",
+        "--browser",
+        "chromium",
+        "--isolated",
+        "--caps",
+        "vision",
+        "--allowed-origins",
+        "http://localhost:5173;http://localhost:8010;http://localhost:8000",
+        "--viewport-size",
+        "1440x900",
+        "--storage-state",
+        "e2e/.auth/administrador.json"
+      ]
+    }
+  }
+}

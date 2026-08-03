@@ -6,3 +6,21 @@ dist-ssr/
 .env.local
 *.local
 .DS_Store
+
+# ── Playwright ───────────────────────────────────────────────────────────────
+# Artefactos GENERADOS en cada ejecución. Nunca se comparten: pesan, cambian
+# siempre y no son la referencia de nada.
+test-results/
+playwright-report/
+blob-report/
+playwright/.cache/
+
+# Las capturas "actual" y "diff" que Playwright escribe junto a un baseline
+# cuando falla. La que SÍ se versiona es el propio baseline
+# (`*-snapshots/*.png`), que es la referencia acordada por el equipo.
+**/*-actual.png
+**/*-diff.png
+
+# Sesiones grabadas para el agente auditor: contienen una cookie de refresh
+# real y viva. Son credenciales, no configuración.
+e2e/.auth/
