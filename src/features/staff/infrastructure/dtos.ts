@@ -55,8 +55,8 @@ export interface CreateStaffMemberDTO {
   vacation_days_override?: number | null;
 }
 
-/** Body de `PATCH /staff/{id}` — sin `full_name`/`email`/`hire_date` (el
- * backend no permite editarlos aquí); aquí sí existe `is_active`.
+/** Body de `PATCH /staff/{id}` — sin `full_name`/`email` (el backend no
+ * permite editarlos aquí); aquí sí existen `hire_date` e `is_active`.
  *
  * `vacation_days_override` AUSENTE del payload -> no toca el override;
  * `vacation_days_override: null` explícito -> lo vacía (vuelve a
@@ -74,6 +74,9 @@ export interface UpdateStaffMemberDTO {
   department?: string | null;
   entity?: string;
   role?: string;
+  /** Sin el esquema de tres estados de los de arriba: aquí `null` es "no
+   * tocar". La fecha de alta se fija y se corrige, pero no se vacía. */
+  hire_date?: string | null;
   vacation_days_override?: number | null;
   is_active?: boolean;
 }

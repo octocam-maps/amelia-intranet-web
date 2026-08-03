@@ -85,6 +85,10 @@ export interface UpdateStaffMemberInput {
   department?: string | null;
   entityCode?: EntityCode;
   role?: UserRole;
+  /** Editable desde el 2026-08-03. `null` = no tocar, NUNCA "vaciar": el
+   * backend no admite borrar la fecha de alta (tiraría la antigüedad y
+   * devolvería el saldo de vacaciones a 0). Cambiarla recalcula ese saldo. */
+  hireDate?: string | null;
   vacationDaysOverride?: number | null;
   isActive?: boolean;
 }

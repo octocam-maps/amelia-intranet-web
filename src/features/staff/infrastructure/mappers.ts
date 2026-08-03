@@ -87,6 +87,10 @@ export function updateStaffMemberInputToDTO(input: UpdateStaffMemberInput): Upda
   if (input.department !== undefined) dto.department = input.department;
   if (input.entityCode !== undefined) dto.entity = input.entityCode;
   if (input.role !== undefined) dto.role = input.role;
+  // Solo si trae fecha: mandar `hire_date: null` no la vacía (el backend lo
+  // lee como "no tocar"), pero ensucia el payload con una clave que no pide
+  // nada. El formulario manda `null` cuando el campo está vacío.
+  if (input.hireDate) dto.hire_date = input.hireDate;
   if (input.vacationDaysOverride !== undefined) dto.vacation_days_override = input.vacationDaysOverride;
   if (input.isActive !== undefined) dto.is_active = input.isActive;
   return dto;
