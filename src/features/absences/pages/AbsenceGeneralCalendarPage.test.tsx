@@ -73,14 +73,14 @@ describe('AbsenceGeneralCalendarPage — selector de empleado (RF-A1)', () => {
   it('muestra el selector de empleado para un Admin', async () => {
     renderPage();
 
-    expect(await screen.findByLabelText('Filtrar export por empleado')).toBeInTheDocument();
+    expect(await screen.findByLabelText('Filtrar por empleado')).toBeInTheDocument();
   });
 
   it('muestra el selector de empleado para un Socio', async () => {
     mockUser.role = 'socio';
     renderPage();
 
-    expect(await screen.findByLabelText('Filtrar export por empleado')).toBeInTheDocument();
+    expect(await screen.findByLabelText('Filtrar por empleado')).toBeInTheDocument();
   });
 
   it('NO muestra el selector de empleado para un Empleado (aunque el backend ya lo rechace)', async () => {
@@ -88,7 +88,7 @@ describe('AbsenceGeneralCalendarPage — selector de empleado (RF-A1)', () => {
     renderPage();
 
     await waitFor(() => {
-      expect(screen.queryByLabelText('Filtrar export por empleado')).not.toBeInTheDocument();
+      expect(screen.queryByLabelText('Filtrar por empleado')).not.toBeInTheDocument();
     });
   });
 
@@ -97,7 +97,7 @@ describe('AbsenceGeneralCalendarPage — selector de empleado (RF-A1)', () => {
     renderPage();
 
     await waitFor(() => {
-      expect(screen.queryByLabelText('Filtrar export por empleado')).not.toBeInTheDocument();
+      expect(screen.queryByLabelText('Filtrar por empleado')).not.toBeInTheDocument();
     });
   });
 

@@ -39,14 +39,17 @@ const ALL_EMPLOYEES_VALUE = 'all';
  * aquí: el frontend tampoco decide el acceso, solo compone la navegación
  * (mismo criterio que `/administracion/plantilla`, `/administracion/festivos`, etc.).
  *
- * RF-A1 (selector de empleado): Admin/Socio pueden acotar el EXPORT (no la
- * grilla, que sigue mostrando toda la plantilla — `/calendar/all` no
- * cambia) a un empleado concreto. El selector se oculta para cualquier
- * otro rol — doble capa con el backend, que igualmente rechazaría con 403
- * a un Empleado pidiendo el `user_id` de otro (ver
- * `GetAbsenceCalendarUseCase`); "ocultar ≠ proteger" corta en los dos
- * sentidos, así que aquí solo evita mostrar una opción que de todos modos
- * fallaría.
+ * RF-A1 (selector de empleado): Admin/Socio pueden acotar a un empleado
+ * concreto tanto los EXPORTS como la GRILLA. RF-A1.1 solo pedía el filtro en
+ * los exports y así se implementó, pero el selector queda encima de la
+ * grilla: elegir a alguien y ver que la vista no se movía (con toda la
+ * plantilla todavía pintada, uno mismo incluido) se leía como un filtro
+ * roto. `/absences/calendar/all` ya aceptaba `user_id` — solo faltaba
+ * pasárselo. El selector se oculta para cualquier otro rol — doble capa con
+ * el backend, que igualmente rechazaría con 403 a un Empleado pidiendo el
+ * `user_id` de otro (ver `GetAbsenceCalendarUseCase`); "ocultar ≠ proteger"
+ * corta en los dos sentidos, así que aquí solo evita mostrar una opción que
+ * de todos modos fallaría.
  */
 export function AbsenceGeneralCalendarPage() {
   const currentUser = useStore((s) => s.user);
@@ -62,7 +65,11 @@ export function AbsenceGeneralCalendarPage() {
   const annualRange = useMemo(() => yearRange(cursor), [cursor]);
   const visibleYear = cursor.getFullYear();
 
-  const { data: entries = EMPTY_ENTRIES, isLoading } = useAbsenceCalendar(range);
+  const calendarParams = useMemo(
+    () => ({ ...range, userId: selectedEmployeeId }),
+    [range, selectedEmployeeId]
+  );
+  const { data: entries = EMPTY_ENTRIES, isLoading } = useAbsenceCalendar(calendarParams);
   const { data: directory = [] } = useTeamDirectory();
   const sortedDirectory = useMemo(
     () => [...directory].sort((a, b) => a.fullName.localeCompare(b.fullName, 'es')),
@@ -71,6 +78,12 @@ export function AbsenceGeneralCalendarPage() {
   const selectedEmployeeName = selectedEmployeeId
     ? sortedDirectory.find((person) => person.id === selectedEmployeeId)?.fullName
     : undefined;
+  // Con un `user_id` cuyo nombre todavía no está en el directorio cargado se
+  // dice "el empleado seleccionado" en vez de dejar la frase coja — la
+  // grilla YA está filtrada, así que callarlo sería peor que no nombrarlo.
+  const filterLabel = selectedEmployeeId
+    ? (selectedEmployeeName ?? 'el empleado seleccionado')
+    : 'toda la plantilla';
 
   const { mutate: exportPdf, isPending: isExportingPdf } = useExportAbsenceCalendarPdf();
   const { mutate: exportXlsx, isPending: isExportingXlsx } = useExportAbsenceCalendarXlsx();
@@ -85,8 +98,12 @@ export function AbsenceGeneralCalendarPage() {
       <div className={styles.header}>
         <div>
           <h2 className={styles.title}>Calendario general de la plantilla</h2>
+          {/* El alcance vigente va en esta línea, no en un aviso aparte: es
+              la única señal de que la grilla está acotada a una persona
+              (el propio selector muestra el nombre, pero no dice si eso
+              afecta a lo que se está viendo o solo al export). */}
           <p className={styles.subtitle}>
-            Ausencias y vacaciones de toda la plantilla — vista exclusiva de RRHH.
+            {`Ausencias y vacaciones de ${filterLabel} — vista exclusiva de RRHH.`}
           </p>
         </div>
         <div className={styles.actions}>
@@ -99,7 +116,7 @@ export function AbsenceGeneralCalendarPage() {
                   setSelectedEmployeeId(next === ALL_EMPLOYEES_VALUE ? undefined : next)
                 }
               >
-                <SelectTrigger className={styles.employeeTrigger} aria-label="Filtrar export por empleado">
+                <SelectTrigger className={styles.employeeTrigger} aria-label="Filtrar por empleado">
                   <SelectValue placeholder="Empleado" />
                 </SelectTrigger>
                 <SelectContent>
@@ -154,6 +171,11 @@ export function AbsenceGeneralCalendarPage() {
       <GeneralAbsenceCalendar
         entries={entries}
         isLoading={isLoading}
+        emptyMessage={
+          selectedEmployeeName
+            ? `${selectedEmployeeName} no tiene ausencias registradas este mes.`
+            : undefined
+        }
         cursor={cursor}
         onPreviousMonth={() => setCursor((c) => new Date(c.getFullYear(), c.getMonth() - 1, 1))}
         onNextMonth={() => setCursor((c) => new Date(c.getFullYear(), c.getMonth() + 1, 1))}

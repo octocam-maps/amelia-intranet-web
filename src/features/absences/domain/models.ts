@@ -94,9 +94,15 @@ export interface AbsenceCalendarEntry {
 export interface AbsenceCalendarRangeParams {
   dateFrom: string;
   dateTo: string;
-  /** RF-A1: filtro por empleado en el export (`export.xlsx`/`export.pdf`).
-   * `undefined` -> comportamiento actual (global para Admin/Socio, propio
-   * para Empleado, resuelto en el backend). NO se usa en `listCalendar`
-   * (`/absences/calendar/all` no acepta este parámetro — sin cambios). */
+  /** RF-A1: filtro por empleado. `undefined` -> global para Admin/Socio,
+   * propio para Empleado (lo resuelve el backend).
+   *
+   * Lo aceptan los DOS exports (`export.xlsx`/`export.pdf`) y también
+   * `listCalendar` (`/absences/calendar/all?user_id=`): la grilla se acota
+   * al empleado elegido igual que el fichero exportado. RF-A1.1 solo pedía
+   * el filtro en los exports, pero un selector encima de la grilla que no
+   * cambiaba lo que se veía se leía como una pantalla rota. El alcance por
+   * rol sigue decidiéndose en el backend (`GetAbsenceCalendarUseCase`
+   * devuelve 403 a un Empleado que pida el `user_id` de otro). */
   userId?: string;
 }

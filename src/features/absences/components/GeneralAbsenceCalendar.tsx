@@ -26,12 +26,19 @@ function initialsOf(name: string): string {
     .join('');
 }
 
+const DEFAULT_EMPTY_MESSAGE = 'Sin ausencias registradas este mes.';
+
 interface GeneralAbsenceCalendarProps {
   entries: AbsenceCalendarEntry[];
   isLoading: boolean;
   cursor: Date;
   onPreviousMonth: () => void;
   onNextMonth: () => void;
+  /** Copy del estado vacío. Con el filtro por empleado activo (RF-A1) la
+   * grilla vacía significa "esta persona no tiene nada este mes", no "no hay
+   * ausencias en la empresa" — el mensaje genérico ahí hacía dudar de si el
+   * filtro había funcionado. */
+  emptyMessage?: string;
 }
 
 /**
@@ -55,6 +62,7 @@ export function GeneralAbsenceCalendar({
   cursor,
   onPreviousMonth,
   onNextMonth,
+  emptyMessage = DEFAULT_EMPTY_MESSAGE,
 }: GeneralAbsenceCalendarProps) {
   const year = cursor.getFullYear();
   const month = cursor.getMonth();
@@ -122,7 +130,7 @@ export function GeneralAbsenceCalendar({
           {isLoading ? (
             <p className={styles.empty}>Cargando calendario…</p>
           ) : rows.length === 0 ? (
-            <p className={styles.empty}>Sin ausencias registradas este mes.</p>
+            <p className={styles.empty}>{emptyMessage}</p>
           ) : (
             rows.map((row) => (
               <div key={row.userId} className={styles.employeeRow}>
