@@ -14,7 +14,16 @@ import styles from './ManualsLibrary.module.css';
  * trabajar no protegería nada. Lo que sí se marca es cuáles ya confirmó, porque le
  * dice qué le queda pendiente de su onboarding.
  */
-export function ManualsLibrary() {
+interface ManualsLibraryProps {
+  /** URL de un manual que la página ya presenta por su cuenta. Se omite de la
+   *  lista para no ofrecer el mismo documento dos veces en la misma pantalla:
+   *  en Ayuda, el manual de uso de la intranet es la cabecera (con su índice de
+   *  capítulos y su versión navegable) y desde la migración 043 está además
+   *  registrado en la biblioteca, así que salía repetido. */
+  excludeUrl?: string;
+}
+
+export function ManualsLibrary({ excludeUrl }: ManualsLibraryProps = {}) {
   const { data: manuals, isLoading, isError } = useManuals();
 
   if (isLoading) {
@@ -31,9 +40,19 @@ export function ManualsLibrary() {
     return <p className={styles.empty}>RRHH todavía no ha publicado ningún manual.</p>;
   }
 
+  // Se compara por `url` (`onboarding_documents.storage_ref`) y no por título:
+  // el título lo puede editar un admin, la ruta del fichero es la identidad.
+  const visible = excludeUrl ? manuals.filter((manual) => manual.url !== excludeUrl) : manuals;
+
+  if (visible.length === 0) {
+    // Distinto de "no hay ningún manual": hay uno, y es el que esta página ya
+    // muestra arriba. Decir que no hay ninguno sería falso.
+    return <p className={styles.empty}>No hay más manuales que el de arriba.</p>;
+  }
+
   return (
     <ul className={styles.list}>
-      {manuals.map((manual) => (
+      {visible.map((manual) => (
         <li key={manual.id} className={styles.item}>
           <span className={styles.iconBox}>
             {manual.acknowledged ? (
