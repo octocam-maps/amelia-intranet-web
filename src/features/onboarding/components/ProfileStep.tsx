@@ -5,13 +5,54 @@ import { Input } from '@/components/ui/Input';
 import { Label } from '@/components/ui/Label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/Select';
 import { ApiError } from '@/lib/http/api-client';
+import { ENTITY_SHORT_NAME, type EntityCode } from '@/lib/entities';
 import { useDepartments } from '@/features/departments/application/useDepartments';
+import type { Department } from '@/features/departments/domain/models';
 import { useCompleteProfile } from '../application/useCompleteProfile';
 import type { CompleteProfileInput, OnboardingStep } from '../domain/models';
 import styles from './ProfileStep.module.css';
 
 interface ProfileStepProps {
   step: OnboardingStep;
+}
+
+/**
+ * Nombres de departamento que aparecen MÁS DE UNA VEZ en la lista.
+ *
+ * Los mismos departamentos existen en las cuatro sociedades del grupo, así que
+ * cuando la lista no está filtrada por entidad salen cuatro «Administración»
+ * idénticas y elegir es elegir a ciegas. Desde que `GET /departments` filtra por
+ * la sociedad de quien pregunta, esto normalmente devuelve un conjunto VACÍO —
+ * queda para el caso que el backend no puede filtrar: un usuario sin entidad
+ * asignada, al que se le muestran todas para no dejarlo sin poder terminar el
+ * paso.
+ */
+function ambiguousDepartmentNames(departments: Department[]): ReadonlySet<string> {
+  const vistos = new Set<string>();
+  const repetidos = new Set<string>();
+  for (const { name } of departments) {
+    if (vistos.has(name)) repetidos.add(name);
+    else vistos.add(name);
+  }
+  return repetidos;
+}
+
+/**
+ * Etiqueta de la opción: añade la sociedad SOLO si el nombre está repetido.
+ *
+ * Añadirla siempre sería ruido en el caso normal —«Administración · Hub» cuando
+ * todas las opciones son de Hub no distingue nada— y omitirla siempre deja el
+ * selector inservible en el caso ambiguo. Se decide por lista, no por gusto.
+ */
+function departmentLabel(
+  department: Department,
+  ambiguos: ReadonlySet<string>,
+): string {
+  if (!ambiguos.has(department.name) || !department.entityCode) return department.name;
+  // `ENTITY_SHORT_NAME` (no el nombre comercial largo): en un desplegable el
+  // prefijo «Amelia» se repite en todas las opciones y no aporta.
+  const sociedad = ENTITY_SHORT_NAME[department.entityCode as EntityCode];
+  return sociedad ? `${department.name} · ${sociedad}` : department.name;
 }
 
 /** Claves de `ApiError.fieldErrors` (nombres del DTO del backend, snake_case)
@@ -50,6 +91,7 @@ const FORM_FIELD_BY_BACKEND_KEY: Record<string, keyof CompleteProfileInput> = {
 export function ProfileStep({ step }: ProfileStepProps) {
   const { mutate, isPending } = useCompleteProfile();
   const { data: departments = [], isLoading: isLoadingDepartments } = useDepartments();
+  const ambiguos = ambiguousDepartmentNames(departments);
   const {
     register,
     handleSubmit,
@@ -212,7 +254,7 @@ export function ProfileStep({ step }: ProfileStepProps) {
           <SelectContent>
             {departments.map((department) => (
               <SelectItem key={department.id} value={department.id}>
-                {department.name}
+                {departmentLabel(department, ambiguos)}
               </SelectItem>
             ))}
           </SelectContent>
