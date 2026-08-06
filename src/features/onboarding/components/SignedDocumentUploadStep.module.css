@@ -102,3 +102,172 @@
 .signedLink:hover {
   text-decoration: underline;
 }
+
+/* ── Varios documentos a firmar (migración backend 046) ──────────────────── */
+/* Mismo lenguaje visual que la cascada de manuales
+   (`ManualStep.module.css`): UN contenedor con borde y una fila por documento
+   separada por una línea. Cuatro tarjetas apiladas con su propio borde harían
+   leer el paso como si fuesen cuatro pasos. */
+
+.documentList {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-radius: var(--radius);
+  border: 1px solid hsl(var(--border));
+  background-color: hsl(var(--card));
+  overflow: hidden;
+}
+
+/* La fila no lleva padding propio: lo ponen el disparador y el panel, para que el
+   área de clic del disparador llegue de borde a borde. */
+.documentRow {
+  display: block;
+}
+
+/* La línea separadora va ENTRE filas, nunca encima de la primera ni debajo de la
+   última: ahí ya está el borde del contenedor y se vería doble. */
+.documentRow + .documentRow {
+  border-top: 1px solid hsl(var(--border));
+}
+
+/* El encabezado no aporta estilo: existe para que el disparador del acordeón sea
+   un `h3` navegable por lectores de pantalla. */
+.documentHeading {
+  margin: 0;
+  font: inherit;
+}
+
+.documentToggle {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  width: 100%;
+  padding: var(--space-3) var(--space-4);
+  border: 0;
+  background: none;
+  text-align: left;
+  cursor: pointer;
+  color: hsl(var(--foreground));
+}
+
+.documentToggle:hover {
+  background-color: hsl(var(--accent));
+}
+
+.documentToggle:focus-visible {
+  outline: 2px solid hsl(var(--primary));
+  outline-offset: -2px;
+}
+
+.documentTitle {
+  font-size: 0.9375rem;
+  font-weight: 600;
+}
+
+.documentIcon,
+.documentIconDone {
+  height: var(--space-4);
+  width: var(--space-4);
+  flex-shrink: 0;
+  color: hsl(var(--primary));
+}
+
+.documentBadge {
+  border-radius: 999px;
+  background-color: hsl(var(--success) / 0.12);
+  padding: 0 var(--space-2);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  /* `--success-on-tint`, NO `--success`: el verde de marca como color de texto
+     sobre su propio tinte da 2,03:1. Este es el valor medido para texto sobre
+     tinte (lo fija `src/lib/a11y/palette.test.ts`). */
+  color: hsl(var(--success-on-tint));
+}
+
+.documentChevron {
+  /* `auto` empuja el chevron al extremo: es el indicador de plegado y se busca
+     siempre en el mismo sitio, no pegado a un título de ancho variable. */
+  margin-left: auto;
+  flex-shrink: 0;
+  height: 1rem;
+  width: 1rem;
+  color: hsl(var(--muted-foreground));
+  transition: transform 150ms ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .documentChevron {
+    transition: none;
+  }
+}
+
+.documentChevronOpen {
+  transform: rotate(180deg);
+}
+
+.documentPanel {
+  padding: 0 var(--space-4) var(--space-3);
+}
+
+/* Los dos tiempos del documento —descargar y subir— apilados en el orden en que
+   se hacen. En línea no se leía como una secuencia. */
+.documentSteps {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.documentActions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.documentActionIcon {
+  height: 1rem;
+  width: 1rem;
+  margin-right: var(--space-1_5);
+}
+
+.documentFooter {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.documentHint {
+  font-size: 0.75rem;
+  color: hsl(var(--muted-foreground));
+}
+
+.documentNote {
+  font-size: 0.8125rem;
+  line-height: 1.4;
+  color: hsl(var(--muted-foreground));
+}
+
+/* Aviso a nivel de paso (sin documentación publicada): va suelto, con su caja. */
+.documentPending {
+  border-radius: var(--radius);
+  border: 1px solid hsl(var(--border));
+  background-color: hsl(var(--card));
+  padding: var(--space-4);
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: hsl(var(--muted-foreground));
+}
+
+.progress {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: hsl(var(--muted-foreground));
+}
+
+.gateHint {
+  font-size: 0.8125rem;
+  color: hsl(var(--muted-foreground));
+}

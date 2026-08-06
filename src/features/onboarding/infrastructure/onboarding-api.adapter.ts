@@ -76,12 +76,21 @@ export const onboardingApiAdapter: OnboardingRepository = {
     return quizResultFromDTO(dto);
   },
 
-  async uploadSignedDocument(stepId: string, file: File): Promise<UploadSignedDocumentResult> {
+  async uploadSignedDocument(
+    stepId: string,
+    file: File,
+    documentId?: string,
+  ): Promise<UploadSignedDocumentResult> {
     // No usa `apiClient`: el body es `FormData` (multipart), no JSON — mismo
-    // motivo que `documentsApiAdapter.upload`. Único campo `file`: el
-    // `user_id` lo deriva el backend del JWT, nunca viaja en el payload.
+    // motivo que `documentsApiAdapter.upload`. El `user_id` lo deriva el backend
+    // del JWT, nunca viaja en el payload.
     const formData = new FormData();
     formData.append('file', file);
+    // `document_id` desde la migración backend 046: el paso tiene CUATRO
+    // documentos y hay que decir a cuál corresponde el archivo. Se omite el campo
+    // si no hay id, en vez de mandarlo vacío — el backend lo trata como ausente y
+    // resuelve solo cuando hay un único documento activo.
+    if (documentId) formData.append('document_id', documentId);
 
     const response = await fetch(`${API_BASE_URL}/onboarding/steps/${stepId}/documents`, {
       method: 'POST',
@@ -95,6 +104,25 @@ export const onboardingApiAdapter: OnboardingRepository = {
     }
     const dto = (await response.json()) as UploadSignedDocumentDTO;
     return uploadSignedDocumentFromDTO(dto);
+  },
+
+  async downloadSignableDocument(documentId: string): Promise<Blob> {
+    // El PDF viene RELLENADO con los datos del perfil de quien lo pide, así que
+    // NO es un asset estático de `public/` como los manuales: lleva dentro
+    // nombre, DNI y puesto, y el backend lo resuelve desde el JWT.
+    //
+    // Por eso hace falta este fetch con `Authorization` y no basta un `<a href>`:
+    // un enlace normal no manda la cabecera y el endpoint responde 401.
+    // Igual que `documentsApiAdapter.download`: binario en streaming, no JSON.
+    const response = await fetch(`${API_BASE_URL}/onboarding/documents/${documentId}/pdf`, {
+      credentials: 'include',
+      headers: authHeaders(),
+    });
+    if (!response.ok) {
+      const message = await parseErrorMessage(response, 'No se pudo descargar el documento.');
+      throw new ApiError(message, response.status);
+    }
+    return response.blob();
   },
 
   async acknowledgeManual(stepId: string, documentId: string): Promise<AcknowledgeManualResult> {

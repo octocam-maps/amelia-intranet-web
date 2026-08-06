@@ -118,17 +118,26 @@ export function HelpPage() {
       {/* Biblioteca de manuales (`GET /manuals`, migración backend 043). Va aquí y
           no en una ruta propia: quien busca "el manual de X" ya viene a Ayuda, y
           repartir el mismo material en dos pantallas obligaría a adivinar cuál
-          mirar. Abierta a los cinco roles, igual que esta página. */}
+          mirar. Abierta a los cinco roles, igual que esta página.
+
+          `excludeUrl`: el manual de uso de la intranet está registrado en la
+          biblioteca desde la 043, así que sin esto aparecía DOS VECES en esta
+          pantalla — como cabecera y como fila de la lista. Se queda la cabecera
+          porque es la ficha completa: enlaza la versión navegable con buscador y
+          los 14 capítulos por ancla, cosa que la fila de la biblioteca (solo PDF)
+          no puede dar. Se pasa `MANUAL_PDF`, la misma constante que usa el enlace
+          de descarga, para que la relación no dependa de repetir la ruta. */}
       <Card>
         <CardContent className={styles.manualsSection}>
           <div>
-            <p className={styles.title}>Manuales</p>
+            <p className={styles.title}>Otros manuales</p>
             <p className={styles.note}>
-              Documentación de referencia del equipo. Los de lectura obligatoria se confirman en tu
-              onboarding; el resto están para consultar cuando los necesites.
+              Documentación de referencia del equipo, además del manual de arriba. Los de lectura
+              obligatoria se confirman en tu onboarding; el resto están para consultar cuando los
+              necesites.
             </p>
           </div>
-          <ManualsLibrary />
+          <ManualsLibrary excludeUrl={MANUAL_PDF} />
         </CardContent>
       </Card>
 

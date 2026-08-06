@@ -102,6 +102,56 @@ describe('ManualsLibrary', () => {
     expect(items[1]).toHaveTextContent('De consulta');
   });
 
+  it('omite el manual que la página ya presenta por su cuenta (`excludeUrl`)', () => {
+    // En Ayuda, el manual de uso de la intranet es la cabecera de la pantalla y
+    // desde la migración 043 está también en la biblioteca: sin este filtro
+    // aparecía DOS VECES en la misma página.
+    const INTRANET_URL = '/manuales/manual-de-uso-intranet.pdf';
+    mockHook({
+      data: [
+        manual(),
+        manual({ id: 'doc-intranet', title: 'Manual de uso de la intranet', url: INTRANET_URL }),
+      ],
+    });
+    render(<ManualsLibrary excludeUrl={INTRANET_URL} />);
+
+    expect(screen.getByText('Manual de uso de ClickUp')).toBeInTheDocument();
+    expect(screen.queryByText('Manual de uso de la intranet')).not.toBeInTheDocument();
+  });
+
+  it('excluye por URL y no por título, que el admin puede cambiar', () => {
+    // `url` es `onboarding_documents.storage_ref`: la identidad del fichero. El
+    // título es editable, así que filtrar por él dejaría de funcionar el día que
+    // alguien lo renombre desde el panel.
+    const INTRANET_URL = '/manuales/manual-de-uso-intranet.pdf';
+    mockHook({
+      data: [manual({ id: 'doc-intranet', title: 'Guía de la intranet (v2)', url: INTRANET_URL })],
+    });
+    render(<ManualsLibrary excludeUrl={INTRANET_URL} />);
+
+    expect(screen.queryByText('Guía de la intranet (v2)')).not.toBeInTheDocument();
+  });
+
+  it('si el filtro deja la lista vacía NO dice que no haya ningún manual', () => {
+    // Habría uno —el de la cabecera—, así que "no ha publicado ningún manual"
+    // sería falso.
+    const INTRANET_URL = '/manuales/manual-de-uso-intranet.pdf';
+    mockHook({ data: [manual({ id: 'doc-intranet', url: INTRANET_URL })] });
+    render(<ManualsLibrary excludeUrl={INTRANET_URL} />);
+
+    expect(screen.getByText(/no hay más manuales que el de arriba/i)).toBeInTheDocument();
+    expect(screen.queryByText(/todavía no ha publicado ningún manual/i)).not.toBeInTheDocument();
+  });
+
+  it('sin `excludeUrl` no filtra nada', () => {
+    mockHook({
+      data: [manual(), manual({ id: 'doc-intranet', title: 'Manual de uso de la intranet' })],
+    });
+    render(<ManualsLibrary />);
+
+    expect(screen.getAllByRole('listitem')).toHaveLength(2);
+  });
+
   it('distingue cargando, error y catálogo vacío', () => {
     mockHook({ data: [], isLoading: true });
     const { rerender } = render(<ManualsLibrary />);
