@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import { render, screen } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { useDepartments } from '@/features/departments/application/useDepartments';
@@ -7,6 +8,35 @@ import { ProfileStep } from './ProfileStep';
 
 vi.mock('../application/useCompleteProfile', () => ({ useCompleteProfile: vi.fn() }));
 vi.mock('@/features/departments/application/useDepartments', () => ({ useDepartments: vi.fn() }));
+/**
+ * El `Select` de Radix no se puede abrir en jsdom (`scrollIntoView` no existe
+ * ahí), así que se sustituye por un `<select>` nativo con la misma interfaz —
+ * mismo patrón que `StaffForm.test.tsx` y `AdminDocumentUploadForm.test.tsx`.
+ * Lo que se prueba aquí es la ETIQUETA de cada opción, y para eso el
+ * desplegable real no aporta nada.
+ */
+vi.mock('@/components/ui/Select', () => ({
+  Select: ({
+    value,
+    onValueChange,
+    children,
+  }: {
+    value: string;
+    onValueChange: (v: string) => void;
+    children: ReactNode;
+  }) => (
+    <select value={value} onChange={(event) => onValueChange(event.target.value)}>
+      {children}
+    </select>
+  ),
+  SelectContent: ({ children }: { children: ReactNode }) => <>{children}</>,
+  SelectItem: ({ value, children }: { value: string; children: ReactNode }) => (
+    <option value={value}>{children}</option>
+  ),
+  SelectTrigger: () => null,
+  SelectValue: () => null,
+}));
+
 
 function buildStep(overrides: Partial<OnboardingStep> = {}): OnboardingStep {
   return {
@@ -69,5 +99,73 @@ describe('ProfileStep — el perfil YA NO es el último paso', () => {
     expect(screen.getByText(/documentación firmada/i)).toBeInTheDocument();
     // "Ya formas parte del equipo" daba el flujo por terminado.
     expect(screen.queryByText(/ya formas parte del equipo/i)).not.toBeInTheDocument();
+  });
+});
+
+// El selector mostraba cuatro «Administración» seguidas e indistinguibles: los
+// mismos departamentos existen en las cuatro sociedades del grupo. Ahora
+// `GET /departments` filtra por la entidad de quien pregunta, y la etiqueta con
+// la sociedad queda como red para el caso que el backend no puede filtrar (un
+// usuario sin entidad asignada, al que se le muestran todas).
+describe('ProfileStep — selector de departamento', () => {
+  function mockDepartments(data: unknown[]) {
+    vi.mocked(useDepartments).mockReturnValue({
+      data,
+      isLoading: false,
+    } as unknown as ReturnType<typeof useDepartments>);
+  }
+
+  it('no añade la sociedad cuando los nombres NO se repiten', () => {
+    // El caso normal desde que el backend filtra: sería ruido, porque todas las
+    // opciones son de la misma sociedad y el sufijo no distingue nada.
+    mockDepartments([
+      { id: 'd1', name: 'Administración', entityId: 'e-hub', entityCode: 'hub' },
+      { id: 'd2', name: 'Comercial', entityId: 'e-hub', entityCode: 'hub' },
+    ]);
+    render(<ProfileStep step={buildStep()} />);
+
+    expect(screen.getByText('Administración')).toBeInTheDocument();
+    expect(screen.queryByText(/Administración · /)).not.toBeInTheDocument();
+  });
+
+  it('añade la sociedad SOLO a los nombres repetidos', () => {
+    mockDepartments([
+      { id: 'd1', name: 'Administración', entityId: 'e-hub', entityCode: 'hub' },
+      { id: 'd2', name: 'Administración', entityId: 'e-lab', entityCode: 'lab' },
+      { id: 'd3', name: 'Comercial', entityId: 'e-hub', entityCode: 'hub' },
+    ]);
+    render(<ProfileStep step={buildStep()} />);
+
+    // Las dos ambiguas quedan distinguibles…
+    expect(screen.getByText('Administración · Hub')).toBeInTheDocument();
+    expect(screen.getByText('Administración · Lab')).toBeInTheDocument();
+    // …y la que no lo era se queda limpia.
+    expect(screen.getByText('Comercial')).toBeInTheDocument();
+  });
+
+  it('usa la etiqueta corta y no el nombre comercial largo', () => {
+    // En un desplegable el prefijo «Amelia» se repetiría en todas las opciones.
+    mockDepartments([
+      { id: 'd1', name: 'Administración', entityId: 'e-hub', entityCode: 'hub' },
+      { id: 'd2', name: 'Administración', entityId: 'e-lab', entityCode: 'lab' },
+    ]);
+    render(<ProfileStep step={buildStep()} />);
+
+    expect(screen.getByText('Administración · Hub')).toBeInTheDocument();
+    expect(screen.queryByText(/Amelia Hub/)).not.toBeInTheDocument();
+  });
+
+  it('cae al nombre a secas si el departamento no trae sociedad', () => {
+    // `entityCode` puede venir null: el JOIN del repositorio es LEFT. Mejor una
+    // opción ambigua que una etiqueta con un hueco o un «undefined».
+    mockDepartments([
+      { id: 'd1', name: 'Administración', entityId: 'e-1', entityCode: null },
+      { id: 'd2', name: 'Administración', entityId: 'e-2', entityCode: null },
+    ]);
+    render(<ProfileStep step={buildStep()} />);
+
+    expect(screen.getAllByText('Administración').length).toBe(2);
+    expect(screen.queryByText(/·\s*$/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/undefined/)).not.toBeInTheDocument();
   });
 });
