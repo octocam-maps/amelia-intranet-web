@@ -8,14 +8,22 @@
         "--browser",
         "chromium",
         "--isolated",
+        "--storage-state",
+        "e2e/.auth/administrador.json",
         "--caps",
-        "vision",
+        "vision,network,devtools,testing,config",
         "--allowed-origins",
-        "http://localhost:5173;http://localhost:8010;http://localhost:8000",
+        "http://localhost:5173;http://localhost:8010;http://localhost:8000;https://fonts.googleapis.com;https://fonts.gstatic.com",
         "--viewport-size",
         "1440x900",
-        "--storage-state",
-        "e2e/.auth/administrador.json"
+        "--snapshot-boxes",
+        "--console-level",
+        "warning",
+        "--timeout-action",
+        "10000",
+        "--output-dir",
+        "e2e-report/mcp",
+        "--save-session"
       ]
     }
   }
