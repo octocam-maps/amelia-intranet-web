@@ -67,8 +67,11 @@
   transform: rotate(180deg);
 }
 
+/* `padding-top` a propósito, no 0: sin él los botones del panel arrancan a solo
+   12px del título del acordeón (el `padding-bottom` del disparador) y, al tener
+   borde visible, se leen como si chocaran con él. */
 .manualPanel {
-  padding: 0 var(--space-4) var(--space-3);
+  padding: var(--space-2) var(--space-4) var(--space-3);
 }
 
 .manualIcon {
@@ -91,13 +94,27 @@
   gap: var(--space-2);
 }
 
+/* El botón de confirmar, a la misma altura que los dos enlaces de al lado.
+   Es el `<Button size="sm">` (2,25rem por defecto) y aquí es el ÚNICO `button`
+   posible: los dos enlaces son `<a class="manualAction">`. Se ajusta desde el
+   contenedor en vez de tocar el `size` compartido del Button, que lo usan otras
+   veinte pantallas — bajarlo ahí para arreglar este panel sería cambiar el
+   sistema de diseño por un caso concreto. */
+.manualActions button {
+  height: 2rem;
+}
+
 .manualAction {
   display: inline-flex;
   align-items: center;
   gap: var(--space-1_5);
-  /* Alto alineado con el `size="sm"` del Button (2,25rem) para que los tres
-     controles de la fila queden a la misma altura. */
-  height: 2.25rem;
+  /* 2rem y no el 2,25rem del `size="sm"` del Button: dentro del panel del
+     acordeón esa altura hacía que los botones pesaran más que el contenido y
+     quedaran encajados contra el título. Sigue por encima del mínimo de 24px de
+     WCAG 2.5.8 para el tamaño del objetivo táctil.
+     El botón de confirmar se baja al mismo valor justo debajo — las tres
+     alturas tienen que seguir coincidiendo. */
+  height: 2rem;
   padding: 0 var(--space-3);
   border: 1px solid hsl(var(--border));
   border-radius: var(--radius);
