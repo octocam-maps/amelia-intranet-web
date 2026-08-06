@@ -7,13 +7,18 @@ que responden preguntas distintas.
 |---|---|---|---|
 | 1. Regresión visual | `visual/*.visual.spec.ts` | ¿Ha CAMBIADO algo? | Sí |
 | 2. Invariantes de UI | `ui/*.ui.spec.ts` + `support/ui-audit.ts` | ¿Hay algo ROTO? | Sí |
-| 3. Auditoría con agente | `AUDIT-PROTOCOL.md` | ¿Está mal DISEÑADO? | No |
+| 3. Auditoría con subagentes | `AUDIT-PROTOCOL.md` + `.claude/agents/e2e-*.md` | ¿Está mal DISEÑADO o mal COMPORTADO? | No |
 
 Las tres son necesarias y ninguna sustituye a otra. La capa 1 detecta cambios
 pero no sabe si el estado anterior estaba bien. La capa 2 mide, pero solo lo
 que se puede medir. La capa 3 juzga, pero no da el mismo veredicto dos veces —
 por eso su salida son hallazgos, y todo hallazgo confirmado termina convertido
 en una regla de la capa 1 o 2.
+
+La capa 3 la ejecutan **cuatro subagentes especializados** —`e2e-funcional`,
+`e2e-consola-red`, `e2e-layout` y `e2e-a11y`—, en secuencia y sobre un único
+navegador, coordinados por `AUDIT-PROTOCOL.md`. La arquitectura completa está en
+`amelia-intranet/docs/e2e-agentes-playwright-mcp.md`.
 
 ## Arranque
 
@@ -87,8 +92,9 @@ es lo único que mide hallazgos.
 | `pnpm e2e:ui` | Modo interactivo de Playwright |
 | `pnpm e2e:update` | Reescribe los baselines visuales — **mira las imágenes antes** |
 | `pnpm e2e:report` | Abre el último informe HTML |
-| `pnpm e2e:hallazgos` | Resume la última auditoría agrupada **por causa** |
-| `pnpm e2e:session <rol>` | Graba una sesión para el agente auditor |
+| `pnpm e2e:hallazgos` | Resume las dos bitácoras agrupadas **por causa** |
+| `pnpm e2e:session <rol>` | Graba una sesión para los subagentes auditores |
+| `pnpm e2e:registrar --file <json>` | Valida y registra los hallazgos de un subagente |
 
 `e2e:hallazgos` es el que se usa a diario: agrupa por causa en vez de por
 pantalla, que es la diferencia entre leer un informe de 21 fallos y ver que en
