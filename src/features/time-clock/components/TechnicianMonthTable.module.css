@@ -1,0 +1,47 @@
+.empty {
+  color: hsl(var(--muted-foreground));
+  font-size: 0.9375rem;
+}
+
+/* La tabla tiene 11 columnas y no cabe en pantallas estrechas. Scroll DENTRO
+ * de su contenedor, nunca en el body de la página: una tabla ancha que empuja
+ * el layout entero rompe también el sidebar y el header. */
+.scroll {
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+  white-space: nowrap;
+}
+
+.table th,
+.table td {
+  padding: var(--space-2) var(--space-3);
+  text-align: left;
+  border-bottom: 1px solid hsl(var(--border));
+}
+
+.table th {
+  font-weight: 600;
+  color: hsl(var(--muted-foreground));
+  font-size: 0.8125rem;
+}
+
+.numeric {
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+}
+
+.nextDay {
+  color: hsl(var(--muted-foreground));
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.rowActions {
+  display: flex;
+  gap: var(--space-1);
+}

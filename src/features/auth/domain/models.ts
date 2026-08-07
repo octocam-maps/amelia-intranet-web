@@ -21,9 +21,10 @@ export type UserRole =
   | 'empleado'
   | 'externo_invitado'
   | 'socio'
-  | 'becario';
+  | 'becario'
+  | 'tecnico';
 
-/** Mismos 5 valores de `UserRole`, como array — única lista permitida para
+/** Mismos 6 valores de `UserRole`, como array — única lista permitida para
  * `parseEnum`/`parseEnumNullable` en los mappers que validan el `role`/
  * `role_code` que manda el backend (antes duplicada como `PROFILE_ROLES` en
  * `profile/infrastructure/mappers.ts` y `STAFF_ROLES` en
@@ -34,6 +35,7 @@ export const USER_ROLES: readonly UserRole[] = [
   'externo_invitado',
   'socio',
   'becario',
+  'tecnico',
 ];
 
 /** Etiqueta legible de cada rol — para los lugares que solo necesitan
@@ -58,6 +60,7 @@ export const USER_ROLE_LABEL: Record<UserRole, string> = {
   externo_invitado: 'Externo-invitado',
   socio: 'Socio',
   becario: 'Becario',
+  tecnico: 'Técnico',
 };
 
 /** Helpers de rol — evitan repetir el literal `'administrador'`/
@@ -66,16 +69,36 @@ export const USER_ROLE_LABEL: Record<UserRole, string> = {
 export const isAdmin = (role?: UserRole | null): boolean => role === 'administrador';
 export const isExternalGuest = (role?: UserRole | null): boolean => role === 'externo_invitado';
 
-/** `becario` [migración backend `038_becario_role.sql`, RF-A10]: accede a todo
- * lo que ve un empleado SALVO el control horario. Es el único módulo que se
- * le niega, así que este helper solo se usa para eso — no para ramificar
- * permisos en general, donde el becario se comporta como un empleado.
+/** Quién usa el FICHAJE POR TRAMOS (reloj en vivo, alta manual, alta en lote).
  *
- * Ocultar ≠ proteger: esto solo evita ofrecerle una pantalla que el backend le
- * va a negar con un 403 (`TIME_CLOCK_ROLES` en `src/shared/auth/roles.py`). La
- * autorización real vive allí. */
+ * Lista POSITIVA, y el cambio es deliberado: antes se escribía por exclusión
+ * (`!== 'externo_invitado' && !== 'becario'`) y eso convertía cada rol nuevo en
+ * un permiso concedido por defecto. Al entrar `tecnico` [migración backend
+ * `051_tecnico_role.sql`] la versión antigua le habría dado acceso al fichaje
+ * por tramos, que es justo lo que NO usa: él cumplimenta un parte diario. Con
+ * la lista positiva, un rol futuro que nadie recuerde clasificar se queda
+ * fuera — que es el fallo seguro.
+ *
+ * Espejo exacto de `TIME_CLOCK_ROLES` en `src/shared/auth/roles.py`.
+ *
+ * Ocultar ≠ proteger: esto solo evita ofrecer una pantalla que el backend va a
+ * negar con un 403. La autorización real vive allí. */
 export const canUseTimeClock = (role?: UserRole | null): boolean =>
-  role != null && role !== 'externo_invitado' && role !== 'becario';
+  role === 'administrador' || role === 'empleado' || role === 'socio';
+
+/** Quién cumplimenta el PARTE DIARIO del técnico (requerimiento v1.2 §M1):
+ * proyecto, lugar, horario, pausa, pernocta y categoría de producto, uno por
+ * día, con bolsa mensual de 162 h.
+ *
+ * Espejo de `TECHNICIAN_ROLES` en `src/shared/auth/roles.py`. El administrador
+ * NO entra aquí: consulta y corrige partes ajenos, pero no rellena el suyo —
+ * para eso está `canReviewTechnicianLogs`. */
+export const canUseTechnicianLog = (role?: UserRole | null): boolean => role === 'tecnico';
+
+/** Quién puede VER y corregir partes: el propio técnico y el administrador
+ * (que además elige de quién y descarga el Excel del mes). */
+export const canReviewTechnicianLogs = (role?: UserRole | null): boolean =>
+  role === 'tecnico' || role === 'administrador';
 
 export interface AmeliaUser {
   id: string;

@@ -20,6 +20,7 @@ import { OnboardingPage } from '@/features/onboarding/pages/OnboardingPage';
 import { ProfilePage } from '@/features/profile/pages/ProfilePage';
 import { StaffPage } from '@/features/staff/pages/StaffPage';
 import { TeamPage } from '@/features/team/pages/TeamPage';
+import { TechnicianTimeClockPage } from '@/features/time-clock/pages/TechnicianTimeClockPage';
 import { TimeClockPage } from '@/features/time-clock/pages/TimeClockPage';
 import { AppLayout } from '@/layouts/AppLayout/AppLayout';
 
@@ -68,6 +69,14 @@ export function AppRoutes() {
         <Route path="/administracion/calendario" element={<AbsenceGeneralCalendarPage />} />
         <Route path="/administracion/onboarding" element={<OnboardingAdminPage />} />
         <Route path="/administracion/plantillas-email" element={<EmailTemplatesPage />} />
+        {/* Registro horario de técnicos (requerimiento v1.2 §M1): «que puedan
+            verlo tanto ellos como administrador». El técnico lo ve en
+            `/control-horario`; el admin, aquí, con selector de persona y
+            descarga del Excel del mes. */}
+        <Route
+          path="/administracion/registro-tecnicos"
+          element={<TechnicianTimeClockPage adminView />}
+        />
       </Route>
 
       <Route path="*" element={<Navigate to="/" replace />} />

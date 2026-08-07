@@ -1,5 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { USER_ROLES } from '@/features/auth/domain/models';
 import { useManuals } from '@/features/manuals/application/useManuals';
 import { NAV_BY_ROLE } from '@/layouts/AppLayout/nav-config';
 import { HelpPage } from './HelpPage';
@@ -73,12 +74,16 @@ describe('HelpPage', () => {
     expect(screen.queryByRole('heading', { name: /^ayuda$/i })).toBeNull();
   });
 
-  it('está en el navbar de los cinco roles', () => {
+  it('está en el navbar de TODOS los roles', () => {
     // El manual explica también el onboarding recortado del externo-invitado:
     // es el único módulo del que ningún rol debe quedar fuera.
+    //
+    // La longitud se compara contra `USER_ROLES` y no contra un número
+    // escrito a mano: así entrar un rol nuevo (`tecnico`, migración 051) no
+    // rompe este test por la cifra, solo si de verdad se olvida "Ayuda".
     const roles = Object.keys(NAV_BY_ROLE) as (keyof typeof NAV_BY_ROLE)[];
 
-    expect(roles).toHaveLength(5);
+    expect(roles).toHaveLength(USER_ROLES.length);
     for (const role of roles) {
       expect(NAV_BY_ROLE[role].some((item) => item.to === '/ayuda')).toBe(true);
     }

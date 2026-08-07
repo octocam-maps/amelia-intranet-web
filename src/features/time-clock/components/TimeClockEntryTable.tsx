@@ -1,9 +1,18 @@
 import { Badge } from '@/components/ui/Badge';
 import type { TimeClockEntry } from '../domain/models';
+import { toTimeInput } from '../domain/wallClock';
 import styles from './TimeClockEntryTable.module.css';
 
+/**
+ * Hora LOCAL, no `iso.slice(11, 16)`.
+ *
+ * Recortar la cadena mostraba la hora en UTC. Con los tramos del fichaje en
+ * vivo —que sí guardan el instante real— eso significaba enseñar una hora
+ * menos (dos en verano) que la que marcaba el reloj al fichar, y no coincidir
+ * con el informe XLSX de RRHH, que convierte a Madrid.
+ */
 function formatTime(iso: string): string {
-  return iso.slice(11, 16);
+  return toTimeInput(iso);
 }
 
 function formatMinutes(minutes: number | null): string {

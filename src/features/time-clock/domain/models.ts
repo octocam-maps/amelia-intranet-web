@@ -119,3 +119,94 @@ export interface TimeClockEntryNote {
 export interface AddTimeClockEntryNoteInput {
   body: string;
 }
+
+// --- Parte diario del técnico (requerimiento v1.2 §M1) ---
+
+/** Dónde pernoctó. RRHH lo pregunta en dos pasos (¿hubo? → ¿dónde?) y el
+ * formulario lo presenta así, pero el valor que viaja es UNO: con un booleano
+ * más un lugar aparte, "no hubo pernocta pero fue en España" sería un estado
+ * representable, y acabaría enviándose. */
+export type OvernightStay = 'ninguna' | 'espana' | 'extranjero';
+
+/** Línea de producto a la que se imputa la jornada. Eje DISTINTO del
+ * departamento, aunque desde el catálogo 2026 existan departamentos con el
+ * mismo nombre: alguien de Hardware puede imputar una jornada a Software. */
+export type ProductCategory = 'software' | 'hardware';
+
+export interface TechnicianDailyLog {
+  entryId: string;
+  userId: string;
+  fullName: string | null;
+  workDate: string; // 'YYYY-MM-DD'
+  /** ISO datetime. Puede terminar al día siguiente: la jornada de campo cruza
+   * la medianoche y se imputa al día en que EMPIEZA. */
+  startedAt: string;
+  endedAt: string;
+  projectId: string;
+  projectName: string | null;
+  workLocation: string;
+  hadBreak: boolean;
+  breakMinutes: number;
+  overnightStay: OvernightStay;
+  productCategory: ProductCategory;
+  /** Lo calcula el backend y NUNCA se envía: es el dato del que cuelga toda
+   * la bolsa de 162 h. */
+  workedMinutes: number;
+}
+
+export interface TechnicianDailyLogInput {
+  workDate: string;
+  startedAt: string;
+  endedAt: string;
+  projectId: string;
+  workLocation: string;
+  hadBreak: boolean;
+  breakMinutes: number;
+  overnightStay: OvernightStay;
+  productCategory: ProductCategory;
+}
+
+export interface TechnicianMonthSummary {
+  year: number;
+  month: number;
+  budgetMinutes: number;
+  workedMinutes: number;
+  remainingMinutes: number;
+  overtimeMinutes: number;
+  compensationMinutes: number;
+  overnightStaysSpain: number;
+  overnightStaysAbroad: number;
+  overnightStaysTotal: number;
+  /** `false` mientras el mes no ha terminado: su excedente todavía puede
+   * cambiar, así que no devenga saldo. */
+  isClosed: boolean;
+}
+
+export interface TechnicianMonthPage {
+  logs: TechnicianDailyLog[];
+  summary: TechnicianMonthSummary;
+}
+
+/** Saldo ANUAL de descanso por horas extra. `pendingMinutes` es lo que
+ * devengaría el mes en curso si terminara hoy — llega aparte para poder
+ * mostrarlo sin contarlo como disponible. */
+export interface CompensationBalance {
+  year: number;
+  accruedMinutes: number;
+  consumedMinutes: number;
+  availableMinutes: number;
+  pendingMinutes: number;
+}
+
+export interface Project {
+  id: string;
+  code: string;
+  name: string;
+}
+
+export interface TechnicianMonthParams {
+  year: number;
+  month: number;
+  /** Solo el admin puede pedir el de otro técnico. */
+  userId?: string;
+}

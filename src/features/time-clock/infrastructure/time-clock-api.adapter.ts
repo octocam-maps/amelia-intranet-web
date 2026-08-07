@@ -2,9 +2,15 @@ import { API_BASE_URL, apiClient, ApiError } from '@/lib/http/api-client';
 import { useStore } from '@/store';
 import type {
   AddTimeClockEntryNoteInput,
+  CompensationBalance,
   CreateTimeClockEntriesBatchInput,
   CreateTimeClockEntryInput,
   ListTimeClockEntriesParams,
+  TechnicianDailyLog,
+  TechnicianDailyLogInput,
+  TechnicianMonthPage,
+  TechnicianMonthParams,
+  Project,
   TimeClockCurrentStatus,
   TimeClockEntriesBatchResult,
   TimeClockEntry,
@@ -14,6 +20,9 @@ import type {
 } from '../domain/models';
 import type { TimeClockRepository } from '../domain/ports';
 import type {
+  CompensationBalanceDTO,
+  TechnicianDailyLogDTO,
+  TechnicianDailyLogListDTO,
   TimeClockCurrentStatusDTO,
   TimeClockEntriesBatchDTO,
   TimeClockEntryDTO,
@@ -21,7 +30,41 @@ import type {
   TimeClockEntryNoteDTO,
   TimeClockEntryNoteListDTO,
 } from './dtos';
-import { batchResultFromDTO, currentStatusFromDTO, entryFromDTO, noteFromDTO } from './mappers';
+import {
+  batchResultFromDTO,
+  compensationBalanceFromDTO,
+  currentStatusFromDTO,
+  entryFromDTO,
+  noteFromDTO,
+  technicianLogFromDTO,
+  technicianMonthFromDTO,
+} from './mappers';
+
+function technicianMonthQuery(params: TechnicianMonthParams): string {
+  const search = new URLSearchParams({
+    year: String(params.year),
+    month: String(params.month),
+  });
+  if (params.userId) search.set('user_id', params.userId);
+  return `?${search.toString()}`;
+}
+
+/** El cuerpo que espera el backend. `workedMinutes` NO se envía nunca: lo
+ * calcula el servidor y aceptarlo del cliente permitiría declarar 4 horas en
+ * una jornada de 12 — es el dato del que cuelga toda la bolsa de 162 h. */
+function technicianLogToBody(input: TechnicianDailyLogInput) {
+  return {
+    work_date: input.workDate,
+    started_at: input.startedAt,
+    ended_at: input.endedAt,
+    project_id: input.projectId,
+    work_location: input.workLocation,
+    had_break: input.hadBreak,
+    break_minutes: input.breakMinutes,
+    overnight_stay: input.overnightStay,
+    product_category: input.productCategory,
+  };
+}
 
 function buildQuery(params: ListTimeClockEntriesParams): string {
   const search = new URLSearchParams();
@@ -169,5 +212,69 @@ export const timeClockApiAdapter: TimeClockRepository = {
       method: 'POST',
     });
     return currentStatusFromDTO(dto);
+  },
+
+  // --- Parte diario del técnico (requerimiento v1.2 §M1) ---
+
+  async listTechnicianLogs(params: TechnicianMonthParams): Promise<TechnicianMonthPage> {
+    const dto = await apiClient<TechnicianDailyLogListDTO>(
+      `/time-clock/technician-logs${technicianMonthQuery(params)}`,
+    );
+    return technicianMonthFromDTO(dto);
+  },
+
+  async createTechnicianLog(input: TechnicianDailyLogInput): Promise<TechnicianDailyLog> {
+    const dto = await apiClient<TechnicianDailyLogDTO>('/time-clock/technician-logs', {
+      method: 'POST',
+      body: JSON.stringify(technicianLogToBody(input)),
+    });
+    return technicianLogFromDTO(dto);
+  },
+
+  async updateTechnicianLog(
+    entryId: string,
+    input: TechnicianDailyLogInput,
+  ): Promise<TechnicianDailyLog> {
+    const dto = await apiClient<TechnicianDailyLogDTO>(
+      `/time-clock/technician-logs/${entryId}`,
+      { method: 'PATCH', body: JSON.stringify(technicianLogToBody(input)) },
+    );
+    return technicianLogFromDTO(dto);
+  },
+
+  async removeTechnicianLog(entryId: string): Promise<void> {
+    await apiClient<void>(`/time-clock/technician-logs/${entryId}`, { method: 'DELETE' });
+  },
+
+  async getCompensationBalance(year: number, userId?: string): Promise<CompensationBalance> {
+    const search = new URLSearchParams({ year: String(year) });
+    if (userId) search.set('user_id', userId);
+    const dto = await apiClient<CompensationBalanceDTO>(
+      `/time-clock/technician-logs/balance?${search.toString()}`,
+    );
+    return compensationBalanceFromDTO(dto);
+  },
+
+  async listProjects(): Promise<Project[]> {
+    const dto = await apiClient<{ projects: Project[] }>('/time-clock/technician-logs/projects');
+    // El DTO del backend ya usa `id`/`code`/`name` en camel-compatible: no hay
+    // snake_case que traducir, así que no hace falta mapper.
+    return dto.projects;
+  },
+
+  async exportTechnicianMonthXlsx(params: TechnicianMonthParams): Promise<Blob> {
+    // Mismo motivo que `exportXlsx`: la respuesta es binaria, no JSON.
+    const accessToken = useStore.getState().getAccessToken();
+    const response = await fetch(
+      `${API_BASE_URL}/time-clock/technician-logs/export.xlsx${technicianMonthQuery(params)}`,
+      {
+        credentials: 'include',
+        headers: accessToken ? { Authorization: `Bearer ${accessToken}` } : {},
+      },
+    );
+    if (!response.ok) {
+      throw new ApiError('No se pudo generar el Excel del mes.', response.status);
+    }
+    return response.blob();
   },
 };
