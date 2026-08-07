@@ -1,5 +1,7 @@
 import type {
+  BulkFolderPlan,
   Document,
+  DriveFolderProvisionRun,
   DriveSyncRun,
   ListDocumentsParams,
   UploadDocumentInput,
@@ -19,4 +21,10 @@ export interface DocumentsRepository {
   /** Dispara la conciliación Drive → Postgres (admin-only); devuelve el
    * resumen de la corrida. */
   sync(): Promise<DriveSyncRun>;
+  /** Pasada EN SECO del volcado de carpetas: qué haría, sin tocar Drive. Es
+   * un `GET` justamente porque no escribe. */
+  planFolders(): Promise<BulkFolderPlan>;
+  /** Crea el árbol de carpetas en Drive (admin-only). Idempotente y
+   * re-ejecutable: quien ya tiene carpeta se cuenta como omitido. */
+  provisionFolders(): Promise<DriveFolderProvisionRun>;
 }
