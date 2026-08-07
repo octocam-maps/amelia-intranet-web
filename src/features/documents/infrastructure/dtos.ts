@@ -30,26 +30,23 @@ export interface FolderPlanEntryDTO {
   email: string;
   entity_name: string | null;
   action: string;
-  missing_categories: string[];
 }
 
 export interface BulkFolderPlanDTO {
   entries: FolderPlanEntryDTO[];
   entity_folders_to_create: string[];
+  pending: number;
+  already_done: number;
   to_create: number;
   to_move: number;
-  already_ok: number;
   category_folders_to_create: number;
   estimated_drive_writes: number;
 }
 
-export interface DriveFolderProvisionRunDTO {
-  id: string;
-  started_at: string;
-  finished_at: string | null;
-  status: string;
+export interface FolderBatchResultDTO {
+  processed: number;
   created: number;
-  skipped: number;
+  relocated: number;
   failed: number;
-  error_detail: string | null;
+  remaining: number;
 }

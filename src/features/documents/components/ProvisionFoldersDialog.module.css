@@ -79,3 +79,19 @@
   line-height: 1.6;
   color: hsl(var(--foreground));
 }
+
+/* Barra de progreso del volcado. El relleno es el verde de marca: es una
+ * tarea que avanza, no una alerta. */
+.progressTrack {
+  height: 0.5rem;
+  border-radius: 999px;
+  background: hsl(var(--muted));
+  overflow: hidden;
+}
+
+.progressFill {
+  height: 100%;
+  border-radius: 999px;
+  background: hsl(var(--primary));
+  transition: width 200ms ease-out;
+}

@@ -3,7 +3,7 @@ import { useStore } from '@/store';
 import type {
   BulkFolderPlan,
   Document,
-  DriveFolderProvisionRun,
+  FolderBatchResult,
   DriveSyncRun,
   ListDocumentsParams,
   UploadDocumentInput,
@@ -13,13 +13,13 @@ import type {
   BulkFolderPlanDTO,
   DocumentDTO,
   DocumentListDTO,
-  DriveFolderProvisionRunDTO,
+  FolderBatchResultDTO,
   DriveSyncRunDTO,
 } from './dtos';
 import {
   bulkFolderPlanFromDTO,
   documentFromDTO,
-  driveFolderProvisionRunFromDTO,
+  folderBatchResultFromDTO,
   driveSyncRunFromDTO,
 } from './mappers';
 
@@ -114,10 +114,11 @@ export const documentsApiAdapter: DocumentsRepository = {
     return bulkFolderPlanFromDTO(dto);
   },
 
-  async provisionFolders(): Promise<DriveFolderProvisionRun> {
-    const dto = await apiClient<DriveFolderProvisionRunDTO>('/documents/provision-folders', {
+  async provisionFoldersBatch(limit: number): Promise<FolderBatchResult> {
+    const dto = await apiClient<FolderBatchResultDTO>('/documents/provision-folders', {
       method: 'POST',
+      body: JSON.stringify({ limit }),
     });
-    return driveFolderProvisionRunFromDTO(dto);
+    return folderBatchResultFromDTO(dto);
   },
 };
