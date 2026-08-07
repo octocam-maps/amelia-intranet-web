@@ -12,6 +12,7 @@ import { cn } from '@/lib/utils';
 import { useStaffList } from '../application/useStaffList';
 import { useUpdateStaffMember } from '../application/useUpdateStaffMember';
 import { StaffFormDialog } from '../components/StaffFormDialog';
+import { DeleteStaffMemberDialog } from '../components/DeleteStaffMemberDialog';
 import { StaffTable } from '../components/StaffTable';
 import type { EntityCode, StaffMember } from '../domain/models';
 import styles from './StaffPage.module.css';
@@ -50,6 +51,10 @@ export function StaffPage() {
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
   const [dialogMember, setDialogMember] = useState<StaffMember | 'new' | null>(null);
+  // Estado propio y no reutilizando `dialogMember`: son dos diálogos con
+  // consecuencias muy distintas, y compartir estado abriría el de edición o el
+  // de baja según una bandera suelta.
+  const [memberToDelete, setMemberToDelete] = useState<StaffMember | null>(null);
 
   const { data, isLoading, error } = useStaffList({ pageSize: CLIENT_PAGE_CAP });
   const members = data?.members ?? EMPTY_MEMBERS;
@@ -179,6 +184,7 @@ export function StaffPage() {
           isLoading={isLoading}
           onEdit={setDialogMember}
           onToggleActive={(member) => updateMember({ id: member.id, input: { isActive: !member.isActive } })}
+          onDelete={setMemberToDelete}
           pendingInvitationByEmail={pendingInvitationByEmail}
           onResendInvitation={(invitation) => resendInvitation(invitation.id)}
           onCancelInvitation={(invitation) => cancelInvitation(invitation.id)}
@@ -218,6 +224,11 @@ export function StaffPage() {
         open={dialogMember !== null}
         onOpenChange={(open) => !open && setDialogMember(null)}
         member={dialogMember && dialogMember !== 'new' ? dialogMember : undefined}
+      />
+
+      <DeleteStaffMemberDialog
+        member={memberToDelete}
+        onClose={() => setMemberToDelete(null)}
       />
     </div>
   );

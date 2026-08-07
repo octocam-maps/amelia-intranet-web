@@ -50,6 +50,10 @@ export const staffApiAdapter: StaffRepository = {
     return staffMemberFromDTO(dto);
   },
 
+  async remove(id: string): Promise<void> {
+    await apiClient<void>(`/staff/${id}`, { method: 'DELETE' });
+  },
+
   async roleHistory(id: string): Promise<RoleChange[]> {
     // Ya llega ordenado de lo más reciente a lo más antiguo (`ORDER BY
     // changed_at DESC` en el repositorio) — no se reordena aquí.

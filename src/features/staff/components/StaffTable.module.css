@@ -112,3 +112,10 @@
   font-size: 0.875rem;
   color: hsl(var(--muted-foreground));
 }
+
+/* Baja definitiva: en el color de acción destructiva porque comparte menú con
+ * «Desactivar acceso», que es reversible. El color es la primera señal que
+ * distingue una de otra antes de leer el texto. */
+.destructiveItem {
+  color: hsl(var(--destructive));
+}
