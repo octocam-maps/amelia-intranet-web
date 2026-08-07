@@ -19,5 +19,11 @@ export default defineConfig({
     environment: 'jsdom',
     setupFiles: ['./src/test/setup.ts'],
     globals: true,
+    // El producto es de España y su dominio horario razona en hora de pared
+    // de Madrid (fichaje, jornada que cruza medianoche, informe del art. 34.9
+    // ET). Sin fijar la zona, los tests de `time-clock/domain/wallClock` pasan
+    // solo en una máquina configurada en Madrid: fallan en CI (UTC) y en
+    // cualquier portátil fuera de la península.
+    env: { TZ: 'Europe/Madrid' },
   },
 });
