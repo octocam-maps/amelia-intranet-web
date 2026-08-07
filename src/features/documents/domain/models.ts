@@ -46,13 +46,13 @@ export interface DriveSyncRun {
   errorDetail: string | null;
 }
 
-/** Veredicto del provisioning para una persona.
+/** Veredicto del volcado para una persona.
  *
- * `mover` es el único que toca una carpeta que YA existe (la reubica bajo su
- * entidad conservando su id y su contenido). Los otros tres, o crean algo
- * nuevo, o no hacen nada. Por eso la UI los separa: un movimiento no tiene
- * deshacer y quien pulsa el botón tiene que verlo por nombre antes. */
-export const FOLDER_PLAN_ACTIONS = ['crear', 'mover', 'ya_en_su_sitio', 'ya_registrada'] as const;
+ * `mover` y `recolocar` son los dos que tocan una carpeta que YA existe, y por
+ * eso la UI los enumera por nombre: son las únicas operaciones sin deshacer.
+ * `mover` es herencia del árbol plano y desaparece tras el primer volcado;
+ * `recolocar` es recurrente — pasa cada vez que alguien cambia de sociedad. */
+export const FOLDER_PLAN_ACTIONS = ['crear', 'mover', 'recolocar'] as const;
 export type FolderPlanAction = (typeof FOLDER_PLAN_ACTIONS)[number];
 
 export interface FolderPlanEntry {
@@ -60,31 +60,33 @@ export interface FolderPlanEntry {
   email: string;
   entityName: string | null;
   action: FolderPlanAction;
-  missingCategories: string[];
 }
 
-/** Pasada EN SECO de `GET /documents/provision-folders/plan`: lo que haría el
- * volcado, sin haberlo hecho. No escribe nada en Drive. */
+/** Pasada EN SECO de `GET /documents/provision-folders/plan`.
+ *
+ * Solo habla del trabajo PENDIENTE: a quien ya tiene su carpeta en su sitio ni
+ * se le menciona. Por eso `alreadyDone` viene aparte — es el denominador que
+ * permite pintar «12 de 37» en vez de solo «quedan 25». */
 export interface BulkFolderPlan {
   entries: FolderPlanEntry[];
   entityFoldersToCreate: string[];
+  pending: number;
+  alreadyDone: number;
   toCreate: number;
   toMove: number;
-  alreadyOk: number;
   categoryFoldersToCreate: number;
-  /** Escrituras que costaría aplicarlo. Drive limita por proyecto, y saberlo
-   * antes evita descubrir el corte con el árbol a medias. */
   estimatedDriveWrites: number;
 }
 
-/** Resultado de `POST /documents/provision-folders`. */
-export interface DriveFolderProvisionRun {
-  id: string;
-  startedAt: string;
-  finishedAt: string | null;
-  status: DriveSyncRunStatus;
+/** Resultado de UN lote de `POST /documents/provision-folders`.
+ *
+ * `remaining` gobierna el bucle del cliente y lo calcula el servidor
+ * consultando la base — no es `total - procesadas`. Quien falla sigue contando
+ * como pendiente, y esa diferencia es la señal de que hay que parar. */
+export interface FolderBatchResult {
+  processed: number;
   created: number;
-  skipped: number;
+  relocated: number;
   failed: number;
-  errorDetail: string | null;
+  remaining: number;
 }

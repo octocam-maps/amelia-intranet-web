@@ -1,7 +1,7 @@
 import type {
   BulkFolderPlan,
   Document,
-  DriveFolderProvisionRun,
+  FolderBatchResult,
   DriveSyncRun,
   ListDocumentsParams,
   UploadDocumentInput,
@@ -24,7 +24,8 @@ export interface DocumentsRepository {
   /** Pasada EN SECO del volcado de carpetas: qué haría, sin tocar Drive. Es
    * un `GET` justamente porque no escribe. */
   planFolders(): Promise<BulkFolderPlan>;
-  /** Crea el árbol de carpetas en Drive (admin-only). Idempotente y
-   * re-ejecutable: quien ya tiene carpeta se cuenta como omitido. */
-  provisionFolders(): Promise<DriveFolderProvisionRun>;
+  /** UN LOTE del volcado (admin-only). Devuelve cuántas quedan; quien llama
+   * repite mientras `remaining` siga bajando. Lanza `ApiError` 409 si ya hay
+   * otro volcado en curso. */
+  provisionFoldersBatch(limit: number): Promise<FolderBatchResult>;
 }
