@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import {
   DownloadIcon,
   ExclamationTriangleIcon,
+  FilePlusIcon,
   FileTextIcon,
   ReloadIcon,
   TrashIcon,
@@ -13,6 +14,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useStaffList } from '@/features/staff/application/useStaffList';
 import { cn } from '@/lib/utils';
 import { AdminDocumentUploadDialog } from '../components/AdminDocumentUploadDialog';
+import { ProvisionFoldersDialog } from '../components/ProvisionFoldersDialog';
 import { useDeleteDocument } from '../application/useDeleteDocument';
 import { useDocuments } from '../application/useDocuments';
 import { useDownloadDocument } from '../application/useDownloadDocument';
@@ -61,6 +63,7 @@ export function AdminDocumentsPage() {
   const [employeeFilter, setEmployeeFilter] = useState('all');
   const [categoryFilter, setCategoryFilter] = useState<CategoryFilter>('all');
   const [isUploadOpen, setIsUploadOpen] = useState(false);
+  const [isProvisionOpen, setIsProvisionOpen] = useState(false);
 
   const { data: staff } = useStaffList({ pageSize: STAFF_PICKER_CAP });
   const members = useMemo(
@@ -96,6 +99,13 @@ export function AdminDocumentsPage() {
           <p className={styles.subtitle}>Nóminas, contratos y documentos sincronizados con Google Drive</p>
         </div>
         <div className={styles.headerActions}>
+          {/* Antes de este botón el volcado solo se lanzaba con `curl` y un token:
+              RRHH dependía de que un desarrollador se lo ejecutara cada vez que
+              entraba gente nueva por invitación. */}
+          <Button variant="outline" onClick={() => setIsProvisionOpen(true)}>
+            <FilePlusIcon />
+            Crear carpetas
+          </Button>
           <Button variant="outline" onClick={() => sync()} disabled={isSyncing}>
             <ReloadIcon className={cn(isSyncing && styles.spinning)} />
             {isSyncing ? 'Sincronizando…' : 'Sincronizar ahora'}
@@ -232,6 +242,7 @@ export function AdminDocumentsPage() {
       </Card>
 
       <AdminDocumentUploadDialog open={isUploadOpen} onOpenChange={setIsUploadOpen} />
+      <ProvisionFoldersDialog open={isProvisionOpen} onOpenChange={setIsProvisionOpen} />
     </div>
   );
 }

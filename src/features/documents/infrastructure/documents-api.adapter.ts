@@ -1,9 +1,27 @@
 import { API_BASE_URL, apiClient, ApiError } from '@/lib/http/api-client';
 import { useStore } from '@/store';
-import type { Document, DriveSyncRun, ListDocumentsParams, UploadDocumentInput } from '../domain/models';
+import type {
+  BulkFolderPlan,
+  Document,
+  DriveFolderProvisionRun,
+  DriveSyncRun,
+  ListDocumentsParams,
+  UploadDocumentInput,
+} from '../domain/models';
 import type { DocumentsRepository } from '../domain/ports';
-import type { DocumentDTO, DocumentListDTO, DriveSyncRunDTO } from './dtos';
-import { documentFromDTO, driveSyncRunFromDTO } from './mappers';
+import type {
+  BulkFolderPlanDTO,
+  DocumentDTO,
+  DocumentListDTO,
+  DriveFolderProvisionRunDTO,
+  DriveSyncRunDTO,
+} from './dtos';
+import {
+  bulkFolderPlanFromDTO,
+  documentFromDTO,
+  driveFolderProvisionRunFromDTO,
+  driveSyncRunFromDTO,
+} from './mappers';
 
 function listQuery(params: ListDocumentsParams): string {
   const search = new URLSearchParams();
@@ -87,5 +105,19 @@ export const documentsApiAdapter: DocumentsRepository = {
   async sync(): Promise<DriveSyncRun> {
     const dto = await apiClient<DriveSyncRunDTO>('/documents/sync', { method: 'POST' });
     return driveSyncRunFromDTO(dto);
+  },
+
+  async planFolders(): Promise<BulkFolderPlan> {
+    // `GET`: la pasada en seco no escribe nada, ni en Drive ni en
+    // `drive_sync_runs`. Mandarla por POST daría a entender lo contrario.
+    const dto = await apiClient<BulkFolderPlanDTO>('/documents/provision-folders/plan');
+    return bulkFolderPlanFromDTO(dto);
+  },
+
+  async provisionFolders(): Promise<DriveFolderProvisionRun> {
+    const dto = await apiClient<DriveFolderProvisionRunDTO>('/documents/provision-folders', {
+      method: 'POST',
+    });
+    return driveFolderProvisionRunFromDTO(dto);
   },
 };
