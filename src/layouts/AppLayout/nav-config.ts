@@ -94,6 +94,10 @@ const calendarioGeneral: NavItem = {
 export const ADMIN_SECTION_ITEMS: NavItem[] = [
   { label: 'Plantilla', to: '/administracion/plantilla', icon: UsersIcon },
   { label: 'Aprobar ausencias', to: '/ausencias', icon: InboxIcon },
+  // Requerimiento v1.2 §M1: «que puedan ver tanto ellos como administrador el
+  // registro horario mensual». El técnico lo ve en "Control horario"; el admin,
+  // aquí, con selector de técnico y descarga del Excel del mes.
+  { label: 'Registro de técnicos', to: '/administracion/registro-tecnicos', icon: ClockIcon },
   calendarioGeneral,
   { label: 'Documentos', to: '/administracion/documentos', icon: ArchiveIcon },
   { label: 'Anuncios', to: '/administracion/anuncios', icon: BellIcon },
@@ -163,6 +167,23 @@ export const NAV_BY_ROLE: Record<UserRole, NavItem[]> = {
   // `TIME_CLOCK_ROLES`, que no lo incluye — escribir `/control-horario` a mano
   // da 403, no la pantalla.
   becario: [inicio, onboarding, ausencias, nominas, documentos, equipo, buzonAnonimo, perfil, ayuda],
+  // `tecnico` (migración 051, requerimiento v1.2 §M1): mismo navbar que
+  // `empleado`, y "Control horario" apunta a la MISMA ruta — lo que cambia es
+  // la pantalla que se sirve en ella (parte diario en vez de fichaje por
+  // tramos), no el sitio donde se busca. Que el técnico tuviera un ítem con
+  // otro nombre y otra URL para la misma tarea solo complicaría explicarlo.
+  tecnico: [
+    inicio,
+    onboarding,
+    ausencias,
+    controlHorario,
+    nominas,
+    documentos,
+    equipo,
+    buzonAnonimo,
+    perfil,
+    ayuda,
+  ],
 };
 
 /**

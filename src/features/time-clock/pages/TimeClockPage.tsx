@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react';
 import { ChevronLeftIcon, ChevronRightIcon, DownloadIcon } from '@radix-ui/react-icons';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
-import { canUseTimeClock, isAdmin } from '@/features/auth/domain/models';
+import { canUseTechnicianLog, canUseTimeClock, isAdmin } from '@/features/auth/domain/models';
 import { useStaffList } from '@/features/staff/application/useStaffList';
 import { useStore } from '@/store';
 import { useDeleteTimeClockEntry } from '../application/useDeleteTimeClockEntry';
@@ -16,6 +16,7 @@ import { RegisterWorkdayCard } from '../components/RegisterWorkdayCard';
 import { TimeClockEntryNotesDialog } from '../components/TimeClockEntryNotesDialog';
 import { TimeClockEntryTable } from '../components/TimeClockEntryTable';
 import type { TimeClockEntry } from '../domain/models';
+import { TechnicianTimeClockPage } from './TechnicianTimeClockPage';
 import styles from './TimeClockPage.module.css';
 
 const WINDOW_DAYS = 30;
@@ -50,6 +51,14 @@ function defaultRange() {
  */
 export function TimeClockPage() {
   const role = useStore((s) => s.user?.role);
+
+  // El técnico usa la MISMA ruta pero otra pantalla: cumplimenta un parte
+  // diario (proyecto, lugar, pernocta, bolsa de 162 h), no ficha por tramos.
+  // Se bifurca aquí y no con una ruta aparte para que "Control horario" siga
+  // siendo un único sitio al que ir, sea cual sea tu rol.
+  if (canUseTechnicianLog(role)) {
+    return <TechnicianTimeClockPage />;
+  }
 
   if (!canUseTimeClock(role)) {
     return (

@@ -1,8 +1,14 @@
 import type {
   AddTimeClockEntryNoteInput,
+  CompensationBalance,
   CreateTimeClockEntriesBatchInput,
   CreateTimeClockEntryInput,
   ListTimeClockEntriesParams,
+  TechnicianDailyLog,
+  TechnicianDailyLogInput,
+  TechnicianMonthPage,
+  TechnicianMonthParams,
+  Project,
   TimeClockCurrentStatus,
   TimeClockEntriesBatchResult,
   TimeClockEntry,
@@ -42,4 +48,20 @@ export interface TimeClockRepository {
   clockOut(): Promise<TimeClockCurrentStatus>;
   startBreak(): Promise<TimeClockCurrentStatus>;
   endBreak(): Promise<TimeClockCurrentStatus>;
+
+  // Parte diario del técnico (requerimiento v1.2 §M1). Endpoints separados de
+  // los de `/entries` a propósito: el técnico no ficha por tramos y el
+  // empleado no cumplimenta partes.
+  listTechnicianLogs(params: TechnicianMonthParams): Promise<TechnicianMonthPage>;
+  createTechnicianLog(input: TechnicianDailyLogInput): Promise<TechnicianDailyLog>;
+  updateTechnicianLog(
+    entryId: string,
+    input: TechnicianDailyLogInput,
+  ): Promise<TechnicianDailyLog>;
+  removeTechnicianLog(entryId: string): Promise<void>;
+  getCompensationBalance(year: number, userId?: string): Promise<CompensationBalance>;
+  /** Excel del mes (hoja Detalle + hoja Resumen). Blob y no URL directa: el
+   * endpoint necesita el header `Authorization`. */
+  exportTechnicianMonthXlsx(params: TechnicianMonthParams): Promise<Blob>;
+  listProjects(): Promise<Project[]>;
 }

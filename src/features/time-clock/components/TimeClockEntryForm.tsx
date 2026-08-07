@@ -4,6 +4,7 @@ import { Input } from '@/components/ui/Input';
 import { Label } from '@/components/ui/Label';
 import { useCreateTimeClockEntry } from '../application/useCreateTimeClockEntry';
 import { validateWorkDateNotFuture } from '../domain/batchRangeValidation';
+import { toIsoDateTime } from '../domain/wallClock';
 import { TimeSelect } from './TimeSelect';
 import styles from './TimeClockEntryForm.module.css';
 
@@ -22,10 +23,12 @@ function todayIso(): string {
  * un botón de "fichar ahora". El backend es quien valida solape y rango
  * horario; aquí solo se exige lo mínimo (fecha + entrada) antes de enviar.
  *
- * Pendiente/simplificación conocida: la hora se envía tal cual la elige el
- * usuario, con sufijo `Z` (se trata como si fuera UTC) — no hay conversión
- * de zona horaria todavía. Aceptable para la demo (un único huso, Madrid);
- * revisar si el producto crece a otras zonas.
+ * La hora se convierte a instante con el offset REAL del navegador
+ * (`toIsoDateTime`). Antes se enviaba `` `${workDate}T${hora}:00Z` ``, pegando
+ * una `Z` a una hora local: "las 08:00" se guardaba como 08:00 UTC, o sea las
+ * 10:00 de Madrid en verano. El listado lo disimulaba porque leía el ISO en
+ * crudo, pero el informe XLSX de RRHH convierte a Madrid y mostraba 10:00 —
+ * pantalla y registro legal de jornada decían cosas distintas del mismo tramo.
  */
 export function TimeClockEntryForm() {
   const {
@@ -42,8 +45,10 @@ export function TimeClockEntryForm() {
   const onSubmit = async (values: FormValues) => {
     await mutateAsync({
       workDate: values.workDate,
-      clockIn: `${values.workDate}T${values.clockInTime}:00Z`,
-      clockOut: values.clockOutTime ? `${values.workDate}T${values.clockOutTime}:00Z` : null,
+      clockIn: toIsoDateTime(values.workDate, values.clockInTime),
+      clockOut: values.clockOutTime
+        ? toIsoDateTime(values.workDate, values.clockOutTime)
+        : null,
     });
     reset({ workDate: values.workDate, clockInTime: '', clockOutTime: '' });
   };

@@ -1,0 +1,37 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.monthNav {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.monthLabel {
+  font-weight: 600;
+  min-width: 10rem;
+  text-align: center;
+  /* Ancho mínimo fijo para que los botones de mes no salten al pasar de
+   * "mayo de 2026" a "septiembre de 2026". */
+  text-transform: capitalize;
+}
+
+.technicianSelect {
+  max-width: 18rem;
+}
+
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(19rem, 1fr));
+  gap: var(--space-4);
+}

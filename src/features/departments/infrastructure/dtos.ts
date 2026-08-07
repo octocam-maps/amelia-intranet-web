@@ -6,6 +6,8 @@ export interface DepartmentDTO {
   name: string;
   entity_id: string;
   entity_code: string | null;
+  parent_department_id: string | null;
+  parent_name: string | null;
 }
 
 export interface DepartmentListDTO {

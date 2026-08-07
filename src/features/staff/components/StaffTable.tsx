@@ -60,6 +60,9 @@ interface StaffTableProps {
   isLoading: boolean;
   onEdit: (member: StaffMember) => void;
   onToggleActive: (member: StaffMember) => void;
+  /** Baja DEFINITIVA (borrado lógico con anonimización) — distinta de
+   * `onToggleActive`, que solo suspende el acceso y es reversible. */
+  onDelete: (member: StaffMember) => void;
   /** Invitación pendiente asociada, si la hay — clave por email en
    * minúsculas (ver `StaffPage`). Solo aporta datos para `status ===
    * 'invited'`; si no hay entrada (p. ej. altas anteriores a este feature),
@@ -75,6 +78,7 @@ export function StaffTable({
   isLoading,
   onEdit,
   onToggleActive,
+  onDelete,
   pendingInvitationByEmail,
   onResendInvitation,
   onCancelInvitation,
@@ -180,6 +184,17 @@ export function StaffTable({
                           </DropdownMenuItem>
                         </>
                       )}
+                      {/* Separada del resto y en rojo: comparte menú con
+                          «Desactivar acceso», que es reversible y se usa a
+                          diario. Sin la separación, dos ítems contiguos de
+                          nombre parecido invitan al clic equivocado. */}
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem
+                        className={styles.destructiveItem}
+                        onClick={() => onDelete(member)}
+                      >
+                        Dar de baja definitiva
+                      </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </div>
