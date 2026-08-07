@@ -1,13 +1,23 @@
+import { useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { CheckCircledIcon, CheckIcon } from '@radix-ui/react-icons';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Label } from '@/components/ui/Label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/Select';
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/Select';
 import { ApiError } from '@/lib/http/api-client';
 import { ENTITY_SHORT_NAME, type EntityCode } from '@/lib/entities';
 import { useDepartments } from '@/features/departments/application/useDepartments';
-import type { Department } from '@/features/departments/domain/models';
+import { groupDepartments } from '@/features/departments/domain/models';
+import type { Department, DepartmentGroup } from '@/features/departments/domain/models';
 import { useCompleteProfile } from '../application/useCompleteProfile';
 import type { CompleteProfileInput, OnboardingStep } from '../domain/models';
 import styles from './ProfileStep.module.css';
@@ -55,6 +65,22 @@ function departmentLabel(
   return sociedad ? `${department.name} · ${sociedad}` : department.name;
 }
 
+/**
+ * Encabezado de un grupo, con el mismo criterio de desambiguación que sus
+ * hojas: el usuario sin entidad ve los departamentos de las cuatro sociedades,
+ * y sin esto leería cuatro grupos «Producto» idénticos.
+ *
+ * La sociedad se toma del primer hijo porque todos los de un grupo comparten
+ * entidad — el `ORDER BY e.code, ...` del backend los deja contiguos.
+ */
+function groupHeading(group: DepartmentGroup, ambiguos: ReadonlySet<string>): string {
+  const [first] = group.departments;
+  if (!group.parentName || !first) return group.parentName ?? '';
+  // `Producto` es un departamento más de la lista, así que si está repetido ya
+  // figura en `ambiguos` y `departmentLabel` resuelve igual que para las hojas.
+  return departmentLabel({ ...first, name: group.parentName }, ambiguos);
+}
+
 /** Claves de `ApiError.fieldErrors` (nombres del DTO del backend, snake_case)
  * -> campo del formulario (camelCase) — permite que un 422 nativo de
  * Pydantic (campo obligatorio vacío, DNI/NIE con formato inválido) se
@@ -92,6 +118,7 @@ export function ProfileStep({ step }: ProfileStepProps) {
   const { mutate, isPending } = useCompleteProfile();
   const { data: departments = [], isLoading: isLoadingDepartments } = useDepartments();
   const ambiguos = ambiguousDepartmentNames(departments);
+  const departmentGroups = useMemo(() => groupDepartments(departments), [departments]);
   const {
     register,
     handleSubmit,
@@ -252,10 +279,23 @@ export function ProfileStep({ step }: ProfileStepProps) {
             <SelectValue placeholder={isLoadingDepartments ? 'Cargando departamentos…' : 'Selecciona un departamento'} />
           </SelectTrigger>
           <SelectContent>
-            {departments.map((department) => (
-              <SelectItem key={department.id} value={department.id}>
-                {departmentLabel(department, ambiguos)}
-              </SelectItem>
+            {/* Agrupado por rama (catálogo 2026): `Software` y `Hardware`
+                aparecen bajo `Producto` en vez de sueltos entre las raíces,
+                donde no se entendería que son subdivisiones suyas.
+                Las hojas conservan `departmentLabel`, que añade la sociedad
+                cuando el nombre está repetido — sin él, el usuario sin entidad
+                vería cuatro «Software» idénticos dentro de cuatro «Producto». */}
+            {departmentGroups.map((group, index) => (
+              <SelectGroup key={`${group.parentName ?? 'raiz'}-${index}`}>
+                {group.parentName && (
+                  <SelectLabel>{groupHeading(group, ambiguos)}</SelectLabel>
+                )}
+                {group.departments.map((department) => (
+                  <SelectItem key={department.id} value={department.id}>
+                    {departmentLabel(department, ambiguos)}
+                  </SelectItem>
+                ))}
+              </SelectGroup>
             ))}
           </SelectContent>
         </Select>

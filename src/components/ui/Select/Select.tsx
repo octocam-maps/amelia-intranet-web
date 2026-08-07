@@ -47,6 +47,23 @@ export const SelectContent = forwardRef<
 ));
 SelectContent.displayName = SelectPrimitive.Content.displayName;
 
+/**
+ * Agrupación de opciones bajo un encabezado — la usa el selector de
+ * departamento para colgar `Software` y `Hardware` de `Producto` (catálogo
+ * 2026, migración 054 del backend). Radix asocia el `Label` al `Group` por
+ * `aria-labelledby`, así que un lector de pantalla anuncia "Producto,
+ * Software" en vez de leer siete opciones planas sin relación entre ellas.
+ */
+export const SelectGroup = SelectPrimitive.Group;
+
+export const SelectLabel = forwardRef<
+  ElementRef<typeof SelectPrimitive.Label>,
+  ComponentPropsWithoutRef<typeof SelectPrimitive.Label>
+>(({ className, ...props }, ref) => (
+  <SelectPrimitive.Label ref={ref} className={cn(styles.groupLabel, className)} {...props} />
+));
+SelectLabel.displayName = SelectPrimitive.Label.displayName;
+
 export const SelectItem = forwardRef<
   ElementRef<typeof SelectPrimitive.Item>,
   ComponentPropsWithoutRef<typeof SelectPrimitive.Item>

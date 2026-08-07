@@ -75,6 +75,19 @@
   min-width: var(--radix-select-trigger-width);
 }
 
+/* Encabezado de un grupo de opciones (p. ej. "Producto" sobre Software y
+ * Hardware). Mismo sangrado izquierdo que `.item` para que el texto del grupo
+ * y el de sus opciones queden en la misma columna; el peso y el tamaño son lo
+ * que los distingue, no la posición. */
+.groupLabel {
+  padding: var(--space-2) var(--space-3) var(--space-1) var(--space-8);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: hsl(var(--muted-foreground));
+  text-transform: uppercase;
+}
+
 .item {
   position: relative;
   display: flex;

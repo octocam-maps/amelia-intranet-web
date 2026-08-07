@@ -30,6 +30,12 @@ vi.mock('@/components/ui/Select', () => ({
     </select>
   ),
   SelectContent: ({ children }: { children: ReactNode }) => <>{children}</>,
+  // Catálogo 2026: el selector agrupa `Software`/`Hardware` bajo `Producto`.
+  // En el mock se representan con `<optgroup>` porque es el equivalente nativo
+  // del `<select>` que sustituye a Radix aquí, y así el encabezado sigue
+  // siendo consultable desde los tests.
+  SelectGroup: ({ children }: { children: ReactNode }) => <>{children}</>,
+  SelectLabel: ({ children }: { children: ReactNode }) => <optgroup label={String(children)} />,
   SelectItem: ({ value, children }: { value: string; children: ReactNode }) => (
     <option value={value}>{children}</option>
   ),
